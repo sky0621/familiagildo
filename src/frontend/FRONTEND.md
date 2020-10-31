@@ -65,3 +65,8 @@ Successfully created project frontend
 
   See : https://typescript.nuxtjs.org/cookbook/components/
 ```
+
+## add module
+```
+$ yarn add nuxt-property-decorator
+```
