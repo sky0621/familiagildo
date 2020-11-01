@@ -1,5 +1,8 @@
 <template>
-  <div></div>
+  <div>
+    <h1>Tasks you should do</h1>
+    <h1>actual results</h1>
+  </div>
 </template>
 
 <script lang="ts">
