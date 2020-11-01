@@ -70,3 +70,8 @@ Successfully created project frontend
 ```
 $ yarn add nuxt-property-decorator
 ```
+
+```
+$ yarn add nuxt-webfontloader
+```
+

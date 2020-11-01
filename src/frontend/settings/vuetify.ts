@@ -3,9 +3,13 @@ export default function () {
     theme: {
       themes: {
         light: {
-          primary: '#00FF00',
-          secondary: '#F0F4C3',
-          accent: '#FF6D00',
+          primary: '#cddc39',
+          secondary: '#ffc107',
+          accent: '#3f51b5',
+          error: '#f44336',
+          warning: '#ff9800',
+          info: '#2196f3',
+          success: '#4caf50'
         },
       },
     },

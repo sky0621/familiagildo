@@ -1,9 +1,16 @@
 <template>
   <v-app>
+    <!--
+      ヘッダー
+    -->
     <v-app-bar fixed app color="primary">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title>kaubandus</v-toolbar-title>
+      <v-toolbar-title><h3 :class="$style.tomorrow">kaubandus</h3></v-toolbar-title>
     </v-app-bar>
+
+    <!--
+      サイドメニュー
+    -->
     <v-navigation-drawer v-model="drawer" fixed app>
       <!-- Home -->
       <v-list>
@@ -19,10 +26,11 @@
           <v-list-item-title>Tasks</v-list-item-title>
         </template>
         <v-list-item-group>
-          <v-list-item>
+          <v-list-item to="/tasks/new">
             <v-list-item-title>you created</v-list-item-title>
+            <v-list-item-icon><v-icon>mdi-01</v-icon></v-list-item-icon>
           </v-list-item>
-          <v-list-item>
+          <v-list-item to="/tasks/list">
             <v-list-item-title>you should do</v-list-item-title>
           </v-list-item>
         </v-list-item-group>
@@ -67,11 +75,19 @@
         </v-list-item-group>
       </v-list-group>
     </v-navigation-drawer>
+
+    <!--
+      コンテンツ
+    -->
     <v-main>
       <v-container>
         <nuxt />
       </v-container>
     </v-main>
+
+    <!--
+      フッター
+    -->
     <v-footer app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
@@ -87,3 +103,9 @@ export default class DefaultLayout extends Vue {
   drawer: boolean = false
 }
 </script>
+
+<style module>
+.tomorrow {
+  font-family: 'Tomorrow', sans-serif;
+}
+</style>

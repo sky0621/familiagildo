@@ -17,8 +17,7 @@ export default {
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
-  css: [
-  ],
+  css: [],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
   plugins: [
@@ -37,12 +36,19 @@ export default {
 
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
+    'nuxt-webfontloader'
   ],
 
   // Vuetify module configuration (https://go.nuxtjs.dev/config-vuetify)
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     optionsPath: '~/settings/vuetify.ts',
+  },
+
+  webfontloader: {
+    google: {
+      families: ['Tomorrow']
+    }
   },
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
