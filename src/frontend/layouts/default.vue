@@ -30,7 +30,7 @@
             </v-list-item-content>
           </template>
 
-          <v-list-item to="/tasks/new">
+          <v-list-item to="/tasks/created">
             <v-list-item-content>
               <v-list-item-title>you created</v-list-item-title>
             </v-list-item-content>
