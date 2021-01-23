@@ -1,19 +1,36 @@
 @startuml
 
-'left to right direction
+left to right direction
 
 actor Parent as p
 actor Child as c
 
 package Kaubandus {
-    usecase "Check Tasks" as cht
-    usecase "Check My Tasks" as chmt
-    usecase "Create Task" as ct
+    usecase "Child情報を登録する" as crc
+    usecase "タスクを確認する" as cht
+    usecase "タスクを登録する" as crt
+    usecase "タスクを修正する" as upt
+    usecase "取引を確認する" as chtr
+    usecase "取引を開始する" as sttr
+    usecase "取引を確定する" as dctr
 }
 
-p -> cht
-c -> chmt
-p -> ct
-c -> ct
+p --> cht
+p --> crt
+p --> upt
+
+p --> chtr
+p --> sttr
+p --> dctr
+
+p --> crc
+
+
+cht <-- c : "自分に関係するもののみ"
+crt <-- c
+upt <-- c : "自分で作ったもののみ"
+
+chtr <-- c : "自分に関係するもののみ"
+sttr <-- c
 
 @enduml
