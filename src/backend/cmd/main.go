@@ -45,7 +45,7 @@ func execMain() int {
 	 * start app
 	 */
 
-	return 0
+	return normalEnd
 }
 
 func buildApp(ctx context.Context, cfg config) (*app, func(), error) {
