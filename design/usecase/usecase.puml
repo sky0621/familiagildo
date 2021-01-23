@@ -1,0 +1,19 @@
+@startuml
+
+'left to right direction
+
+actor Parent as p
+actor Child as c
+
+package Kaubandus {
+    usecase "Check Tasks" as cht
+    usecase "Check My Tasks" as chmt
+    usecase "Create Task" as ct
+}
+
+p -> cht
+c -> chmt
+p -> ct
+c -> ct
+
+@enduml
