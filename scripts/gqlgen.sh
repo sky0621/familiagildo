@@ -4,9 +4,9 @@ SCRIPT_DIR=$(dirname "$0")
 echo "${SCRIPT_DIR}"
 cd "${SCRIPT_DIR}" && cd ../
 
-cd ./src
-#rm -f ./adapter/web/graphql_generated.go
-#rm -f ./adapter/web/gqlmodel/graphql_generated.go
+cd ./src/backend
+rm -f ./adapter/web/graphql_generated.go
+rm -f ./adapter/web/gqlmodel/graphql_generated.go
 
 subCmd=${1:-}
 

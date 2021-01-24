@@ -35,7 +35,7 @@ func newConfig() config {
 }
 
 func (c *config) IsCloud() bool {
-	return c.Env == "local"
+	return c.Env != "local"
 }
 
 func (c *config) Dsn() string {

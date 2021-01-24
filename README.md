@@ -55,3 +55,25 @@ $ yarn -v
 GoLand 2020.3.1
 Build #GO-203.6682.164, built on December 29, 2020
 ```
+
+### docker
+```
+$ sudo docker version
+Client: Docker Engine - Community
+ Version:           19.03.13
+   ~~~
+
+Server: Docker Engine - Community
+ Engine:
+  Version:          19.03.13
+   ~~~
+```
+
+### docker-compose
+```
+$ sudo docker-compose version
+docker-compose version 1.25.4, build 8d51620a
+docker-py version: 4.1.0
+CPython version: 3.7.5
+OpenSSL version: OpenSSL 1.1.0l  10 Sep 2019
+```
