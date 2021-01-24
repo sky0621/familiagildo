@@ -1,0 +1,25 @@
+@startuml
+
+left to right direction
+
+actor Parent as p
+actor Child as c
+
+package Kaubandus {
+    usecase "タスクを登録する" as crt
+}
+
+p --> crt
+crt <-- c
+
+note left of crt
+・タスクの内容
+・報酬
+end note
+
+note right of crt
+ああ
+あ
+end note
+
+@enduml

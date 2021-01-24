@@ -1,14 +1,22 @@
 package main
 
-import "github.com/sky0621/kaubandus"
+import (
+	"github.com/google/wire"
+	"gocloud.dev/server"
+)
 
-func NewApp() kaubandus.App {
-	return &app{}
+func init() {
+	_ = appSet
 }
+
+var appSet = wire.NewSet(
+	newApp,
+)
 
 type app struct {
+	s *server.Server
 }
 
-func (a *app) Start() error {
-	return nil
+func newApp(s *server.Server) *app {
+	return &app{s: s}
 }

@@ -33,4 +33,9 @@ upt <-- c : "自分で作ったもののみ"
 chtr <-- c : "自分に関係するもののみ"
 sttr <-- c
 
+note right of crt
+aa
+bb
+end note
+
 @enduml

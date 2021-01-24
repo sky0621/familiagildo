@@ -1,0 +1,16 @@
+extend type Mutation {
+    "「タスク」を登録"
+    createTask(task: TaskInput!): Task
+}
+
+"タスクインプット"
+input TaskInput {
+    "タスクの内容"
+    Content: String!
+
+    "報酬"
+    Reward: String!
+
+    "インセンティブ（よりよい成果をあげた場合の追加報酬）"
+    Incentive: String
+}

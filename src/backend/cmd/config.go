@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/kelseyhightower/envconfig"
@@ -19,6 +20,9 @@ type config struct {
 
 	// Webサーバ設定用
 	WebPort string `split_words:"true" default:"8080"`
+
+	// トレース設定用
+	Trace bool `split_words:"true" default:"false"`
 }
 
 func newConfig() config {
@@ -30,6 +34,15 @@ func newConfig() config {
 	return c
 }
 
-func (c *config) IsLocal() bool {
+func (c *config) IsCloud() bool {
 	return c.Env == "local"
+}
+
+func (c *config) Dsn() string {
+	if c.IsCloud() {
+		return fmt.Sprintf("host=/cloudsql/%s user=%s password=%s dbname=%s sslmode=disable",
+			c.DBHost, c.DBUser, c.DBPass, c.DBName)
+	}
+	return fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
+		c.DBHost, c.DBPort, c.DBName, c.DBUser, c.DBPass)
 }
