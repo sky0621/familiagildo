@@ -8,8 +8,6 @@ cd ./src/backend
 rm -f ./adapter/web/graphql_generated.go
 rm -f ./adapter/web/gqlmodel/graphql_generated.go
 
-subCmd=${1:-}
-
 # https://gqlgen.com/
 # https://github.com/99designs/gqlgen
 #go get -u github.com/99designs/gqlgen@v0.13.0

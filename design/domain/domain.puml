@@ -1,0 +1,18 @@
+@startuml
+node Trade [
+  [core domain]
+  Trade
+  ====
+  Taskを登録し、Reward
+  (及びIncentive)を設定する。
+]
+
+node Auth [
+  [generic sub domain]
+  Auth
+  ====
+  認証・認可
+]
+
+
+@enduml

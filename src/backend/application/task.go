@@ -3,7 +3,7 @@ package application
 import "github.com/sky0621/kaubandus/application/entity"
 
 type Task interface {
-	Create() (entity.Task, error)
+	Create(e entity.Task) (entity.Task, error)
 	Tasks() ([]entity.Task, error)
 }
 
@@ -14,7 +14,7 @@ func NewTask() Task {
 type task struct {
 }
 
-func (t *task) Create() (entity.Task, error) {
+func (t *task) Create(e entity.Task) (entity.Task, error) {
 	return entity.Task{}, nil
 }
 
