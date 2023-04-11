@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="api" type="GoApplicationRunConfiguration" factoryName="Go Application">
+  <configuration default="false" name="apiserver" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="kaubandus" />
     <working_directory value="$PROJECT_DIR$/src/backend" />
-    <parameters value="api" />
+    <parameters value="apiserver" />
     <kind value="PACKAGE" />
     <package value="github.com/sky0621/kaubandus" />
     <directory value="$PROJECT_DIR$" />

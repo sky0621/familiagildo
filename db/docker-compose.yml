@@ -3,7 +3,7 @@ version: '3'
 services:
   db:
     restart: always
-    image: postgres:12-alpine
+    image: postgres:15-alpine
     container_name: kaubandus-container
     ports:
       - "11111:5432"
@@ -17,7 +17,7 @@ services:
       - ./local/data:/docker-entrypoint-initdb.d/
   testdb:
     restart: always
-    image: postgres:12-alpine
+    image: postgres:15-alpine
     container_name: kaubandus-test-container
     ports:
       - "11112:5432"

@@ -114,5 +114,5 @@ cobra-cli init
 ```
 
 ```
-cobra-cli add api
+cobra-cli add apiserver
 ```
