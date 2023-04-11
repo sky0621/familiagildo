@@ -86,6 +86,13 @@ Docker Compose version v2.17.2
 
 ## setup
 
+### go module
+
+```
+❯ cd src/backend
+❯ go mod init github.com/sky0621/kaubandus
+```
+
 ### cobra
 
 https://github.com/spf13/cobra
@@ -103,7 +110,7 @@ cobra-cli init
 #### add command
 
 ```
-cd src
+❯ cd src/backend
 ```
 
 ```
