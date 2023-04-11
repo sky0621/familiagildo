@@ -14,66 +14,98 @@ small step
 GCP(Cloud Run)
 
 ## env
+
+### OS
+
+```
+Mac Book Air M2 2022
+Ventura 13.2.1
+```
+
 ### go
 ```
-$ go version
-go version go1.15.2 linux/amd64
+❯ go version                     
+go version go1.20.2 darwin/arm64
 ```
 
 ### gcloud
 ```
-$ gcloud version
-Google Cloud SDK 321.0.0
+❯ gcloud version
+Google Cloud SDK 422.0.0
 ```
 
 ### gqlgen
 ```
-$ gqlgen version
-v0.13.0
+❯ gqlgen version        
+v0.17.28
 ```
 
 ### nodejs
 ```
-$ node -v
-v15.6.0
+❯ node -v
+v18.15.0
 ```
 
 ### npm
 ```
-$ npm -v
-7.4.3
+❯ npm -v 
+9.5.0
 ```
 
 ### yarn
 ```
-$ yarn -v
-1.22.10
+❯ yarn -v
+1.22.19
 ```
 
 ### IDE(goland)
 ```
-GoLand 2020.3.1
-Build #GO-203.6682.164, built on December 29, 2020
+GoLand 2022.3.4
+ビルド #GO-223.8836.56、ビルド日 2023年3月23日
 ```
 
 ### docker
 ```
-$ sudo docker version
+❯ docker version
 Client: Docker Engine - Community
- Version:           19.03.13
+ Version:           23.0.1
+ 
    ~~~
 
-Server: Docker Engine - Community
+Server:
  Engine:
-  Version:          19.03.13
-   ~~~
+  Version:          23.0.3
+
 ```
 
 ### docker-compose
 ```
-$ sudo docker-compose version
-docker-compose version 1.25.4, build 8d51620a
-docker-py version: 4.1.0
-CPython version: 3.7.5
-OpenSSL version: OpenSSL 1.1.0l  10 Sep 2019
+❯ docker compose version
+Docker Compose version v2.17.2
+```
+
+## setup
+
+### cobra
+
+https://github.com/spf13/cobra
+
+https://github.com/spf13/cobra-cli/blob/main/README.md
+
+```
+go install github.com/spf13/cobra-cli@latest
+```
+
+```
+cobra-cli init
+```
+
+#### add command
+
+```
+cd src
+```
+
+```
+cobra-cli add api
 ```
