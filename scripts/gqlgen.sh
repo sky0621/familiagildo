@@ -5,8 +5,8 @@ echo "${SCRIPT_DIR}"
 cd "${SCRIPT_DIR}" && cd ../
 
 cd ./src/backend
-rm -f ./adapter/web/graphql_generated.go
-rm -f ./adapter/web/gqlmodel/graphql_generated.go
+rm -f ./adapter/controller/graphql_generated.go
+rm -f ./adapter/controller/gqlmodel/graphql_generated.go
 
 # https://gqlgen.com/
 # https://github.com/99designs/gqlgen
