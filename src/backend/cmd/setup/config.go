@@ -17,12 +17,30 @@ type Config struct {
 	DBName string `split_words:"true" default:"kaubandusdb"`
 	DBUser string `split_words:"true" default:"postgres"`
 	DBPass string `split_words:"true" default:"yuckyjuice"`
+	// DB接続オプション用
+	DBMaxIdleConnections     int `split_words:"true" default:"10"`
+	DBMaxOpenConnections     int `split_words:"true" default:"100"`
+	DBConnMaxLifetimeMinutes int `split_words:"true" default:"60"`
 
 	// Webサーバ設定用
 	WebPort string `split_words:"true" default:"8080"`
 
 	// トレース設定用
 	Trace bool `split_words:"true" default:"false"`
+}
+
+type DBSetOption struct {
+	DBMaxIdleConnections     int
+	DBMaxOpenConnections     int
+	DBConnMaxLifetimeMinutes int
+}
+
+func (c *Config) ToDBSetOption() DBSetOption {
+	return DBSetOption{
+		DBMaxIdleConnections:     c.DBMaxIdleConnections,
+		DBMaxOpenConnections:     c.DBMaxOpenConnections,
+		DBConnMaxLifetimeMinutes: c.DBConnMaxLifetimeMinutes,
+	}
 }
 
 func ReadConfig() Config {

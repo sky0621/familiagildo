@@ -1,10 +1,11 @@
-package setup
+package web
 
 import (
 	"context"
 	"errors"
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/rs/zerolog/log"
+	"github.com/sky0621/kaubandus/adapter/controller"
+	"github.com/sky0621/kaubandus/cmd/setup"
 	"go.opencensus.io/trace"
 	"gocloud.dev/gcp"
 	"gocloud.dev/server"
@@ -14,8 +15,8 @@ import (
 	"time"
 )
 
-func Server(ctx context.Context, cfg Config, es graphql.ExecutableSchema) (*server.Server, func(), error) {
-	r, err := Router(es, cfg.Env)
+func Server(ctx context.Context, env setup.Env, isTrace bool) (*server.Server, func(), error) {
+	r, err := router(controller.NewExecutableSchema(controller.Config{Resolvers: controller.NewResolver()}), env)
 	if err != nil {
 		return nil, nil, errors.Join(err)
 	}
@@ -34,7 +35,7 @@ func Server(ctx context.Context, cfg Config, es graphql.ExecutableSchema) (*serv
 		Driver: &server.DefaultDriver{},
 	}
 
-	if cfg.Trace {
+	if isTrace {
 		traceExporter, err := setupTraceExporter(ctx)
 		if err != nil {
 			return nil, nil, errors.Join(err)

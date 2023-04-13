@@ -5,9 +5,11 @@ package cmd
 
 import (
 	"context"
+	"fmt"
 	"github.com/rs/zerolog/log"
-	"github.com/sky0621/kaubandus/adapter/controller"
 	"github.com/sky0621/kaubandus/cmd/setup"
+	"github.com/sky0621/kaubandus/external/postgres"
+	"github.com/sky0621/kaubandus/external/web"
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
@@ -23,9 +25,17 @@ var serverCmd = &cobra.Command{
 		cfg := setup.ReadConfig()
 		setup.Logger(cfg.Env)
 
-		svr, shutdownServer, err := setup.Server(context.Background(), cfg, controller.NewExecutableSchema(controller.Config{Resolvers: controller.NewResolver()}))
+		db, closeDB, err := postgres.Open(cfg.Dsn(), cfg.ToDBSetOption())
 		if err != nil {
-			log.Err(err).Msgf("failed to setup.Server: %+v", err)
+			log.Err(err).Msgf("failed to setup db: %+v", err)
+			return
+		}
+		// FIXME:
+		fmt.Print(db)
+
+		svr, shutdownServer, err := web.Server(context.Background(), cfg.Env, cfg.Trace)
+		if err != nil {
+			log.Err(err).Msgf("failed to setup server: %+v", err)
 			return
 		}
 		defer shutdownServer()
@@ -34,7 +44,7 @@ var serverCmd = &cobra.Command{
 			q := make(chan os.Signal, 1)
 			signal.Notify(q, os.Interrupt, syscall.SIGTERM)
 			<-q
-			//			closeDB()
+			closeDB()
 			shutdownServer()
 			os.Exit(-1)
 		}()
