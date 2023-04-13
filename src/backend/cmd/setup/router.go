@@ -2,6 +2,8 @@ package setup
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
@@ -13,7 +15,6 @@ import (
 	"github.com/go-chi/cors"
 	"github.com/rs/zerolog/log"
 	"github.com/vektah/gqlparser/v2/gqlerror"
-	"golang.org/x/xerrors"
 	"time"
 )
 
@@ -75,9 +76,9 @@ func graphQlServer(es graphql.ExecutableSchema) *handler.Server {
 		return graphql.DefaultErrorPresenter(ctx, err)
 	})
 
-	srv.SetRecoverFunc(func(ctx context.Context, err interface{}) error {
+	srv.SetRecoverFunc(func(ctx context.Context, err any) error {
 		// FIXME:
-		return xerrors.Errorf("panic occurred: %w", err)
+		return errors.Join(fmt.Errorf("%v", err))
 	})
 
 	return srv

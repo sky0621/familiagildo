@@ -39,9 +39,6 @@ var serverCmd = &cobra.Command{
 			os.Exit(-1)
 		}()
 
-		/*
-		 * start app
-		 */
 		if err := svr.ListenAndServe(":" + cfg.WebPort); err != nil {
 			log.Err(err).Msgf("failed to start server: %+v", err)
 			return

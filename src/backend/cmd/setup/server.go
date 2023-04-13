@@ -10,7 +10,6 @@ import (
 	"gocloud.dev/server"
 	"gocloud.dev/server/health"
 	"gocloud.dev/server/sdserver"
-	"golang.org/x/xerrors"
 	"sync"
 	"time"
 )
@@ -18,7 +17,7 @@ import (
 func Server(ctx context.Context, cfg Config, es graphql.ExecutableSchema) (*server.Server, func(), error) {
 	r, err := Router(es, cfg.Env)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to setupRouter: %w", err)
+		return nil, nil, errors.Join(err)
 	}
 
 	healthCheck := new(customHealthCheck)
@@ -38,7 +37,7 @@ func Server(ctx context.Context, cfg Config, es graphql.ExecutableSchema) (*serv
 	if cfg.Trace {
 		traceExporter, err := setupTraceExporter(ctx)
 		if err != nil {
-
+			return nil, nil, errors.Join(err)
 		}
 		options.TraceExporter = traceExporter
 
@@ -62,12 +61,12 @@ func Server(ctx context.Context, cfg Config, es graphql.ExecutableSchema) (*serv
 func setupTraceExporter(ctx context.Context) (trace.Exporter, error) {
 	credentials, err := gcp.DefaultCredentials(ctx)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to DefaultCredentials: %w", err)
+		return nil, errors.Join(err)
 	}
 
 	projectID, err := gcp.DefaultProjectID(credentials)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to DefaultProjectID: %w", err)
+		return nil, errors.Join(err)
 	}
 
 	tokenSource := gcp.CredentialsTokenSource(credentials)
@@ -75,7 +74,7 @@ func setupTraceExporter(ctx context.Context) (trace.Exporter, error) {
 	mr := GlobalMonitoredResource{projectID: string(projectID)}
 	exporter, _, err := sdserver.NewExporter(projectID, tokenSource, mr)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to NewExporter: %w", err)
+		return nil, errors.Join(err)
 	}
 
 	return exporter, err
