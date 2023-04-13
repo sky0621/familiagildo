@@ -90,6 +90,9 @@ Docker Compose version v2.17.2
 
 ```
 ❯ cd src/backend
+```
+
+```
 ❯ go mod init github.com/sky0621/kaubandus
 ```
 
@@ -104,6 +107,10 @@ go install github.com/spf13/cobra-cli@latest
 ```
 
 ```
+❯ cd src/backend
+```
+
+```
 cobra-cli init
 ```
 
@@ -114,5 +121,5 @@ cobra-cli init
 ```
 
 ```
-cobra-cli add apiserver
+cobra-cli add server
 ```
