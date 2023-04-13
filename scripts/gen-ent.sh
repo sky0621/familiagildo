@@ -4,5 +4,5 @@ SCRIPT_DIR=$(dirname "$0")
 echo "${SCRIPT_DIR}"
 cd "${SCRIPT_DIR}" && cd ../
 
-cd ../src
+cd ./src/backend/adapter/gateway
 go generate ./ent
