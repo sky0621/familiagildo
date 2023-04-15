@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/sky0621/kaubandus/cmd/setup"
-	"github.com/sky0621/kaubandus/external/postgres"
+	"github.com/sky0621/kaubandus/external/db"
 	"github.com/sky0621/kaubandus/external/web"
 	"github.com/spf13/cobra"
 	"os"
@@ -25,7 +25,9 @@ var serverCmd = &cobra.Command{
 		cfg := setup.ReadConfig()
 		setup.Logger(cfg.Env)
 
-		db, closeDB, err := postgres.Open(cfg.Dsn(), cfg.ToDBSetOption())
+		ctx := context.Background()
+
+		db, closeDB, err := db.Open(cfg.Dsn(), cfg.ToDBSetOption())
 		if err != nil {
 			log.Err(err).Msgf("failed to setup db: %+v", err)
 			return
@@ -33,7 +35,7 @@ var serverCmd = &cobra.Command{
 		// FIXME:
 		fmt.Print(db)
 
-		svr, shutdownServer, err := web.Server(context.Background(), cfg.Env, cfg.Trace)
+		svr, shutdownServer, err := web.Server(ctx, cfg.Env, cfg.Trace)
 		if err != nil {
 			log.Err(err).Msgf("failed to setup server: %+v", err)
 			return

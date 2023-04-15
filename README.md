@@ -123,3 +123,7 @@ cobra-cli init
 ```
 cobra-cli add server
 ```
+
+### sqlc
+
+https://docs.sqlc.dev/en/latest/overview/install.html
