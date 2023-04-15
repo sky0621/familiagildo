@@ -4,7 +4,7 @@ left to right direction
 
 actor Guest as g
 
-package "familia gildo" {
+package "guest site" {
     usecase "ギルド登録を依頼する" as requestCreateGuild
     usecase "ギルドオーナーを登録する" as createOwner
     usecase "ギルド参加者を登録する" as createParticipant

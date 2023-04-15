@@ -4,7 +4,7 @@ left to right direction
 
 actor System as s
 
-package "familia gildo" {
+package "system" {
     usecase "ギルド登録依頼トークンチェックをする" as checkCreateGuildToken
     usecase "参加者登録依頼トークンチェックをする" as checkCreateParticipantToken
 }

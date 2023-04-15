@@ -1,0 +1,25 @@
+extend type Query {
+    "オーナーがタスクの一覧を参照する"
+    listTaskByOwner: [OwnerTask!]!
+    "オーナーが条件に合致するタスクの一覧を参照する"
+    findTaskByOwner(filter: OwnerTaskFilter): [OwnerTask!]!
+    "オーナーが１タスクの詳細を参照する"
+    getTaskByOwner(id: ID!): OwnerTask
+}
+
+"オーナータスク"
+type OwnerTask implements Node {
+    "ID"
+    id: ID!
+
+    "タスクの内容"
+    Content: String!
+
+    "タスクの期日"
+    DueDate: Time
+}
+
+"オーナータスクフィルター条件"
+input OwnerTaskFilter {
+    ContentLike: String
+}

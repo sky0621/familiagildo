@@ -4,7 +4,7 @@ left to right direction
 
 actor Admin as a
 
-package "familia gildo" {
+package "admin site" {
     usecase "ギルドを登録する" as createGuildByAdmin
     usecase "ギルドの一覧を参照する" as listGuild
     usecase "条件に合致するギルドの一覧を参照する" as findGuild

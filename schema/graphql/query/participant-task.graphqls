@@ -1,0 +1,25 @@
+extend type Query {
+    "参加者がタスクの一覧を参照する"
+    listTaskByParticipant: [ParticipantTask!]!
+    "参加者が条件に合致するタスクの一覧を参照する"
+    findTaskByParticipant(filter: ParticipantTaskFilter): [ParticipantTask!]!
+    "参加者が１タスクの詳細を参照する"
+    getTaskByParticipant(id: ID!): ParticipantTask
+}
+
+"参加者タスク"
+type ParticipantTask implements Node {
+    "ID"
+    id: ID!
+
+    "タスクの内容"
+    Content: String!
+
+    "タスクの期日"
+    DueDate: Time
+}
+
+"参加者タスクフィルター条件"
+input ParticipantTaskFilter {
+    ContentLike: String
+}

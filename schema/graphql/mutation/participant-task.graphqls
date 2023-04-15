@@ -1,0 +1,14 @@
+extend type Mutation {
+    "参加者がタスクを登録する"
+    createTaskByParticipant(input: ParticipantTaskInput!): ParticipantTask
+    "参加者がタスクを更新する"
+    updateTaskByParticipant(input: ParticipantTaskInput!): ParticipantTask
+}
+
+"参加者タスク"
+input ParticipantTaskInput {
+    "タスクの内容"
+    Content: String!
+    "タスクの期日"
+    DueDate: Time
+}

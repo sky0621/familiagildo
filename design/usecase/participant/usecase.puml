@@ -4,12 +4,26 @@ left to right direction
 
 actor Participant as p
 
-package "familia gildo" {
+package "participant site" {
     usecase "ログインする" as loginByParticipant
     usecase "ログアウトする" as logoutByParticipant
+    usecase "タスクを登録する" as createMyTaskByParticipant
+    usecase "タスクを更新する" as updateMyTaskByParticipant
+    usecase "タスクを削除する" as deleteMyTaskByParticipant
+    usecase "タスクの一覧を参照する" as listTaskByParticipant
+    usecase "条件に合致するタスクの一覧を参照する" as findTaskByParticipant
+    usecase "１タスクの詳細を参照する" as getTaskByParticipant
+    usecase "交渉記録を参照する" as getNegotiationRecordByParticipant
 }
 
 p --> loginByParticipant
 p --> logoutByParticipant
+p --> createMyTaskByParticipant
+p --> updateMyTaskByParticipant
+p --> deleteMyTaskByParticipant
+p --> listTaskByParticipant
+p --> findTaskByParticipant
+p --> getTaskByParticipant
+p --> getNegotiationRecordByParticipant
 
 @enduml

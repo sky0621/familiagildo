@@ -1,0 +1,16 @@
+extend type Mutation {
+    "オーナーがタスクを登録する"
+    createTaskByOwner(input: OwnerTaskInput!): OwnerTask
+    "オーナーがタスクを更新する"
+    updateTaskByOwner(input: OwnerTaskInput!): OwnerTask
+    "オーナーがタスクを削除する"
+    deleteTaskByOwner(input: OwnerTaskInput!): ID
+}
+
+"オーナータスク"
+input OwnerTaskInput {
+    "タスクの内容"
+    Content: String!
+    "タスクの期日"
+    DueDate: Time
+}

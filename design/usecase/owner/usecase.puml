@@ -4,37 +4,52 @@ left to right direction
 
 actor Owner as o
 
-package "familia gildo" {
+package "owner site" {
     usecase "ログインする" as loginByOwner
     usecase "ログアウトする" as logoutByOwner
     usecase "ギルド参加者登録を依頼する" as requestCreateParticipant
-    usecase "タスクを登録する" as createTask
-    usecase "タスクを更新する" as updateTask
-    usecase "タスクを削除する" as deleteTask
-    usecase "報酬を登録する" as createReward
-    usecase "インセンティブを登録する" as createIncentive
-    usecase "タスクの一覧を参照する" as listTask
-    usecase "条件に合致するタスクの一覧を参照する" as findTask
-    usecase "１タスクの詳細を参照する" as getTask
-    usecase "交渉記録を登録する" as createNegotiationRecord
+    usecase "タスクを登録する" as createTaskByOwner
+    usecase "タスクを更新する" as updateTaskByOwner
+    usecase "タスクを削除する" as deleteTaskByOwner
+    usecase "報酬を登録する" as createRewardByOwner
+    usecase "インセンティブを登録する" as createIncentiveByOwner
+    usecase "タスクの一覧を参照する" as listTaskByOwner
+    usecase "条件に合致するタスクの一覧を参照する" as findTaskByOwner
+    usecase "１タスクの詳細を参照する" as getTaskByOwner
+    usecase "交渉記録を登録する" as createNegotiationRecordByOwner
+    usecase "交渉記録を更新する" as updateNegotiationRecordByOwner
+    usecase "交渉記録を参照する" as getNegotiationRecordByOwner
+    usecase "タスクの内容を受諾する" as acceptTaskByOwner
+    usecase "タスクの内容を拒否する" as acceptTaskByOwner
 }
 
 o --> loginByOwner
 o --> logoutByOwner
 o --> requestCreateParticipant
-o --> createTask
-o --> updateTask
-o --> deleteTask
-o --> createReward
-o --> createIncentive
-o --> listTask
-o --> findTask
-o --> getTask
-o --> createNegotiationRecord
+o --> createTaskByOwner
+o --> updateTaskByOwner
+o --> deleteTaskByOwner
+o --> createRewardByOwner
+o --> createIncentiveByOwner
+o --> listTaskByOwner
+o --> findTaskByOwner
+o --> getTaskByOwner
+o --> createNegotiationRecordByOwner
+o --> updateNegotiationRecordByOwner
+o --> getNegotiationRecordByOwner
+o --> acceptTaskByOwner
 
 note left of requestCreateParticipant
 ・メールアドレスを入力
 ※入力されたメールアドレス宛に本登録用のURLを記載したメールが送信される。
+end note
+
+note left of updateTaskByOwner
+・オーナーが登録したタスクを更新する。
+end note
+
+note left of acceptTaskByOwner
+・参加者が登録したタスクに対して受諾する。
 end note
 
 @enduml
