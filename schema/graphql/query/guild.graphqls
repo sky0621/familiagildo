@@ -1,0 +1,13 @@
+extend type Query {
+    "「ギルド」を取得"
+    findGuild: [Guild!]!
+}
+
+"ギルド"
+type Guild implements Node{
+    "ID"
+    id: ID!
+
+    "ギルドの内容"
+    Content: String!
+}

@@ -1,0 +1,30 @@
+@startuml
+
+left to right direction
+
+actor Guest as g
+
+package "familia gildo" {
+    usecase "ギルド登録を依頼する" as requestCreateGuild
+    usecase "ギルドオーナーを登録する" as createOwner
+    usecase "ギルド参加者を登録する" as createParticipant
+}
+
+g --> requestCreateGuild
+g --> createOwner
+g --> createParticipant
+
+note left of requestCreateGuild
+・メールアドレスを入力
+※入力されたメールアドレス宛に本登録用のURLを記載したメールが送信される。
+end note
+
+note left of createOwner
+・ログインID、パスワードを入力
+end note
+
+note left of createParticipant
+・ログインID、パスワードを入力
+end note
+
+@enduml

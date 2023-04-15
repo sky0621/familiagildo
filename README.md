@@ -89,11 +89,11 @@ Docker Compose version v2.17.2
 ### go module
 
 ```
-❯ cd src/backend
+cd src/backend
 ```
 
 ```
-❯ go mod init github.com/sky0621/kaubandus
+go mod init github.com/sky0621/kaubandus
 ```
 
 ### cobra
@@ -107,7 +107,7 @@ go install github.com/spf13/cobra-cli@latest
 ```
 
 ```
-❯ cd src/backend
+cd src/backend
 ```
 
 ```
@@ -117,7 +117,7 @@ cobra-cli init
 #### add command
 
 ```
-❯ cd src/backend
+cd src/backend
 ```
 
 ```
@@ -127,3 +127,9 @@ cobra-cli add server
 ### sqlc
 
 https://docs.sqlc.dev/en/latest/overview/install.html
+
+### wire
+
+```
+go install github.com/google/wire/cmd/wire@latest
+```

@@ -1,0 +1,26 @@
+@startuml
+
+left to right direction
+
+actor Admin as a
+
+package "familia gildo" {
+    usecase "ギルドを登録する" as createGuildByAdmin
+    usecase "ギルドの一覧を参照する" as listGuild
+    usecase "条件に合致するギルドの一覧を参照する" as findGuild
+    usecase "１ギルドの詳細を参照する" as getGuild
+    usecase "１ギルドのお知らせを登録する" as createNotice
+}
+
+a --> createGuildByAdmin
+a --> listGuild
+a --> findGuild
+a --> getGuild
+a --> createNotice
+
+note left of createGuildByAdmin
+・保護者（メールアドレス）も登録する。
+・
+end note
+
+@enduml

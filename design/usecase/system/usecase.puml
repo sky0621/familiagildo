@@ -1,0 +1,23 @@
+@startuml
+
+left to right direction
+
+actor System as s
+
+package "familia gildo" {
+    usecase "ギルド登録依頼トークンチェックをする" as checkCreateGuildToken
+    usecase "参加者登録依頼トークンチェックをする" as checkCreateParticipantToken
+}
+
+s --> checkCreateGuildToken
+s --> checkCreateParticipantToken
+
+note left of checkCreateGuildToken
+・トークンの有効期限をチェックする。
+end note
+
+note left of checkCreateParticipantToken
+・トークンの有効期限をチェックする。
+end note
+
+@enduml

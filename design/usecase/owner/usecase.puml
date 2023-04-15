@@ -1,0 +1,40 @@
+@startuml
+
+left to right direction
+
+actor Owner as o
+
+package "familia gildo" {
+    usecase "ログインする" as loginByOwner
+    usecase "ログアウトする" as logoutByOwner
+    usecase "ギルド参加者登録を依頼する" as requestCreateParticipant
+    usecase "タスクを登録する" as createTask
+    usecase "タスクを更新する" as updateTask
+    usecase "タスクを削除する" as deleteTask
+    usecase "報酬を登録する" as createReward
+    usecase "インセンティブを登録する" as createIncentive
+    usecase "タスクの一覧を参照する" as listTask
+    usecase "条件に合致するタスクの一覧を参照する" as findTask
+    usecase "１タスクの詳細を参照する" as getTask
+    usecase "交渉記録を登録する" as createNegotiationRecord
+}
+
+o --> loginByOwner
+o --> logoutByOwner
+o --> requestCreateParticipant
+o --> createTask
+o --> updateTask
+o --> deleteTask
+o --> createReward
+o --> createIncentive
+o --> listTask
+o --> findTask
+o --> getTask
+o --> createNegotiationRecord
+
+note left of requestCreateParticipant
+・メールアドレスを入力
+※入力されたメールアドレス宛に本登録用のURLを記載したメールが送信される。
+end note
+
+@enduml

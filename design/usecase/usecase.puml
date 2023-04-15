@@ -5,7 +5,7 @@ left to right direction
 actor Parent as p
 actor Child as c
 
-package Kaubandus {
+package "familia gildo" {
     usecase "Child情報を登録する" as crc
     usecase "タスクを確認する" as cht
     usecase "タスクを登録する" as crt

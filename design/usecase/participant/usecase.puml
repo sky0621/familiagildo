@@ -1,0 +1,15 @@
+@startuml
+
+left to right direction
+
+actor Participant as p
+
+package "familia gildo" {
+    usecase "ログインする" as loginByParticipant
+    usecase "ログアウトする" as logoutByParticipant
+}
+
+p --> loginByParticipant
+p --> logoutByParticipant
+
+@enduml
