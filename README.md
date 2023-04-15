@@ -1,5 +1,5 @@
-# kaubandus
-kaubandus means "trade" in Estonian.
+# familia gildo
+familia gildo means "trade" in Esperanto.
 
 ## outline
 
