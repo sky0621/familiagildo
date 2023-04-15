@@ -14,6 +14,8 @@ package "participant site" {
     usecase "条件に合致するタスクの一覧を参照する" as findTaskByParticipant
     usecase "１タスクの詳細を参照する" as getTaskByParticipant
     usecase "交渉記録を参照する" as getNegotiationRecordByParticipant
+    usecase "タスクの内容を受諾する" as acceptTaskByParticipant
+    usecase "タスクの内容を拒否する" as rejectTaskByParticipant
 }
 
 p --> loginByParticipant
@@ -25,5 +27,7 @@ p --> listTaskByParticipant
 p --> findTaskByParticipant
 p --> getTaskByParticipant
 p --> getNegotiationRecordByParticipant
+p --> acceptTaskByParticipant
+p --> rejectTaskByParticipant
 
 @enduml

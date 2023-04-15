@@ -20,7 +20,7 @@ package "owner site" {
     usecase "交渉記録を更新する" as updateNegotiationRecordByOwner
     usecase "交渉記録を参照する" as getNegotiationRecordByOwner
     usecase "タスクの内容を受諾する" as acceptTaskByOwner
-    usecase "タスクの内容を拒否する" as acceptTaskByOwner
+    usecase "タスクの内容を拒否する" as rejectTaskByOwner
 }
 
 o --> loginByOwner
@@ -38,6 +38,7 @@ o --> createNegotiationRecordByOwner
 o --> updateNegotiationRecordByOwner
 o --> getNegotiationRecordByOwner
 o --> acceptTaskByOwner
+o --> rejectTaskByOwner
 
 note left of requestCreateParticipant
 ・メールアドレスを入力
