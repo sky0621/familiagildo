@@ -2,9 +2,33 @@
 
 package controller
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+	"time"
+)
+
 type Node interface {
 	IsNode()
 	GetID() string
+}
+
+// ギルド
+type Guild struct {
+	// ID
+	ID string `json:"id"`
+	// ギルドの内容
+	Content string `json:"Content"`
+}
+
+func (Guild) IsNode()            {}
+func (this Guild) GetID() string { return this.ID }
+
+// ギルドインプット
+type GuildInput struct {
+	// ギルドの名前
+	Name string `json:"Name"`
 }
 
 type MutationResponse struct {
@@ -19,27 +43,156 @@ type NoopPayload struct {
 	ClientMutationID *string `json:"clientMutationId,omitempty"`
 }
 
-// タスク
-type Task struct {
+// オーナータスク
+type OwnerTask struct {
 	// ID
 	ID string `json:"id"`
 	// タスクの内容
 	Content string `json:"Content"`
-	// 報酬
-	Reward string `json:"Reward"`
-	// インセンティブ（よりよい成果をあげた場合の追加報酬）
-	Incentive *string `json:"Incentive,omitempty"`
+	// タスクのステータス
+	Status TaskStatus `json:"Status"`
+	// タスクの継続性
+	Continuity TaskContinuity `json:"Continuity"`
+	// タスクの期日
+	DueDate *time.Time `json:"DueDate,omitempty"`
 }
 
-func (Task) IsNode()            {}
-func (this Task) GetID() string { return this.ID }
+func (OwnerTask) IsNode()            {}
+func (this OwnerTask) GetID() string { return this.ID }
 
-// タスクインプット
-type TaskInput struct {
+// オーナータスクフィルター条件
+type OwnerTaskFilter struct {
+	ContentLike *string `json:"ContentLike,omitempty"`
+}
+
+// オーナータスク
+type OwnerTaskInput struct {
 	// タスクの内容
 	Content string `json:"Content"`
-	// 報酬
-	Reward string `json:"Reward"`
-	// インセンティブ（よりよい成果をあげた場合の追加報酬）
-	Incentive *string `json:"Incentive,omitempty"`
+	// タスクの期日
+	DueDate *time.Time `json:"DueDate,omitempty"`
+}
+
+// 参加者タスク
+type ParticipantTask struct {
+	// ID
+	ID string `json:"id"`
+	// タスクの内容
+	Content string `json:"Content"`
+	// タスクのステータス
+	Status TaskStatus `json:"Status"`
+	// タスクの継続性
+	Continuity TaskContinuity `json:"Continuity"`
+	// タスクの期日
+	DueDate *time.Time `json:"DueDate,omitempty"`
+}
+
+func (ParticipantTask) IsNode()            {}
+func (this ParticipantTask) GetID() string { return this.ID }
+
+// 参加者タスクフィルター条件
+type ParticipantTaskFilter struct {
+	ContentLike *string `json:"ContentLike,omitempty"`
+}
+
+// 参加者タスク
+type ParticipantTaskInput struct {
+	// タスクの内容
+	Content string `json:"Content"`
+	// タスクの期日
+	DueDate *time.Time `json:"DueDate,omitempty"`
+}
+
+// タスクの継続性
+type TaskContinuity string
+
+const (
+	// 単発
+	TaskContinuityOneshot TaskContinuity = "ONESHOT"
+	// 継続
+	TaskContinuityContinuation TaskContinuity = "CONTINUATION"
+)
+
+var AllTaskContinuity = []TaskContinuity{
+	TaskContinuityOneshot,
+	TaskContinuityContinuation,
+}
+
+func (e TaskContinuity) IsValid() bool {
+	switch e {
+	case TaskContinuityOneshot, TaskContinuityContinuation:
+		return true
+	}
+	return false
+}
+
+func (e TaskContinuity) String() string {
+	return string(e)
+}
+
+func (e *TaskContinuity) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TaskContinuity(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TaskContinuity", str)
+	}
+	return nil
+}
+
+func (e TaskContinuity) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+// タスクのステータス
+type TaskStatus string
+
+const (
+	// 仮登録
+	TaskStatusRegistering TaskStatus = "REGISTERING"
+	// 登録済み
+	TaskStatusRegistered TaskStatus = "REGISTERED"
+	// 交渉中
+	TaskStatusNegotiating TaskStatus = "NEGOTIATING"
+	// 受諾済み
+	TaskStatusAccepted TaskStatus = "ACCEPTED"
+)
+
+var AllTaskStatus = []TaskStatus{
+	TaskStatusRegistering,
+	TaskStatusRegistered,
+	TaskStatusNegotiating,
+	TaskStatusAccepted,
+}
+
+func (e TaskStatus) IsValid() bool {
+	switch e {
+	case TaskStatusRegistering, TaskStatusRegistered, TaskStatusNegotiating, TaskStatusAccepted:
+		return true
+	}
+	return false
+}
+
+func (e TaskStatus) String() string {
+	return string(e)
+}
+
+func (e *TaskStatus) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = TaskStatus(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid TaskStatus", str)
+	}
+	return nil
+}
+
+func (e TaskStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
