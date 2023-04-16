@@ -3,6 +3,8 @@ extend type Mutation {
     createTaskByParticipant(input: ParticipantTaskInput!): ParticipantTask
     "参加者がタスクを更新する"
     updateTaskByParticipant(input: ParticipantTaskInput!): ParticipantTask
+    "参加者が(オーナーが登録した)タスクの内容を受諾する"
+    acceptTaskByParticipant(id: ID): Boolean
 }
 
 "参加者タスク"

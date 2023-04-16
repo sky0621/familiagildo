@@ -1,0 +1,55 @@
+"オーナータスク"
+type OwnerTask implements Node {
+    "ID"
+    id: ID!
+
+    "タスクの内容"
+    Content: String!
+
+    "タスクのステータス"
+    Status: TaskStatus!
+
+    "タスクの継続性"
+    Continuity: TaskContinuity!
+
+    "タスクの期日"
+    DueDate: Time
+}
+
+"参加者タスク"
+type ParticipantTask implements Node {
+    "ID"
+    id: ID!
+
+    "タスクの内容"
+    Content: String!
+
+    "タスクのステータス"
+    Status: TaskStatus!
+
+    "タスクの継続性"
+    Continuity: TaskContinuity!
+
+    "タスクの期日"
+    DueDate: Time
+}
+
+"タスクのステータス"
+enum TaskStatus {
+    "仮登録"
+    REGISTERING
+    "登録済み"
+    REGISTERED
+    "交渉中"
+    NEGOTIATING
+    "受諾済み"
+    ACCEPTED
+}
+
+"タスクの継続性"
+enum TaskContinuity {
+    "単発"
+    ONESHOT
+    "継続"
+    CONTINUATION
+}

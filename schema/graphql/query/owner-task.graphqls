@@ -7,18 +7,6 @@ extend type Query {
     getTaskByOwner(id: ID!): OwnerTask
 }
 
-"オーナータスク"
-type OwnerTask implements Node {
-    "ID"
-    id: ID!
-
-    "タスクの内容"
-    Content: String!
-
-    "タスクの期日"
-    DueDate: Time
-}
-
 "オーナータスクフィルター条件"
 input OwnerTaskFilter {
     ContentLike: String

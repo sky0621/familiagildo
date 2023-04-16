@@ -5,6 +5,8 @@ extend type Mutation {
     updateTaskByOwner(input: OwnerTaskInput!): OwnerTask
     "オーナーがタスクを削除する"
     deleteTaskByOwner(input: OwnerTaskInput!): ID
+    "オーナーが(参加者が登録した)タスクの内容を受諾する"
+    acceptTaskByOwner(id: ID): Boolean
 }
 
 "オーナータスク"

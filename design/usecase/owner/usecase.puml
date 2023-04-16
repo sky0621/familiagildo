@@ -20,7 +20,6 @@ package "owner site" {
     usecase "交渉記録を更新する" as updateNegotiationRecordByOwner
     usecase "交渉記録を参照する" as getNegotiationRecordByOwner
     usecase "タスクの内容を受諾する" as acceptTaskByOwner
-    usecase "タスクの内容を拒否する" as rejectTaskByOwner
 }
 
 o --> loginByOwner
@@ -38,7 +37,6 @@ o --> createNegotiationRecordByOwner
 o --> updateNegotiationRecordByOwner
 o --> getNegotiationRecordByOwner
 o --> acceptTaskByOwner
-o --> rejectTaskByOwner
 
 note left of requestCreateParticipant
 ・メールアドレスを入力
@@ -51,6 +49,8 @@ end note
 
 note left of acceptTaskByOwner
 ・参加者が登録したタスクに対して受諾する。
+・受諾したタスクはロックされて編集不可になる。
+・ロックされたタスクは参加者のToDoタスクとなる。
 end note
 
 @enduml

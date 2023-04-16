@@ -7,18 +7,6 @@ extend type Query {
     getTaskByParticipant(id: ID!): ParticipantTask
 }
 
-"参加者タスク"
-type ParticipantTask implements Node {
-    "ID"
-    id: ID!
-
-    "タスクの内容"
-    Content: String!
-
-    "タスクの期日"
-    DueDate: Time
-}
-
 "参加者タスクフィルター条件"
 input ParticipantTaskFilter {
     ContentLike: String
