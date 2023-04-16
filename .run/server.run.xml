@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="server" type="GoApplicationRunConfiguration" factoryName="Go Application">
-    <module name="kaubandus" />
+    <module name="familiagildo" />
     <working_directory value="$PROJECT_DIR$/src/backend" />
     <parameters value="server" />
     <kind value="PACKAGE" />

@@ -1,0 +1,12 @@
+extend type Mutation {
+    "ギルドを登録"
+    createGuildByAdmin(input: AdminGuildInput!): Guild
+}
+
+"ギルドインプット"
+input AdminGuildInput {
+    "ギルドの名前"
+    name: String!
+    "オーナーのメールアドレス"
+    ownerMail: String!
+}

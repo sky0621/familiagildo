@@ -4,16 +4,16 @@ type OwnerTask implements Node {
     id: ID!
 
     "タスクの内容"
-    Content: String!
+    content: String!
 
     "タスクのステータス"
-    Status: TaskStatus!
+    status: TaskStatus!
 
     "タスクの継続性"
-    Continuity: TaskContinuity!
+    continuity: TaskContinuity!
 
     "タスクの期日"
-    DueDate: Time
+    dueDateTime: Time
 }
 
 "参加者タスク"
@@ -22,17 +22,19 @@ type ParticipantTask implements Node {
     id: ID!
 
     "タスクの内容"
-    Content: String!
+    content: String!
 
     "タスクのステータス"
-    Status: TaskStatus!
+    status: TaskStatus!
 
     "タスクの継続性"
-    Continuity: TaskContinuity!
+    continuity: TaskContinuity!
 
     "タスクの期日"
-    DueDate: Time
+    dueDateTime: Time
 }
+
+union Task = OwnerTask | ParticipantTask
 
 "タスクのステータス"
 enum TaskStatus {

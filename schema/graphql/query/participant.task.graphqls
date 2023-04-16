@@ -9,5 +9,5 @@ extend type Query {
 
 "参加者タスクフィルター条件"
 input ParticipantTaskFilter {
-    ContentLike: String
+    contentLike: String
 }

@@ -1,0 +1,17 @@
+extend type Mutation {
+    "１ギルドのお知らせを登録する"
+    createNoticeByAdmin(input: NoticeInput!): Notice
+}
+
+input NoticeInput {
+    title: String!
+
+    subTitle: String
+
+    content: String
+
+    "表示開始日時"
+    startDateTime: Time
+    "表示終了日時"
+    endDateTime: Time
+}

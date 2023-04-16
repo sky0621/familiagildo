@@ -1,0 +1,13 @@
+extend type Query {
+    "ギルドの一覧を参照する"
+    listGuildByAdmin: [Guild!]!
+    "条件に合致するギルドの一覧を参照する"
+    findGuildByAdmin(filter: AdminGuildFilter): [Guild!]!
+    "１ギルドの詳細を参照する"
+    getGuildByAdmin(id: ID!): Guild
+}
+
+"ギルドフィルター条件"
+input AdminGuildFilter {
+    nameLike: String
+}

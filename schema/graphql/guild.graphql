@@ -1,0 +1,17 @@
+"ギルド"
+type Guild implements Node {
+    "ID"
+    id: ID!
+
+    "ギルドの名称"
+    name: String!
+
+    "オーナー"
+    owner: Owner!
+
+    "参加者リスト"
+    participants: [Participant!]!
+
+    "タスクリスト"
+    tasks: [Task!]!
+}

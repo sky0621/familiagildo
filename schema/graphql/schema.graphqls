@@ -36,3 +36,5 @@ scalar Map
 scalar Upload
 
 scalar Any
+
+scalar Void

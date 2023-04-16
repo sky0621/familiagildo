@@ -9,5 +9,5 @@ extend type Query {
 
 "オーナータスクフィルター条件"
 input OwnerTaskFilter {
-    ContentLike: String
+    contentLike: String
 }

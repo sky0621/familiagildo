@@ -1,0 +1,33 @@
+type User {
+    id: ID!
+
+    name: String!
+}
+
+type Owner {
+    id: ID!
+
+    name: String!
+
+    mail: String!
+
+    "所属ギルド"
+    guild: Guild!
+
+    "自分が登録したタスクリスト"
+    myTasks: [OwnerTask!]!
+}
+
+type Participant {
+    id: ID!
+
+    name: String!
+
+    mail: String
+
+    "所属ギルド"
+    guild: Guild!
+
+    "自分が登録したタスクリスト"
+    myTasks: [ParticipantTask!]!
+}

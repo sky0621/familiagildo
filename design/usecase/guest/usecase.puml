@@ -5,25 +5,25 @@ left to right direction
 actor Guest as g
 
 package "guest site" {
-    usecase "ギルド登録を依頼する" as requestCreateGuild
-    usecase "ギルドオーナーを登録する" as createOwner
-    usecase "ギルド参加者を登録する" as createParticipant
+    usecase "ギルド登録を依頼する" as requestCreateGuildByGuest
+    usecase "ギルドオーナーを登録する" as createOwnerByGuest
+    usecase "ギルド参加者を登録する" as createParticipantByGuest
 }
 
-g --> requestCreateGuild
-g --> createOwner
-g --> createParticipant
+g --> requestCreateGuildByGuest
+g --> createOwnerByGuest
+g --> createParticipantByGuest
 
-note left of requestCreateGuild
+note left of requestCreateGuildByGuest
 ・メールアドレスを入力
 ※入力されたメールアドレス宛に本登録用のURLを記載したメールが送信される。
 end note
 
-note left of createOwner
+note left of createOwnerByGuest
 ・ログインID、パスワードを入力
 end note
 
-note left of createParticipant
+note left of createParticipantByGuest
 ・ログインID、パスワードを入力
 end note
 

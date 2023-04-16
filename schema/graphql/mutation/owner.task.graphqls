@@ -12,7 +12,7 @@ extend type Mutation {
 "オーナータスク"
 input OwnerTaskInput {
     "タスクの内容"
-    Content: String!
+    content: String!
     "タスクの期日"
-    DueDate: Time
+    dueDate: Time
 }

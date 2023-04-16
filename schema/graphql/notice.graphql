@@ -1,0 +1,15 @@
+"お知らせ"
+type Notice {
+    id: ID!
+
+    title: String!
+
+    subTitle: String
+
+    content: String
+
+    "表示開始日時"
+    startDateTime: Time
+    "表示終了日時"
+    endDateTime: Time
+}
