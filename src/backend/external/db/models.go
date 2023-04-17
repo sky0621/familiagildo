@@ -6,21 +6,25 @@ package db
 
 import (
 	"database/sql"
-
-	"github.com/google/uuid"
+	"time"
 )
 
 type Admin struct {
 	ID       int64
-	NodeID   uuid.UUID
 	Name     string
 	LoginID  sql.NullString
 	Password sql.NullString
 }
 
+type GuestToken struct {
+	ID             int64
+	Mail           string
+	Token          string
+	ExpirationDate time.Time
+}
+
 type Guild struct {
 	ID           int64
-	NodeID       uuid.UUID
 	Name         string
 	Status       int16
 	CreateUserID sql.NullInt64
@@ -31,10 +35,18 @@ type Guild struct {
 	DeletedAt    sql.NullTime
 }
 
+type GuildOwnerRelation struct {
+	ID      int64
+	GuildID int64
+	OwnerID int64
+}
+
 type Owner struct {
 	ID           int64
-	NodeID       uuid.UUID
-	Name         string
+	Name         sql.NullString
+	Mail         string
+	LoginID      sql.NullString
+	Password     sql.NullString
 	CreateUserID sql.NullInt64
 	CreatedAt    sql.NullTime
 	UpdateUserID sql.NullInt64
@@ -45,7 +57,6 @@ type Owner struct {
 
 type Participant struct {
 	ID           int64
-	NodeID       uuid.UUID
 	Name         string
 	CreateUserID sql.NullInt64
 	CreatedAt    sql.NullTime
@@ -57,7 +68,6 @@ type Participant struct {
 
 type Task struct {
 	ID           int64
-	NodeID       uuid.UUID
 	Content      string
 	Status       int16
 	Continuity   int16

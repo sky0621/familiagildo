@@ -10,7 +10,7 @@ import (
 )
 
 const listTask = `-- name: ListTask :many
-SELECT id, node_id, content, status, continuity, due_datetime, create_user_id, created_at, update_user_id, updated_at, delete_user_id, deleted_at FROM task ORDER BY id DESC
+SELECT id, content, status, continuity, due_datetime, create_user_id, created_at, update_user_id, updated_at, delete_user_id, deleted_at FROM task ORDER BY id DESC
 `
 
 func (q *Queries) ListTask(ctx context.Context) ([]Task, error) {
@@ -24,7 +24,6 @@ func (q *Queries) ListTask(ctx context.Context) ([]Task, error) {
 		var i Task
 		if err := rows.Scan(
 			&i.ID,
-			&i.NodeID,
 			&i.Content,
 			&i.Status,
 			&i.Continuity,

@@ -2,7 +2,7 @@
 
 actor ゲスト as guest
 boundary ギルド登録依頼FORM as form
-control ギルド登録依頼ハンドラー as handler
+control ギルド仮登録ハンドラー as handler
 database guild
 database guest_token
 participant メール送信サービス as mail
