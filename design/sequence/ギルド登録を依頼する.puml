@@ -1,0 +1,11 @@
+@startuml
+
+actor ゲスト as guest
+boundary ギルド登録依頼FORM as form
+control ギルド登録依頼ハンドラー as handler
+database a
+
+guest -> form:ギルド登録を依頼
+form -> handler:ギルド名、メールアドレス
+
+@enduml

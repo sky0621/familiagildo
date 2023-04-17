@@ -4,12 +4,12 @@ services:
   db:
     restart: always
     image: postgres:15-alpine
-    container_name: kaubandus-container
+    container_name: familiagildo-container
     ports:
       - "11111:5432"
     environment:
       - DATABASE_HOST=localhost
-      - POSTGRES_DB=kaubandusdb
+      - POSTGRES_DB=familiagildodb
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=yuckyjuice
       - PGPASSWORD=yuckyjuice
@@ -18,12 +18,12 @@ services:
   testdb:
     restart: always
     image: postgres:15-alpine
-    container_name: kaubandus-test-container
+    container_name: familiagildo-test-container
     ports:
       - "11112:5432"
     environment:
       - DATABASE_HOST=localhost
-      - POSTGRES_DB=kaubandusdbtest
+      - POSTGRES_DB=familiagildodbtest
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=yuckyjuice
       - PGPASSWORD=yuckyjuice

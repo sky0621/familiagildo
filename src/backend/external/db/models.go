@@ -6,12 +6,65 @@ package db
 
 import (
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
+type Admin struct {
+	ID       int64
+	NodeID   uuid.UUID
+	Name     string
+	LoginID  sql.NullString
+	Password sql.NullString
+}
+
+type Guild struct {
+	ID           int64
+	NodeID       uuid.UUID
+	Name         string
+	CreateUserID sql.NullInt64
+	CreatedAt    sql.NullTime
+	UpdateUserID sql.NullInt64
+	UpdatedAt    sql.NullTime
+	DeleteUserID sql.NullInt64
+	DeletedAt    sql.NullTime
+}
+
+type Owner struct {
+	ID           int64
+	NodeID       uuid.UUID
+	Name         string
+	CreateUserID sql.NullInt64
+	CreatedAt    sql.NullTime
+	UpdateUserID sql.NullInt64
+	UpdatedAt    sql.NullTime
+	DeleteUserID sql.NullInt64
+	DeletedAt    sql.NullTime
+}
+
+type Participant struct {
+	ID           int64
+	NodeID       uuid.UUID
+	Name         string
+	CreateUserID sql.NullInt64
+	CreatedAt    sql.NullTime
+	UpdateUserID sql.NullInt64
+	UpdatedAt    sql.NullTime
+	DeleteUserID sql.NullInt64
+	DeletedAt    sql.NullTime
+}
+
 type Task struct {
-	ID        int64
-	NodeID    string
-	Content   string
-	Reward    sql.NullString
-	Incentive sql.NullString
+	ID           int64
+	NodeID       uuid.UUID
+	Content      string
+	Status       int16
+	Continuity   int16
+	DueDatetime  sql.NullTime
+	CreateUserID sql.NullInt64
+	CreatedAt    sql.NullTime
+	UpdateUserID sql.NullInt64
+	UpdatedAt    sql.NullTime
+	DeleteUserID sql.NullInt64
+	DeletedAt    sql.NullTime
 }

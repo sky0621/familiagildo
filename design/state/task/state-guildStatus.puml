@@ -1,0 +1,11 @@
+@startuml
+
+[*] --> REGISTERING
+REGISTERING --> [*]
+REGISTERING : 仮登録
+
+REGISTERING -> REGISTERED
+REGISTERED --> [*]
+REGISTERED : 登録済み
+
+@enduml
