@@ -2,6 +2,7 @@ CREATE TABLE guild (
     id BIGSERIAL PRIMARY KEY,
     node_id UUID NOT NULL UNIQUE,
     name TEXT NOT NULL,
+    status SMALLINT NOT NULL,
 
     create_user_id BIGINT,
     created_at TIMESTAMP WITH TIME ZONE,
