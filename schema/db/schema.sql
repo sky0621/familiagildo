@@ -18,7 +18,7 @@ CREATE TABLE guild (
     status SMALLINT NOT NULL,   -- 1:仮登録、2:本登録
 
     create_user_id BIGINT,
-    created_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_user_id BIGINT,
     updated_at TIMESTAMP WITH TIME ZONE,
     delete_user_id BIGINT,
@@ -33,7 +33,7 @@ CREATE TABLE owner (
     password VARCHAR(128),
 
     create_user_id BIGINT,
-    created_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_user_id BIGINT,
     updated_at TIMESTAMP WITH TIME ZONE,
     delete_user_id BIGINT,
@@ -51,7 +51,7 @@ CREATE TABLE participant (
     name TEXT NOT NULL,
 
     create_user_id BIGINT,
-    created_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_user_id BIGINT,
     updated_at TIMESTAMP WITH TIME ZONE,
     delete_user_id BIGINT,
@@ -66,7 +66,7 @@ CREATE TABLE task (
     due_datetime TIMESTAMP,
 
     create_user_id BIGINT,
-    created_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_user_id BIGINT,
     updated_at TIMESTAMP WITH TIME ZONE,
     delete_user_id BIGINT,

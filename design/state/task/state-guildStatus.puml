@@ -2,10 +2,10 @@
 
 [*] --> REGISTERING
 REGISTERING --> [*]
-REGISTERING : 仮登録
+REGISTERING : 仮登録(=1)
 
 REGISTERING -> REGISTERED
 REGISTERED --> [*]
-REGISTERED : 登録済み
+REGISTERED : 登録済み(=2)
 
 @enduml

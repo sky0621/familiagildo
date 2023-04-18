@@ -28,7 +28,7 @@ type Guild struct {
 	Name         string
 	Status       int16
 	CreateUserID sql.NullInt64
-	CreatedAt    sql.NullTime
+	CreatedAt    time.Time
 	UpdateUserID sql.NullInt64
 	UpdatedAt    sql.NullTime
 	DeleteUserID sql.NullInt64
@@ -48,7 +48,7 @@ type Owner struct {
 	LoginID      sql.NullString
 	Password     sql.NullString
 	CreateUserID sql.NullInt64
-	CreatedAt    sql.NullTime
+	CreatedAt    time.Time
 	UpdateUserID sql.NullInt64
 	UpdatedAt    sql.NullTime
 	DeleteUserID sql.NullInt64
@@ -59,7 +59,7 @@ type Participant struct {
 	ID           int64
 	Name         string
 	CreateUserID sql.NullInt64
-	CreatedAt    sql.NullTime
+	CreatedAt    time.Time
 	UpdateUserID sql.NullInt64
 	UpdatedAt    sql.NullTime
 	DeleteUserID sql.NullInt64
@@ -73,7 +73,7 @@ type Task struct {
 	Continuity   int16
 	DueDatetime  sql.NullTime
 	CreateUserID sql.NullInt64
-	CreatedAt    sql.NullTime
+	CreatedAt    time.Time
 	UpdateUserID sql.NullInt64
 	UpdatedAt    sql.NullTime
 	DeleteUserID sql.NullInt64
