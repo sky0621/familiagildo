@@ -12,7 +12,7 @@ import (
 
 const createGuestToken = `-- name: CreateGuestToken :one
 INSERT INTO guest_token (mail, token, expiration_date) VALUES ($1, $2, $3)
-RETURNING id, mail, token, expiration_date
+RETURNING id, guild_id, mail, token, expiration_date
 `
 
 type CreateGuestTokenParams struct {
@@ -26,6 +26,55 @@ func (q *Queries) CreateGuestToken(ctx context.Context, arg CreateGuestTokenPara
 	var i GuestToken
 	err := row.Scan(
 		&i.ID,
+		&i.GuildID,
+		&i.Mail,
+		&i.Token,
+		&i.ExpirationDate,
+	)
+	return i, err
+}
+
+const deleteGuestToken = `-- name: DeleteGuestToken :exec
+DELETE FROM guest_token WHERE id = $1
+`
+
+func (q *Queries) DeleteGuestToken(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteGuestToken, id)
+	return err
+}
+
+const getGuestTokenByMailAndToken = `-- name: GetGuestTokenByMailAndToken :one
+SELECT id, guild_id, mail, token, expiration_date FROM guest_token WHERE mail = $1 AND token = $2
+`
+
+type GetGuestTokenByMailAndTokenParams struct {
+	Mail  string
+	Token string
+}
+
+func (q *Queries) GetGuestTokenByMailAndToken(ctx context.Context, arg GetGuestTokenByMailAndTokenParams) (GuestToken, error) {
+	row := q.db.QueryRowContext(ctx, getGuestTokenByMailAndToken, arg.Mail, arg.Token)
+	var i GuestToken
+	err := row.Scan(
+		&i.ID,
+		&i.GuildID,
+		&i.Mail,
+		&i.Token,
+		&i.ExpirationDate,
+	)
+	return i, err
+}
+
+const getGuestTokenByToken = `-- name: GetGuestTokenByToken :one
+SELECT id, guild_id, mail, token, expiration_date FROM guest_token WHERE token = $1
+`
+
+func (q *Queries) GetGuestTokenByToken(ctx context.Context, token string) (GuestToken, error) {
+	row := q.db.QueryRowContext(ctx, getGuestTokenByToken, token)
+	var i GuestToken
+	err := row.Scan(
+		&i.ID,
+		&i.GuildID,
 		&i.Mail,
 		&i.Token,
 		&i.ExpirationDate,

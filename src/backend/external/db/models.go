@@ -18,6 +18,7 @@ type Admin struct {
 
 type GuestToken struct {
 	ID             int64
+	GuildID        int64
 	Mail           string
 	Token          string
 	ExpirationDate time.Time

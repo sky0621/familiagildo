@@ -7,6 +7,7 @@ CREATE TABLE admin (
 
 CREATE TABLE guest_token (
     id BIGSERIAL PRIMARY KEY,
+    guild_id BIGINT NOT NULL,
     mail VARCHAR(256) NOT NULL,
     token VARCHAR(256) NOT NULL,
     expiration_date TIMESTAMP WITH TIME ZONE NOT NULL

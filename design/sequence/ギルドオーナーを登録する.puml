@@ -18,7 +18,8 @@ guest_token -> handler:有効期限
 handler -> handler:トークン存在チェック、有効期限切れチェック
 handler -> form:リダイレクト
 form -> handler2:メールアドレス、表示名、ログインID、パスワード
-handler2 -> guest_token:メールアドレス、表示名、トークン存在チェック
+handler2 -> guest_token:メールアドレス、トークン存在チェック
+guest_token -> handler2:ギルドID
 handler2 -> guest_token:レコード削除
 handler2 -> guild:ステータス＝登録済み
 handler2 -> handler2:パスワードハッシュ化

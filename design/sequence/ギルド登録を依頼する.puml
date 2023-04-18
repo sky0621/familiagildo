@@ -10,8 +10,9 @@ participant メール送信サービス as mail
 guest -> form:ギルド登録を依頼
 form -> handler:ギルド名、メールアドレス
 handler -> guild:ギルド名、ステータス＝仮登録
+guild -> handler:ギルドID
 handler -> handler:トークン生成、有効期限決定
-handler -> guest_token:メールアドレス、トークン、有効期限
+handler -> guest_token:メールアドレス、トークン、有効期限、ギルドID
 handler -> mail:メールアドレス、トークン、有効期限
 
 @enduml
