@@ -14,8 +14,8 @@ exec:
 
 # Where should any generated models go?
 model:
-  filename: adapter/controller/model/models_gen.go
-  package: model
+  filename: adapter/controller/models_gen.go
+  package: controller
 
 # Where should the resolver implementations go?
 resolver:
@@ -63,4 +63,4 @@ models:
       - github.com/99designs/gqlgen/graphql.Int32
   Void:
     model:
-      - github.com/sky0621/familiagildo/
+      - github.com/sky0621/familiagildo/adapter/controller/custommodel.Void
