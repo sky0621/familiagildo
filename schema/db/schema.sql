@@ -7,7 +7,7 @@ CREATE TABLE admin (
 
 CREATE TABLE guest_token (
     id BIGSERIAL PRIMARY KEY,
-    guild_id BIGINT NOT NULL,
+    guild_id BIGINT NOT NULL REFERENCES guild (id),
     mail VARCHAR(256) NOT NULL,
     token VARCHAR(256) NOT NULL,
     expiration_date TIMESTAMP WITH TIME ZONE NOT NULL
@@ -43,8 +43,8 @@ CREATE TABLE owner (
 
 CREATE TABLE guild_owner_relation (
     id BIGSERIAL PRIMARY KEY,
-    guild_id BIGINT NOT NULL,
-    owner_id BIGINT NOT NULL
+    guild_id BIGINT NOT NULL REFERENCES guild (id),
+    owner_id BIGINT NOT NULL REFERENCES owner (id)
 );
 
 CREATE TABLE participant (
