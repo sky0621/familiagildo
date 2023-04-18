@@ -2,9 +2,9 @@ package usecase
 
 import (
 	"errors"
-	"github.com/sky0621/kaubandus/domain/aggregate"
-	"github.com/sky0621/kaubandus/domain/entity"
-	"github.com/sky0621/kaubandus/domain/repository"
+	"github.com/sky0621/familiagildo/domain/aggregate"
+	"github.com/sky0621/familiagildo/domain/entity"
+	"github.com/sky0621/familiagildo/domain/repository"
 )
 
 type TaskUsecase interface {

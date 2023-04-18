@@ -6,7 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"github.com/lib/pq"
-	"github.com/sky0621/kaubandus/cmd/setup"
+	"github.com/sky0621/familiagildo/cmd/setup"
 	"time"
 )
 

@@ -1,4 +1,4 @@
-module github.com/sky0621/kaubandus
+module github.com/sky0621/familiagildo
 
 go 1.20
 

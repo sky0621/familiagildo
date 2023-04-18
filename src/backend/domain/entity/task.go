@@ -1,6 +1,6 @@
 package entity
 
-import "github.com/sky0621/kaubandus/domain/vo"
+import "github.com/sky0621/familiagildo/domain/vo"
 
 // Task ... 保護者が子どもにやってもらいたいこと、ないし、子どもが（対価を望む）こと
 type Task struct {

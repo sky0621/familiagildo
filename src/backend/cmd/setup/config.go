@@ -14,7 +14,7 @@ type Config struct {
 	// DB接続設定用
 	DBHost string `split_words:"true" default:"localhost"`
 	DBPort string `split_words:"true" default:"11111"`
-	DBName string `split_words:"true" default:"kaubandusdb"`
+	DBName string `split_words:"true" default:"familiagildodb"`
 	DBUser string `split_words:"true" default:"postgres"`
 	DBPass string `split_words:"true" default:"yuckyjuice"`
 	// DB接続オプション用

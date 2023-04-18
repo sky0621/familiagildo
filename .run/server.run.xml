@@ -4,7 +4,7 @@
     <working_directory value="$PROJECT_DIR$/src/backend" />
     <parameters value="server" />
     <kind value="PACKAGE" />
-    <package value="github.com/sky0621/kaubandus" />
+    <package value="github.com/sky0621/familiagildo" />
     <directory value="$PROJECT_DIR$" />
     <filePath value="$PROJECT_DIR$/src/backend/main.go" />
     <method v="2" />

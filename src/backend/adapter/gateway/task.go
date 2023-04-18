@@ -1,9 +1,9 @@
 package gateway
 
 import (
-	"github.com/sky0621/kaubandus/domain/aggregate"
-	"github.com/sky0621/kaubandus/domain/repository"
-	"github.com/sky0621/kaubandus/external/db"
+	"github.com/sky0621/familiagildo/domain/aggregate"
+	"github.com/sky0621/familiagildo/domain/repository"
+	"github.com/sky0621/familiagildo/external/db"
 )
 
 func NewTaskRepository(db *db.Queries) repository.TaskRepository {

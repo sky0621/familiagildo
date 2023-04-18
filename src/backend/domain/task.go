@@ -1,6 +1,6 @@
 package domain
 
-import "github.com/sky0621/kaubandus/domain/entity"
+import "github.com/sky0621/familiagildo/domain/entity"
 
 type Task interface {
 	Create(e entity.Task) (entity.Task, error)

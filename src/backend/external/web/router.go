@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/sky0621/kaubandus/cmd/setup"
+	"github.com/sky0621/familiagildo/cmd/setup"
 	"time"
 )
 
