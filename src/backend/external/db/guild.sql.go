@@ -31,12 +31,24 @@ func (q *Queries) CreateGuildWithRegistering(ctx context.Context, name string) (
 	return i, err
 }
 
-const updateGuildWithRegistered = `-- name: UpdateGuildWithRegistered :exec
+const updateGuildWithRegistered = `-- name: UpdateGuildWithRegistered :one
 UPDATE guild SET status = 2 WHERE id = $1
 RETURNING id, name, status, create_user_id, created_at, update_user_id, updated_at, delete_user_id, deleted_at
 `
 
-func (q *Queries) UpdateGuildWithRegistered(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, updateGuildWithRegistered, id)
-	return err
+func (q *Queries) UpdateGuildWithRegistered(ctx context.Context, id int64) (Guild, error) {
+	row := q.db.QueryRowContext(ctx, updateGuildWithRegistered, id)
+	var i Guild
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Status,
+		&i.CreateUserID,
+		&i.CreatedAt,
+		&i.UpdateUserID,
+		&i.UpdatedAt,
+		&i.DeleteUserID,
+		&i.DeletedAt,
+	)
+	return i, err
 }

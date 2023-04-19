@@ -28,7 +28,7 @@ type Guild struct {
 	ID           int64
 	Name         string
 	Status       int16
-	CreateUserID sql.NullInt64
+	CreateUserID int64
 	CreatedAt    time.Time
 	UpdateUserID sql.NullInt64
 	UpdatedAt    sql.NullTime

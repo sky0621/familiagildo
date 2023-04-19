@@ -133,3 +133,11 @@ https://docs.sqlc.dev/en/latest/overview/install.html
 ```
 go install github.com/google/wire/cmd/wire@latest
 ```
+
+### goverter
+
+https://goverter.jmattheis.de/#/
+
+```
+go install github.com/jmattheis/goverter/cmd/goverter@latest
+```

@@ -18,7 +18,7 @@ CREATE TABLE guild (
     name TEXT NOT NULL,
     status SMALLINT NOT NULL,   -- 1:仮登録、2:本登録
 
-    create_user_id BIGINT,
+    create_user_id BIGINT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     update_user_id BIGINT,
     updated_at TIMESTAMP WITH TIME ZONE,
