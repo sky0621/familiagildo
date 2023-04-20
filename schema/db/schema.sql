@@ -10,7 +10,8 @@ CREATE TABLE guest_token (
     guild_id BIGINT NOT NULL REFERENCES guild (id),
     mail VARCHAR(256) NOT NULL,
     token VARCHAR(256) NOT NULL,
-    expiration_date TIMESTAMP WITH TIME ZONE NOT NULL
+    expiration_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    accepted_number BIGINT NOT NULL
 );
 
 CREATE TABLE guild (

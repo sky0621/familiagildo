@@ -12,7 +12,7 @@ import (
 
 const createGuestToken = `-- name: CreateGuestToken :one
 INSERT INTO guest_token (mail, token, expiration_date) VALUES ($1, $2, $3)
-RETURNING id, guild_id, mail, token, expiration_date
+RETURNING id, guild_id, mail, token, expiration_date, accepted_number
 `
 
 type CreateGuestTokenParams struct {
@@ -30,6 +30,7 @@ func (q *Queries) CreateGuestToken(ctx context.Context, arg CreateGuestTokenPara
 		&i.Mail,
 		&i.Token,
 		&i.ExpirationDate,
+		&i.AcceptedNumber,
 	)
 	return i, err
 }
@@ -44,7 +45,7 @@ func (q *Queries) DeleteGuestToken(ctx context.Context, id int64) error {
 }
 
 const getGuestTokenByMailAndToken = `-- name: GetGuestTokenByMailAndToken :one
-SELECT id, guild_id, mail, token, expiration_date FROM guest_token WHERE mail = $1 AND token = $2
+SELECT id, guild_id, mail, token, expiration_date, accepted_number FROM guest_token WHERE mail = $1 AND token = $2
 `
 
 type GetGuestTokenByMailAndTokenParams struct {
@@ -61,12 +62,13 @@ func (q *Queries) GetGuestTokenByMailAndToken(ctx context.Context, arg GetGuestT
 		&i.Mail,
 		&i.Token,
 		&i.ExpirationDate,
+		&i.AcceptedNumber,
 	)
 	return i, err
 }
 
 const getGuestTokenByToken = `-- name: GetGuestTokenByToken :one
-SELECT id, guild_id, mail, token, expiration_date FROM guest_token WHERE token = $1
+SELECT id, guild_id, mail, token, expiration_date, accepted_number FROM guest_token WHERE token = $1
 `
 
 func (q *Queries) GetGuestTokenByToken(ctx context.Context, token string) (GuestToken, error) {
@@ -78,6 +80,7 @@ func (q *Queries) GetGuestTokenByToken(ctx context.Context, token string) (Guest
 		&i.Mail,
 		&i.Token,
 		&i.ExpirationDate,
+		&i.AcceptedNumber,
 	)
 	return i, err
 }
