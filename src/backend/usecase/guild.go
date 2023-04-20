@@ -10,8 +10,8 @@ import (
 )
 
 type Guild interface {
-	// RequestCreateGuildByGuest is ギルド登録を依頼する
-	RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) error
+	// RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
+	RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (int64, error)
 }
 
 func NewGuild(r repository.GuildRepository) Guild {
@@ -22,12 +22,12 @@ type guild struct {
 	guildRepository repository.GuildRepository
 }
 
-// RequestCreateGuildByGuest is ギルド登録を依頼する
-func (g *guild) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) error {
+// RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
+func (g *guild) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (int64, error) {
 	// ギルドの仮登録
 	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
 	if err != nil {
-		return app.WrapErrorWithMsgf(err, "name: %s", name.ToVal())
+		return -1, app.WrapErrorWithMsgf(err, "name: %s", name.ToVal())
 	}
 	// FIXME:
 	fmt.Println(guildAggregate)
@@ -42,5 +42,6 @@ func (g *guild) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName
 
 	// メール送信
 
-	return nil
+	// FIXME:
+	return -1, nil
 }

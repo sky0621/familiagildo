@@ -6,11 +6,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/sky0621/familiagildo/cmd/setup"
+	"github.com/sky0621/familiagildo/app"
 	"time"
 )
 
-func router(es graphql.ExecutableSchema, env setup.Env) (*chi.Mux, error) {
+func router(es graphql.ExecutableSchema, env app.Env) (*chi.Mux, error) {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)

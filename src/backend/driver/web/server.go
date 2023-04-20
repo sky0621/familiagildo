@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/rs/zerolog/log"
 	"github.com/sky0621/familiagildo/adapter/controller"
-	"github.com/sky0621/familiagildo/cmd/setup"
+	"github.com/sky0621/familiagildo/app"
 	"go.opencensus.io/trace"
 	"gocloud.dev/gcp"
 	"gocloud.dev/server"
@@ -15,8 +15,12 @@ import (
 	"time"
 )
 
-func Server(ctx context.Context, env setup.Env, isTrace bool) (*server.Server, func(), error) {
-	r, err := router(controller.NewExecutableSchema(controller.Config{Resolvers: controller.NewResolver()}), env)
+type CloseServerFunc = func()
+
+func NewServer(env app.Env, isTrace app.Trace, resolver *controller.Resolver) (*server.Server, CloseServerFunc, error) {
+	ctx := context.Background()
+
+	r, err := router(controller.NewExecutableSchema(controller.Config{Resolvers: resolver}), env)
 	if err != nil {
 		return nil, nil, errors.Join(err)
 	}
@@ -42,7 +46,7 @@ func Server(ctx context.Context, env setup.Env, isTrace bool) (*server.Server, f
 		}
 		options.TraceExporter = traceExporter
 
-		// In production you will likely want to use trace.ProbabilitySampler
+		// In production, you will likely want to use trace.ProbabilitySampler
 		// instead, since AlwaysSample will start and export graphql_generated.go trace for every
 		// request - this may be prohibitively slow with significant traffic.
 		options.DefaultSamplingPolicy = trace.AlwaysSample()

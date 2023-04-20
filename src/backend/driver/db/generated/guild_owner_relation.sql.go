@@ -3,7 +3,7 @@
 //   sqlc v1.17.2
 // source: guild_owner_relation.sql
 
-package db
+package generated
 
 import (
 	"context"

@@ -6,13 +6,15 @@ import (
 	"database/sql/driver"
 	"errors"
 	"github.com/lib/pq"
-	"github.com/sky0621/familiagildo/cmd/setup"
+	"github.com/rs/zerolog/log"
+	"github.com/sky0621/familiagildo/app"
+	"github.com/sky0621/familiagildo/driver/db/generated"
 	"time"
 )
 
 type CloseDBClientFunc = func()
 
-func Open(dsn string, option setup.DBSetOption) (*Queries, CloseDBClientFunc, error) {
+func NewQueries(dsn string, option app.DBSetOption) (*generated.Queries, CloseDBClientFunc, error) {
 	var connector driver.Connector
 	connector, err := pq.NewConnector(dsn)
 	if err != nil {
@@ -28,10 +30,12 @@ func Open(dsn string, option setup.DBSetOption) (*Queries, CloseDBClientFunc, er
 		return nil, nil, errors.Join(err)
 	}
 
-	queries := New(db)
+	queries := generated.New(db)
 	return queries, func() {
 		if db != nil {
-			db.Close()
+			if err := db.Close(); err != nil {
+				log.Err(err).Msg("failed to close db")
+			}
 		}
 	}, nil
 }

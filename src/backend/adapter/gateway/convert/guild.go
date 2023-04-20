@@ -4,10 +4,10 @@ import (
 	"github.com/sky0621/familiagildo/domain/aggregate"
 	"github.com/sky0621/familiagildo/domain/entity"
 	"github.com/sky0621/familiagildo/domain/vo"
-	"github.com/sky0621/familiagildo/external/db"
+	"github.com/sky0621/familiagildo/driver/db/generated"
 )
 
-func GuildAggregateFromDBToDomain(src db.Guild) *aggregate.GuildAggregate {
+func GuildAggregateFromDBToDomain(src generated.Guild) *aggregate.GuildAggregate {
 	return &aggregate.GuildAggregate{
 		Guild: GuildFromDBToDomain(src),
 		AuditItem: AuditFromDBToDomain(
@@ -18,7 +18,7 @@ func GuildAggregateFromDBToDomain(src db.Guild) *aggregate.GuildAggregate {
 	}
 }
 
-func GuildFromDBToDomain(src db.Guild) *entity.Guild {
+func GuildFromDBToDomain(src generated.Guild) *entity.Guild {
 	return &entity.Guild{
 		ID:     vo.ParseID(src.ID),
 		Name:   vo.ParseGuildName(src.Name),

@@ -7,15 +7,15 @@ import (
 	"github.com/sky0621/familiagildo/domain/aggregate"
 	"github.com/sky0621/familiagildo/domain/repository"
 	"github.com/sky0621/familiagildo/domain/vo"
-	"github.com/sky0621/familiagildo/external/db"
+	"github.com/sky0621/familiagildo/driver/db/generated"
 )
 
-func NewGuildRepository(db *db.Queries) repository.GuildRepository {
+func NewGuildRepository(db *generated.Queries) repository.GuildRepository {
 	return &guildRepository{db: db}
 }
 
 type guildRepository struct {
-	db *db.Queries
+	db *generated.Queries
 }
 
 func (r *guildRepository) CreateWithRegistering(ctx context.Context, name vo.GuildName) (*aggregate.GuildAggregate, error) {

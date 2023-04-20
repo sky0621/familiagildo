@@ -4,12 +4,9 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"context"
-	"fmt"
 	"github.com/rs/zerolog/log"
+	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/cmd/setup"
-	"github.com/sky0621/familiagildo/external/db"
-	"github.com/sky0621/familiagildo/external/web"
 	"github.com/spf13/cobra"
 	"os"
 	"os/signal"
@@ -22,38 +19,26 @@ var serverCmd = &cobra.Command{
 	Short: "start api server",
 	Long:  `start api server`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg := setup.ReadConfig()
-		setup.Logger(cfg.Env)
+		cfg := app.ReadConfig()
+		app.Logger(cfg.Env)
 
-		ctx := context.Background()
-
-		db, closeDB, err := db.Open(cfg.Dsn(), cfg.ToDBSetOption())
+		app, err := setup.InitializeApp(cfg)
 		if err != nil {
-			log.Err(err).Msgf("failed to setup db: %+v", err)
+			log.Err(err).Msg("failed to initialize app")
 			return
 		}
-		// FIXME:
-		fmt.Print(db)
-
-		svr, shutdownServer, err := web.Server(ctx, cfg.Env, cfg.Trace)
-		if err != nil {
-			log.Err(err).Msgf("failed to setup server: %+v", err)
-			return
-		}
-		defer shutdownServer()
+		defer app.Close()
 
 		go func() {
 			q := make(chan os.Signal, 1)
 			signal.Notify(q, os.Interrupt, syscall.SIGTERM)
 			<-q
-			closeDB()
-			shutdownServer()
+			defer app.Close()
 			os.Exit(-1)
 		}()
 
-		if err := svr.ListenAndServe(":" + cfg.WebPort); err != nil {
-			log.Err(err).Msgf("failed to start server: %+v", err)
-			return
+		if err := app.Start(cfg.WebPort); err != nil {
+			log.Err(err).Msg("failed to start app")
 		}
 	},
 }
