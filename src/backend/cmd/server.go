@@ -22,7 +22,7 @@ var serverCmd = &cobra.Command{
 		cfg := app.ReadConfig()
 		app.Logger(cfg.Env)
 
-		app, err := setup.InitializeApp(cfg)
+		app, err := setup.InitializeApp(cfg.Dsn(), cfg.ToDBSetOption(), cfg.Env, cfg.Trace)
 		if err != nil {
 			log.Err(err).Msg("failed to initialize app")
 			return

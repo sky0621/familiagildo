@@ -15,14 +15,17 @@ import (
 	"time"
 )
 
-type CloseServerFunc = func()
+type Server struct {
+	S         *server.Server
+	CloseFunc func()
+}
 
-func NewServer(env app.Env, isTrace app.Trace, resolver *controller.Resolver) (*server.Server, CloseServerFunc, error) {
+func NewServer(env app.Env, isTrace bool, resolver *controller.Resolver) (*Server, error) {
 	ctx := context.Background()
 
 	r, err := router(controller.NewExecutableSchema(controller.Config{Resolvers: resolver}), env)
 	if err != nil {
-		return nil, nil, errors.Join(err)
+		return nil, errors.Join(err)
 	}
 
 	healthCheck := new(customHealthCheck)
@@ -42,7 +45,7 @@ func NewServer(env app.Env, isTrace app.Trace, resolver *controller.Resolver) (*
 	if isTrace {
 		traceExporter, err := setupTraceExporter(ctx)
 		if err != nil {
-			return nil, nil, errors.Join(err)
+			return nil, errors.Join(err)
 		}
 		options.TraceExporter = traceExporter
 
@@ -54,13 +57,15 @@ func NewServer(env app.Env, isTrace app.Trace, resolver *controller.Resolver) (*
 
 	svr := server.New(r, options)
 
-	return svr, func() {
+	closeFunc := func() {
 		if svr != nil {
 			if err := svr.Shutdown(ctx); err != nil {
 				log.Err(err).Send()
 			}
 		}
-	}, nil
+	}
+
+	return &Server{S: svr, CloseFunc: closeFunc}, nil
 }
 
 func setupTraceExporter(ctx context.Context) (trace.Exporter, error) {

@@ -12,13 +12,16 @@ import (
 	"time"
 )
 
-type CloseDBClientFunc = func()
+type Client struct {
+	Q         *generated.Queries
+	CloseFunc func()
+}
 
-func NewQueries(dsn string, option app.DBSetOption) (*generated.Queries, CloseDBClientFunc, error) {
+func NewQueries(dsn string, option app.DBSetOption) (*Client, error) {
 	var connector driver.Connector
 	connector, err := pq.NewConnector(dsn)
 	if err != nil {
-		return nil, func() {}, errors.Join(err)
+		return nil, errors.Join(err)
 	}
 	connector = ocsql.WrapConnector(connector, ocsql.WithAllTraceOptions())
 
@@ -27,15 +30,18 @@ func NewQueries(dsn string, option app.DBSetOption) (*generated.Queries, CloseDB
 	db.SetMaxOpenConns(option.DBMaxOpenConnections)
 	db.SetConnMaxLifetime(time.Duration(option.DBConnMaxLifetimeMinutes) * time.Minute)
 	if err := db.Ping(); err != nil {
-		return nil, nil, errors.Join(err)
+		return nil, errors.Join(err)
 	}
 
 	queries := generated.New(db)
-	return queries, func() {
+
+	closeFunc := func() {
 		if db != nil {
 			if err := db.Close(); err != nil {
 				log.Err(err).Msg("failed to close db")
 			}
 		}
-	}, nil
+	}
+
+	return &Client{Q: queries, CloseFunc: closeFunc}, nil
 }

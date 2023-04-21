@@ -7,11 +7,12 @@ import (
 	"github.com/sky0621/familiagildo/domain/aggregate"
 	"github.com/sky0621/familiagildo/domain/repository"
 	"github.com/sky0621/familiagildo/domain/vo"
+	"github.com/sky0621/familiagildo/driver/db"
 	"github.com/sky0621/familiagildo/driver/db/generated"
 )
 
-func NewGuildRepository(db *generated.Queries) repository.GuildRepository {
-	return &guildRepository{db: db}
+func NewGuildRepository(cli *db.Client) repository.GuildRepository {
+	return &guildRepository{db: cli.Q}
 }
 
 type guildRepository struct {

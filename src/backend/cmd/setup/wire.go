@@ -12,21 +12,18 @@ import (
 	"github.com/sky0621/familiagildo/usecase"
 )
 
-func InitializeQueries()
-func InitializeApp(cfg app.Config) (App, error) {
+func InitializeApp(dsn string, option app.DBSetOption, env app.Env, isTrace bool) (App, error) {
 	wire.Build(
-		app.ToDsn,
-		app.ToDBSetOption,
-		app.GetEnv,
-		app.IsTrace,
 		db.NewQueries,
 
 		gateway.NewGuildRepository,
-		gateway.NewTaskRepository,
+		//		gateway.NewTaskRepository,
 		usecase.NewGuild,
 
 		controller.NewResolver,
 		web.NewServer,
+
+		NewApp,
 	)
 	return App{}, nil
 }
