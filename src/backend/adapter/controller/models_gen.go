@@ -41,6 +41,23 @@ type CreateParticipantByGuestInput struct {
 	Password string `json:"password"`
 }
 
+// ゲストトークン
+type GuestToken struct {
+	// ID
+	ID string `json:"id"`
+	// オーナーメールアドレス
+	Mail string `json:"mail"`
+	// トークン
+	Token string `json:"token"`
+	// トークン有効期限
+	ExpirationDate *time.Time `json:"expiration_date,omitempty"`
+	// 受付番号
+	AcceptedNumber int `json:"accepted_number"`
+}
+
+func (GuestToken) IsNode()            {}
+func (this GuestToken) GetID() string { return this.ID }
+
 // ギルド
 type Guild struct {
 	// ID
@@ -177,7 +194,8 @@ type ParticipantTaskInput struct {
 }
 
 type RequestCreateGuildInput struct {
-	Mail string `json:"mail"`
+	GuildName string `json:"guildName"`
+	OwnerMail string `json:"ownerMail"`
 }
 
 type User struct {

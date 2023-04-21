@@ -1,0 +1,17 @@
+"ゲストトークン"
+type GuestToken implements Node {
+    "ID"
+    id: ID!
+
+    "オーナーメールアドレス"
+    mail: String!
+
+    "トークン"
+    token: String!
+
+    "トークン有効期限"
+    expiration_date: Time
+
+    "受付番号"
+    accepted_number: Int!
+}

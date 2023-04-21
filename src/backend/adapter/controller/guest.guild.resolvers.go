@@ -9,11 +9,17 @@ import (
 	"fmt"
 
 	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
+	"github.com/sky0621/familiagildo/domain/vo"
 )
 
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
-func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*custommodel.Void, error) {
-	panic(fmt.Errorf("not implemented: RequestCreateGuildByGuest - requestCreateGuildByGuest"))
+func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (int64, error) {
+	acceptedNumber, err := r.Guild.RequestCreateGuildByGuest(ctx, vo.ParseGuildName(input.GuildName), vo.ParseOwnerMail(input.OwnerMail))
+	if err != nil {
+		// FIXME:
+		return 0, err
+	}
+	return acceptedNumber, err
 }
 
 // CreateOwnerByGuest is the resolver for the createOwnerByGuest field.

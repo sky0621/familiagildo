@@ -1,6 +1,6 @@
 extend type Mutation {
     "ギルド登録を依頼する"
-    requestCreateGuildByGuest(input: RequestCreateGuildInput!): Void
+    requestCreateGuildByGuest(input: RequestCreateGuildInput!): GuestToken!
     "ギルドオーナーを登録する"
     createOwnerByGuest(input: CreateOwnerByGuestInput!): Void
     "ギルド参加者を登録する"
@@ -8,7 +8,8 @@ extend type Mutation {
 }
 
 input RequestCreateGuildInput {
-    mail: String!
+    guildName: String!
+    ownerMail: String!
 }
 
 input CreateOwnerByGuestInput {

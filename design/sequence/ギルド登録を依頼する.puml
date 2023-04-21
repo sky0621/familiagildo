@@ -14,6 +14,6 @@ guild -> handler:ギルドID
 handler -> handler:トークン生成、有効期限決定
 handler -> guest_token:メールアドレス、トークン、有効期限、ギルドID
 handler -> mail:メールアドレス、トークン、有効期限
-handler -> guest
+handler -> guest:受付番号
 
 @enduml

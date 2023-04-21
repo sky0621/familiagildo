@@ -45,6 +45,14 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	GuestToken struct {
+		AcceptedNumber func(childComplexity int) int
+		ExpirationDate func(childComplexity int) int
+		ID             func(childComplexity int) int
+		Mail           func(childComplexity int) int
+		Token          func(childComplexity int) int
+	}
+
 	Guild struct {
 		ID           func(childComplexity int) int
 		Name         func(childComplexity int) int
@@ -141,7 +149,7 @@ type MutationResolver interface {
 	Noop(ctx context.Context, input *NoopInput) (*NoopPayload, error)
 	CreateGuildByAdmin(ctx context.Context, input AdminGuildInput) (*Guild, error)
 	CreateNoticeByAdmin(ctx context.Context, input NoticeInput) (*Notice, error)
-	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*custommodel.Void, error)
+	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error)
 	CreateOwnerByGuest(ctx context.Context, input CreateOwnerByGuestInput) (*custommodel.Void, error)
 	CreateParticipantByGuest(ctx context.Context, input CreateParticipantByGuestInput) (*custommodel.Void, error)
 	CreateTaskByOwner(ctx context.Context, input OwnerTaskInput) (*OwnerTask, error)
@@ -179,6 +187,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "GuestToken.accepted_number":
+		if e.complexity.GuestToken.AcceptedNumber == nil {
+			break
+		}
+
+		return e.complexity.GuestToken.AcceptedNumber(childComplexity), true
+
+	case "GuestToken.expiration_date":
+		if e.complexity.GuestToken.ExpirationDate == nil {
+			break
+		}
+
+		return e.complexity.GuestToken.ExpirationDate(childComplexity), true
+
+	case "GuestToken.id":
+		if e.complexity.GuestToken.ID == nil {
+			break
+		}
+
+		return e.complexity.GuestToken.ID(childComplexity), true
+
+	case "GuestToken.mail":
+		if e.complexity.GuestToken.Mail == nil {
+			break
+		}
+
+		return e.complexity.GuestToken.Mail(childComplexity), true
+
+	case "GuestToken.token":
+		if e.complexity.GuestToken.Token == nil {
+			break
+		}
+
+		return e.complexity.GuestToken.Token(childComplexity), true
 
 	case "Guild.id":
 		if e.complexity.Guild.ID == nil {
@@ -765,6 +808,23 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../../../../schema/graphql/guest_token.graphqls", Input: `"ゲストトークン"
+type GuestToken implements Node {
+    "ID"
+    id: ID!
+
+    "オーナーメールアドレス"
+    mail: String!
+
+    "トークン"
+    token: String!
+
+    "トークン有効期限"
+    expiration_date: Time
+
+    "受付番号"
+    accepted_number: Int!
+}`, BuiltIn: false},
 	{Name: "../../../../schema/graphql/guild.graphqls", Input: `"ギルド"
 type Guild implements Node {
     "ID"
@@ -816,7 +876,7 @@ input NoticeInput {
 `, BuiltIn: false},
 	{Name: "../../../../schema/graphql/mutation/guest.guild.graphqls", Input: `extend type Mutation {
     "ギルド登録を依頼する"
-    requestCreateGuildByGuest(input: RequestCreateGuildInput!): Void
+    requestCreateGuildByGuest(input: RequestCreateGuildInput!): GuestToken!
     "ギルドオーナーを登録する"
     createOwnerByGuest(input: CreateOwnerByGuestInput!): Void
     "ギルド参加者を登録する"
@@ -824,7 +884,8 @@ input NoticeInput {
 }
 
 input RequestCreateGuildInput {
-    mail: String!
+    guildName: String!
+    ownerMail: String!
 }
 
 input CreateOwnerByGuestInput {
@@ -1423,6 +1484,223 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
+func (ec *executionContext) _GuestToken_id(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GuestToken_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNID2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GuestToken_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GuestToken",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GuestToken_mail(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GuestToken_mail(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Mail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GuestToken_mail(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GuestToken",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GuestToken_token(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GuestToken_token(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GuestToken_token(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GuestToken",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GuestToken_expiration_date(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GuestToken_expiration_date(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ExpirationDate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*time.Time)
+	fc.Result = res
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GuestToken_expiration_date(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GuestToken",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Time does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _GuestToken_accepted_number(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_GuestToken_accepted_number(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AcceptedNumber, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_GuestToken_accepted_number(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "GuestToken",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Guild_id(ctx context.Context, field graphql.CollectedField, obj *Guild) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Guild_id(ctx, field)
 	if err != nil {
@@ -1874,11 +2152,14 @@ func (ec *executionContext) _Mutation_requestCreateGuildByGuest(ctx context.Cont
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*custommodel.Void)
+	res := resTmp.(*GuestToken)
 	fc.Result = res
-	return ec.marshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋcustommodelᚐVoid(ctx, field.Selections, res)
+	return ec.marshalNGuestToken2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuestToken(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_requestCreateGuildByGuest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1888,7 +2169,19 @@ func (ec *executionContext) fieldContext_Mutation_requestCreateGuildByGuest(ctx 
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Void does not have child fields")
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_GuestToken_id(ctx, field)
+			case "mail":
+				return ec.fieldContext_GuestToken_mail(ctx, field)
+			case "token":
+				return ec.fieldContext_GuestToken_token(ctx, field)
+			case "expiration_date":
+				return ec.fieldContext_GuestToken_expiration_date(ctx, field)
+			case "accepted_number":
+				return ec.fieldContext_GuestToken_accepted_number(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type GuestToken", field.Name)
 		},
 	}
 	defer func() {
@@ -6636,18 +6929,26 @@ func (ec *executionContext) unmarshalInputRequestCreateGuildInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"mail"}
+	fieldsInOrder := [...]string{"guildName", "ownerMail"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "mail":
+		case "guildName":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mail"))
-			it.Mail, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("guildName"))
+			it.GuildName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "ownerMail":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ownerMail"))
+			it.OwnerMail, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6665,6 +6966,13 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
+	case GuestToken:
+		return ec._GuestToken(ctx, sel, &obj)
+	case *GuestToken:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._GuestToken(ctx, sel, obj)
 	case Guild:
 		return ec._Guild(ctx, sel, &obj)
 	case *Guild:
@@ -6717,6 +7025,59 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var guestTokenImplementors = []string{"GuestToken", "Node"}
+
+func (ec *executionContext) _GuestToken(ctx context.Context, sel ast.SelectionSet, obj *GuestToken) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, guestTokenImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GuestToken")
+		case "id":
+
+			out.Values[i] = ec._GuestToken_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "mail":
+
+			out.Values[i] = ec._GuestToken_mail(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "token":
+
+			out.Values[i] = ec._GuestToken_token(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "expiration_date":
+
+			out.Values[i] = ec._GuestToken_expiration_date(ctx, field, obj)
+
+		case "accepted_number":
+
+			out.Values[i] = ec._GuestToken_accepted_number(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var guildImplementors = []string{"Guild", "Node"}
 
@@ -6817,6 +7178,9 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 				return ec._Mutation_requestCreateGuildByGuest(ctx, field)
 			})
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createOwnerByGuest":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -7841,6 +8205,20 @@ func (ec *executionContext) unmarshalNCreateParticipantByGuestInput2githubᚗcom
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNGuestToken2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuestToken(ctx context.Context, sel ast.SelectionSet, v GuestToken) graphql.Marshaler {
+	return ec._GuestToken(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGuestToken2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuestToken(ctx context.Context, sel ast.SelectionSet, v *GuestToken) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._GuestToken(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuildᚄ(ctx context.Context, sel ast.SelectionSet, v []*Guild) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -7902,6 +8280,21 @@ func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface
 
 func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalID(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	res := graphql.MarshalInt(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
