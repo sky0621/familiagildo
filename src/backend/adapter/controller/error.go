@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/sky0621/familiagildo/app"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"net/http"
 )
@@ -98,5 +99,18 @@ func WithField(v string) CustomErrorOption {
 func WithValue(v string) CustomErrorOption {
 	return func(a *CustomError) {
 		a.value = v
+	}
+}
+
+func AddGraphQLError(ctx context.Context, tag app.CustomErrorTag, opts ...CustomErrorOption) {
+	switch tag {
+	case app.AuthenticationFailure:
+		AuthenticationError(opts...).AddGraphQLError(ctx)
+	case app.AuthorizationFailure:
+		AuthorizationError(opts...).AddGraphQLError(ctx)
+	case app.ValidationFailure:
+		ValidationError("", "", opts...).AddGraphQLError(ctx)
+	default:
+		InternalServerError(opts...).AddGraphQLError(ctx)
 	}
 }

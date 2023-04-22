@@ -16,7 +16,7 @@ import (
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
 	acceptedNumber, err := r.Guild.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
-		// FIXME:
+		AddGraphQLError(ctx, err)
 		return nil, err
 	}
 	return &GuestToken{
