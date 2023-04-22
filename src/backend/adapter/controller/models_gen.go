@@ -52,7 +52,7 @@ type GuestToken struct {
 	// トークン有効期限
 	ExpirationDate *time.Time `json:"expiration_date,omitempty"`
 	// 受付番号
-	AcceptedNumber int `json:"accepted_number"`
+	AcceptedNumber string `json:"accepted_number"`
 }
 
 func (GuestToken) IsNode()            {}

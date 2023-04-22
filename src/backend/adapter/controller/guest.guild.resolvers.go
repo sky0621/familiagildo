@@ -13,13 +13,15 @@ import (
 )
 
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
-func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (int64, error) {
+func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
 	acceptedNumber, err := r.Guild.RequestCreateGuildByGuest(ctx, vo.ParseGuildName(input.GuildName), vo.ParseOwnerMail(input.OwnerMail))
 	if err != nil {
 		// FIXME:
-		return 0, err
+		return nil, err
 	}
-	return acceptedNumber, err
+	return &GuestToken{
+		AcceptedNumber: acceptedNumber,
+	}, err
 }
 
 // CreateOwnerByGuest is the resolver for the createOwnerByGuest field.

@@ -11,7 +11,7 @@ import (
 
 type Guild interface {
 	// RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
-	RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (int64, error)
+	RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error)
 }
 
 func NewGuild(r repository.GuildRepository) Guild {
@@ -23,11 +23,11 @@ type guild struct {
 }
 
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
-func (g *guild) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (int64, error) {
+func (g *guild) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error) {
 	// ギルドの仮登録
 	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
 	if err != nil {
-		return -1, app.WrapErrorWithMsgf(err, "name: %s", name.ToVal())
+		return "", app.WrapErrorWithMsgf(err, "name: %s", name.ToVal())
 	}
 	// FIXME:
 	fmt.Println(guildAggregate)
@@ -42,6 +42,8 @@ func (g *guild) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName
 
 	// メール送信
 
-	// FIXME:
-	return -1, nil
+	// 受付番号の生成
+	acceptedNumber := service.CreateAcceptNumber()
+
+	return acceptedNumber, nil
 }

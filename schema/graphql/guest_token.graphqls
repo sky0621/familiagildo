@@ -13,5 +13,5 @@ type GuestToken implements Node {
     expiration_date: Time
 
     "受付番号"
-    accepted_number: Int!
+    accepted_number: String!
 }
