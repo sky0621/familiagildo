@@ -141,3 +141,11 @@ https://goverter.jmattheis.de/#/
 ```
 go install github.com/jmattheis/goverter/cmd/goverter@latest
 ```
+
+### sql-migrate
+
+https://github.com/rubenv/sql-migrate
+
+```
+go install github.com/rubenv/sql-migrate/...@latest
+```

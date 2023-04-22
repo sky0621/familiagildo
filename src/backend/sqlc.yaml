@@ -2,8 +2,9 @@ version: "2"
 sql:
   - engine: "postgresql"
     queries: "driver/db/sql/"
-    schema: "../../schema/db/schema.sql"
+    schema: "../../schema/db/"
     gen:
       go:
         package: "generated"
         out: "driver/db/generated"
+        emit_empty_slices: true

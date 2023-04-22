@@ -1,17 +1,10 @@
+-- +migrate Up
+-- +migrate StatementBegin
 CREATE TABLE admin (
     id BIGSERIAL PRIMARY KEY,
     name TEXT NOT NULL,
     login_id VARCHAR(128),
     password VARCHAR(128)
-);
-
-CREATE TABLE guest_token (
-    id BIGSERIAL PRIMARY KEY,
-    guild_id BIGINT NOT NULL REFERENCES guild (id),
-    mail VARCHAR(256) NOT NULL,
-    token VARCHAR(256) NOT NULL,
-    expiration_date TIMESTAMP WITH TIME ZONE NOT NULL,
-    accepted_number BIGINT NOT NULL
 );
 
 CREATE TABLE guild (
@@ -25,6 +18,15 @@ CREATE TABLE guild (
     updated_at TIMESTAMP WITH TIME ZONE,
     delete_user_id BIGINT,
     deleted_at TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE guest_token (
+    id BIGSERIAL PRIMARY KEY,
+    guild_id BIGINT NOT NULL REFERENCES guild (id),
+    mail VARCHAR(256) NOT NULL,
+    token VARCHAR(256) NOT NULL,
+    expiration_date TIMESTAMP WITH TIME ZONE NOT NULL,
+    accepted_number BIGINT NOT NULL
 );
 
 CREATE TABLE owner (
@@ -74,3 +76,15 @@ CREATE TABLE task (
     delete_user_id BIGINT,
     deleted_at TIMESTAMP WITH TIME ZONE
 );
+-- +migrate StatementEnd
+
+-- +migrate Down
+-- +migrate StatementBegin
+DROP TABLE task;
+DROP TABLE participant;
+DROP TABLE guild_owner_relation;
+DROP TABLE owner;
+DROP TABLE guest_token;
+DROP TABLE guild;
+DROP TABLE admin;
+-- +migrate StatementEnd

@@ -1,0 +1,17 @@
+dev:
+  dialect: postgres
+  datasource: host=localhost port=25432 dbname=familiagildodb user=postgres password=yuckyjuice sslmode=disable
+  dir: .
+  table: migration
+
+local:
+  dialect: postgres
+  datasource: host=localhost port=11111 dbname=familiagildodb user=postgres password=yuckyjuice sslmode=disable
+  dir: .
+  table: migration
+
+localtest:
+  dialect: postgres
+  datasource: host=localhost port=11112 dbname=familiagildodbtest user=postgres password=yuckyjuice sslmode=disable
+  dir: .
+  table: migration
