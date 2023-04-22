@@ -13,6 +13,6 @@ func (v GuildName) ToVal() string {
 	return string(v)
 }
 
-func ParseGuildName(v string) GuildName {
+func ToGuildName(v string) GuildName {
 	return GuildName(v)
 }

@@ -9,21 +9,21 @@ import (
 	"github.com/sky0621/familiagildo/domain/vo"
 )
 
-type Guild interface {
+type GuildInputPort interface {
 	// RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
 	RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error)
 }
 
-func NewGuild(r repository.GuildRepository) Guild {
-	return &guild{guildRepository: r}
+func NewGuild(r repository.GuildRepository) GuildInputPort {
+	return &guildInteractor{guildRepository: r}
 }
 
-type guild struct {
+type guildInteractor struct {
 	guildRepository repository.GuildRepository
 }
 
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
-func (g *guild) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error) {
+func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error) {
 	// ギルドの仮登録
 	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
 	if err != nil {

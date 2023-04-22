@@ -14,6 +14,6 @@ func (v OwnerMail) ToVal() string {
 	return string(v)
 }
 
-func ParseOwnerMail(v string) OwnerMail {
+func ToOwnerMail(v string) OwnerMail {
 	return OwnerMail(v)
 }

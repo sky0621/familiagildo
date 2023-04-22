@@ -14,7 +14,7 @@ import (
 
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
-	acceptedNumber, err := r.Guild.RequestCreateGuildByGuest(ctx, vo.ParseGuildName(input.GuildName), vo.ParseOwnerMail(input.OwnerMail))
+	acceptedNumber, err := r.Guild.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
 		// FIXME:
 		return nil, err

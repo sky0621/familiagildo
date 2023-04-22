@@ -7,15 +7,15 @@ import (
 	"github.com/sky0621/familiagildo/domain/repository"
 )
 
-type TaskUsecase interface {
+type TaskInputPort interface {
 	Add(e entity.Task) error
 }
 
-type taskUsecase struct {
+type taskInteractor struct {
 	taskRepository repository.TaskRepository
 }
 
-func (u *taskUsecase) Add(e entity.Task) error {
+func (u *taskInteractor) Add(e entity.Task) error {
 	a := aggregate.TaskAggregate{}
 	if err := u.taskRepository.Save(a); err != nil {
 		return errors.Join(err)
