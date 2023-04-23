@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -16,8 +17,12 @@ type CustomError struct {
 	/*
 	 * 以下、全てのエラー表現に必須ではない要素（オプションとして設定可能）
 	 */
-	field string
-	value string
+	details []CustomErrorDetail
+}
+
+type CustomErrorDetail struct {
+	Field string
+	Value any
 }
 
 func (e *CustomError) AddGraphQLError(ctx context.Context, msg string) {
@@ -25,11 +30,9 @@ func (e *CustomError) AddGraphQLError(ctx context.Context, msg string) {
 		"status_code": e.httpStatusCode,
 		"error_code":  e.appErrorCode,
 	}
-	if e.field != "" {
-		extensions["field"] = e.field
-	}
-	if e.value != "" {
-		extensions["value"] = e.value
+	for i, d := range e.details {
+		extensions[fmt.Sprintf("field%d", i+1)] = d.Field
+		extensions[fmt.Sprintf("value%d", i+1)] = d.Value
 	}
 	graphql.AddError(ctx, &gqlerror.Error{
 		Message:    msg,
@@ -61,8 +64,11 @@ func AuthorizationError(opts ...CustomErrorOption) *CustomError {
 }
 
 // ValidationError is バリデーションエラー用
-func ValidationError(field, value string, opts ...CustomErrorOption) *CustomError {
-	options := []CustomErrorOption{WithField(field), WithValue(value)}
+func ValidationError(details []CustomErrorDetail, opts ...CustomErrorOption) *CustomError {
+	var options []CustomErrorOption
+	for _, d := range details {
+		options = append(options, WithCustomErrorDetail(d))
+	}
 	for _, opt := range opts {
 		options = append(options, opt)
 	}
@@ -91,34 +97,34 @@ const (
 
 type CustomErrorOption func(*CustomError)
 
-func WithField(v string) CustomErrorOption {
+func WithCustomErrorDetail(v CustomErrorDetail) CustomErrorOption {
 	return func(a *CustomError) {
-		a.field = v
-	}
-}
-
-func WithValue(v string) CustomErrorOption {
-	return func(a *CustomError) {
-		a.value = v
+		a.details = append(a.details, v)
 	}
 }
 
 func AddGraphQLError(ctx context.Context, err error) {
-	var cerr *app.CustomError
-	if errors.As(err, &cerr) {
-		if cerr.Equals(app.AuthenticationFailure) {
-			AuthenticationError().AddGraphQLError(ctx, "認証に失敗しました。")
-			return
-		}
-		if cerr.Equals(app.AuthorizationFailure) {
-			AuthorizationError().AddGraphQLError(ctx, "")
-			return
-		}
-		if cerr.Equals(app.ValidationFailure) {
-			ValidationError("", "").AddGraphQLError(ctx, "")
-			return
-		}
-		InternalServerError().AddGraphQLError(ctx, "")
+	var anErr *app.AuthenticationError
+	if errors.As(err, &anErr) {
+		AuthenticationError().AddGraphQLError(ctx, "認証に失敗しました。") // FIXME: i18n
+		return
 	}
-	// FIXME:
+
+	var azErr *app.AuthorizationError
+	if errors.As(err, &azErr) {
+		AuthorizationError().AddGraphQLError(ctx, "認可に失敗しました。") // FIXME: i18n
+		return
+	}
+
+	var vnErr *app.ValidationError
+	if errors.As(err, &vnErr) {
+		var cErrs []CustomErrorDetail
+		for _, d := range vnErr.GetDetails() {
+			cErrs = append(cErrs, CustomErrorDetail{Field: d.GetField(), Value: d.GetValue()})
+		}
+		ValidationError(cErrs).AddGraphQLError(ctx, "バリデーションに失敗しました。") // FIXME: i18n
+		return
+	}
+
+	InternalServerError().AddGraphQLError(ctx, "予期せぬエラーが発生しました。") // FIXME: i18n
 }

@@ -1,6 +1,10 @@
 package app
 
-import "github.com/cockroachdb/errors"
+import (
+	"fmt"
+	"github.com/cockroachdb/errors"
+	"strings"
+)
 
 const (
 	// Unknown is ユーザーID不明
@@ -8,51 +12,42 @@ const (
 	Unknown = -1
 )
 
-func NewAuthenticationError(err error, msg string) *AuthenticationError {
-	return &AuthenticationError{err: errors.Wrap(err, msg)}
+// NewAuthenticationError is 認証エラーを生成
+func NewAuthenticationError(err error, userID int) *AuthenticationError {
+	return &AuthenticationError{err: errors.WithStack(err), userID: userID}
 }
 
 type AuthenticationError struct {
-	err error
-}
-
-func (e *AuthenticationError) Error() string {
-	return e.err.Error()
-}
-
-func NewCustomError(err error, msg string) *CustomError {
-	return &CustomError{err: errors.Wrap(err, msg)}
-}
-
-type CustomError struct {
-	err        error
-	supplement CustomErrorSupplement
-}
-
-type CustomErrorSupplement interface {
-}
-
-// AuthenticationErrorSupplement is 認証エラー補足情報
-type AuthenticationErrorSupplement struct {
+	err    error
 	userID int
 }
 
-func NewAuthenticationErrorSupplement(userID int) CustomErrorSupplement {
-	return &AuthenticationErrorSupplement{userID: userID}
+func (e *AuthenticationError) Error() string {
+	return errors.WithDetailf(e.err, "[UserID:%d]", e.userID).Error()
 }
 
-// AuthorizationErrorSupplement is 認可エラー補足情報
-type AuthorizationErrorSupplement struct {
+// NewAuthorizationError is 認可エラーを生成
+func NewAuthorizationError(err error, userID, funcID int) *AuthorizationError {
+	return &AuthorizationError{err: errors.WithStack(err), userID: userID, funcID: funcID}
+}
+
+type AuthorizationError struct {
+	err    error
 	userID int
 	funcID int
 }
 
-func NewAuthorizationErrorSupplement(userID, funcID int) CustomErrorSupplement {
-	return &AuthorizationErrorSupplement{userID: userID, funcID: funcID}
+func (e *AuthorizationError) Error() string {
+	return errors.WithDetailf(e.err, "[UserID:%d][FuncID:%d]", e.userID, e.funcID).Error()
 }
 
-// ValidationErrorSupplement is バリデーションエラー補足情報
-type ValidationErrorSupplement struct {
+// NewValidationError is バリデーションエラーを生成
+func NewValidationError(err error, userID int, details []ValidationErrorDetail) *ValidationError {
+	return &ValidationError{err: errors.WithStack(err), userID: userID, details: details}
+}
+
+type ValidationError struct {
+	err     error
 	userID  int
 	details []ValidationErrorDetail
 }
@@ -62,15 +57,53 @@ type ValidationErrorDetail struct {
 	value any
 }
 
-func NewValidationErrorSupplement(userID int, details []ValidationErrorDetail) CustomErrorSupplement {
-	return &ValidationErrorSupplement{userID: userID, details: details}
+func (d *ValidationErrorDetail) GetField() string {
+	return d.field
 }
 
-// UnexpectedErrorSupplement is 予期せぬエラー補足情報
-type UnexpectedErrorSupplement struct {
-	userID int
+func (d *ValidationErrorDetail) GetValue() any {
+	return d.value
 }
 
-func NewUnexpectedErrorSupplement(userID int) CustomErrorSupplement {
-	return &UnexpectedErrorSupplement{userID: userID}
+func NewValidationErrorDetail(field string, value any) ValidationErrorDetail {
+	return ValidationErrorDetail{field: field, value: value}
+}
+
+func (e *ValidationError) Error() string {
+	sb := strings.Builder{}
+	for _, d := range e.details {
+		sb.WriteString(fmt.Sprintf("[field:%s, value:%v]", d.field, d.value))
+	}
+	return errors.WithDetailf(e.err, "[UserID:%d]%s", e.userID, sb.String()).Error()
+}
+
+func (e *ValidationError) GetDetails() []ValidationErrorDetail {
+	return e.details
+}
+
+// NewUnexpectedError is 予期せぬエラーを生成
+func NewUnexpectedError(err error, userID int, message string) *UnexpectedError {
+	return &UnexpectedError{err: errors.WithStack(err), userID: userID, message: message}
+}
+
+type UnexpectedError struct {
+	err     error
+	userID  int
+	message string
+}
+
+func (e *UnexpectedError) Error() string {
+	return errors.WithDetailf(e.err, "%s [UserID:%d]", e.message, e.userID).Error()
+}
+
+/*
+ * ユーティリティ
+ */
+
+func WrapError(err error, msg string) error {
+	return errors.Wrap(err, msg)
+}
+
+func WrapErrorf(err error, format string, args ...any) error {
+	return errors.Wrapf(err, format, args...)
 }

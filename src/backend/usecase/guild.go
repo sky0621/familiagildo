@@ -24,14 +24,22 @@ type guildInteractor struct {
 
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
 func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error) {
+	// バリデーション
 	if err := name.Validate(); err != nil {
-
+		return "", app.NewValidationError(err, app.Unknown, []app.ValidationErrorDetail{
+			app.NewValidationErrorDetail("guildName", name.ToVal()),
+		})
+	}
+	if err := mail.Validate(); err != nil {
+		return "", app.NewValidationError(err, app.Unknown, []app.ValidationErrorDetail{
+			app.NewValidationErrorDetail("ownerMail", mail.ToVal()),
+		})
 	}
 
 	// ギルドの仮登録
 	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
 	if err != nil {
-		return "", app.WrapError(err, app.UnexpectedFailure)
+		return "", app.WrapError(err, "failed to CreateWithRegistering")
 	}
 	// FIXME:
 	fmt.Println(guildAggregate)

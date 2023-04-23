@@ -11,7 +11,6 @@ func (v GuildName) Validate() error {
 		validation.Required,
 		validation.RuneLength(2, 100),
 	); err != nil {
-		//
 		return err
 	}
 	return nil

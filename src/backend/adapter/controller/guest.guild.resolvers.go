@@ -7,8 +7,6 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/rs/zerolog/log"
-
 	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
 	"github.com/sky0621/familiagildo/domain/vo"
 )
@@ -17,7 +15,6 @@ import (
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
 	acceptedNumber, err := r.Guild.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
-		log.Err(err).Send()
 		AddGraphQLError(ctx, err)
 		return nil, err
 	}

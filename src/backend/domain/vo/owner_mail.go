@@ -1,13 +1,20 @@
 package vo
 
+import (
+	validation "github.com/go-ozzo/ozzo-validation"
+	is "github.com/go-ozzo/ozzo-validation/is"
+)
+
 type OwnerMail string
 
-func (v OwnerMail) Validate() bool {
-	if v == "" {
-		return false
+func (v OwnerMail) Validate() error {
+	if err := validation.Validate(v.ToVal(),
+		validation.Required,
+		is.Email,
+	); err != nil {
+		return err
 	}
-	// FIXME:
-	return true
+	return nil
 }
 
 func (v OwnerMail) ToVal() string {

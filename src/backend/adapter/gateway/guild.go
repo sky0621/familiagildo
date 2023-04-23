@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"fmt"
 	"github.com/sky0621/familiagildo/adapter/gateway/convert"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/aggregate"
@@ -22,7 +23,8 @@ type guildRepository struct {
 func (r *guildRepository) CreateWithRegistering(ctx context.Context, name vo.GuildName) (*aggregate.GuildAggregate, error) {
 	record, err := r.db.CreateGuildWithRegistering(ctx, name.ToVal())
 	if err != nil {
-		return nil, &app.AuthenticationError{}
+		return nil, app.NewUnexpectedError(err, app.Unknown,
+			fmt.Sprintf("failed to CreateGuildWithRegistering [guildName:%s]", name.ToVal()))
 	}
 	return convert.GuildAggregateFromDBToDomain(record), nil
 }
@@ -30,7 +32,8 @@ func (r *guildRepository) CreateWithRegistering(ctx context.Context, name vo.Gui
 func (r *guildRepository) UpdateWithRegistered(ctx context.Context, id vo.ID) (*aggregate.GuildAggregate, error) {
 	record, err := r.db.UpdateGuildWithRegistered(ctx, id.ToVal())
 	if err != nil {
-		return nil, app.WrapErrorWithMsgf(err, app.UnexpectedFailure, "id: %d", id)
+		return nil, app.NewUnexpectedError(err, app.Unknown,
+			fmt.Sprintf("failed to UpdateGuildWithRegistered [id:%d]", id.ToVal()))
 	}
 	return convert.GuildAggregateFromDBToDomain(record), nil
 }
