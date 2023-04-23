@@ -31,8 +31,8 @@ func (e *CustomError) AddGraphQLError(ctx context.Context, msg string) {
 		"error_code":  e.appErrorCode,
 	}
 	for i, d := range e.details {
-		extensions[fmt.Sprintf("field%d", i+1)] = d.Field
-		extensions[fmt.Sprintf("value%d", i+1)] = d.Value
+		extensions[fmt.Sprintf("field_%d", i+1)] = d.Field
+		extensions[fmt.Sprintf("value_%d", i+1)] = d.Value
 	}
 	graphql.AddError(ctx, &gqlerror.Error{
 		Message:    msg,
@@ -112,7 +112,9 @@ func AddGraphQLError(ctx context.Context, err error) {
 
 	var azErr *app.AuthorizationError
 	if errors.As(err, &azErr) {
-		AuthorizationError().AddGraphQLError(ctx, "認可に失敗しました。") // FIXME: i18n
+		AuthorizationError(WithCustomErrorDetail(CustomErrorDetail{
+			Field: "userID", Value: azErr.GetUserID(),
+		})).AddGraphQLError(ctx, "認可に失敗しました。") // FIXME: i18n
 		return
 	}
 
@@ -122,9 +124,16 @@ func AddGraphQLError(ctx context.Context, err error) {
 		for _, d := range vnErr.GetDetails() {
 			cErrs = append(cErrs, CustomErrorDetail{Field: d.GetField(), Value: d.GetValue()})
 		}
-		ValidationError(cErrs).AddGraphQLError(ctx, "バリデーションに失敗しました。") // FIXME: i18n
+		ValidationError(cErrs, WithCustomErrorDetail(CustomErrorDetail{
+			Field: "userID", Value: vnErr.GetUserID(),
+		})).AddGraphQLError(ctx, "バリデーションに失敗しました。") // FIXME: i18n
 		return
 	}
 
-	InternalServerError().AddGraphQLError(ctx, "予期せぬエラーが発生しました。") // FIXME: i18n
+	var uErr *app.UnexpectedError
+	if errors.As(err, &uErr) {
+		InternalServerError(WithCustomErrorDetail(CustomErrorDetail{
+			Field: "userID", Value: uErr.GetUserID(),
+		})).AddGraphQLError(ctx, "予期せぬエラーが発生しました。") // FIXME: i18n
+	}
 }

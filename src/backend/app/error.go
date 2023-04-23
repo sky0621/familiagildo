@@ -26,6 +26,10 @@ func (e *AuthenticationError) Error() string {
 	return errors.WithDetailf(e.err, "[UserID:%d]", e.userID).Error()
 }
 
+func (e *AuthenticationError) GetUserID() int {
+	return e.userID
+}
+
 // NewAuthorizationError is 認可エラーを生成
 func NewAuthorizationError(err error, userID, funcID int) *AuthorizationError {
 	return &AuthorizationError{err: errors.WithStack(err), userID: userID, funcID: funcID}
@@ -39,6 +43,14 @@ type AuthorizationError struct {
 
 func (e *AuthorizationError) Error() string {
 	return errors.WithDetailf(e.err, "[UserID:%d][FuncID:%d]", e.userID, e.funcID).Error()
+}
+
+func (e *AuthorizationError) GetUserID() int {
+	return e.userID
+}
+
+func (e *AuthorizationError) GetFuncID() int {
+	return e.funcID
 }
 
 // NewValidationError is バリデーションエラーを生成
@@ -77,6 +89,10 @@ func (e *ValidationError) Error() string {
 	return errors.WithDetailf(e.err, "[UserID:%d]%s", e.userID, sb.String()).Error()
 }
 
+func (e *ValidationError) GetUserID() int {
+	return e.userID
+}
+
 func (e *ValidationError) GetDetails() []ValidationErrorDetail {
 	return e.details
 }
@@ -94,6 +110,10 @@ type UnexpectedError struct {
 
 func (e *UnexpectedError) Error() string {
 	return errors.WithDetailf(e.err, "%s [UserID:%d]", e.message, e.userID).Error()
+}
+
+func (e *UnexpectedError) GetUserID() int {
+	return e.userID
 }
 
 /*

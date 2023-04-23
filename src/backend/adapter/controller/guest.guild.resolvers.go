@@ -16,7 +16,8 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 	acceptedNumber, err := r.Guild.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
 		AddGraphQLError(ctx, err)
-		return nil, err
+		//		return nil, err
+		return nil, nil
 	}
 	return &GuestToken{
 		AcceptedNumber: acceptedNumber,
