@@ -1,50 +1,76 @@
 package app
 
-import "github.com/pkg/errors"
-
-type CustomError interface {
-	Equals(tag CustomErrorTag) bool
-	Error() string
-}
-
-func WrapError(err error) CustomError {
-	return &customError{err: errors.WithStack(err)}
-}
-
-func WrapErrorWithMsg(err error, msg string) CustomError {
-	return &customError{err: errors.Wrap(err, msg)}
-}
-
-func WrapErrorWithMsgf(err error, format string, args ...any) CustomError {
-	return &customError{err: errors.Wrapf(err, format, args...)}
-}
-
-type CustomErrorTag int
+import "github.com/cockroachdb/errors"
 
 const (
-	// AuthenticationFailure is 認証エラー
-	AuthenticationFailure CustomErrorTag = iota + 1
-	// AuthorizationFailure is 認可エラー
-	AuthorizationFailure
-	// ValidationFailure is バリデーションエラー
-	ValidationFailure
-
-	// UnexpectedFailure is その他の予期せぬエラー
-	UnexpectedFailure
+	// Unknown is ユーザーID不明
+	// FIXME:
+	Unknown = -1
 )
 
-type customError struct {
-	tag CustomErrorTag
+func NewAuthenticationError(err error, msg string) *AuthenticationError {
+	return &AuthenticationError{err: errors.Wrap(err, msg)}
+}
+
+type AuthenticationError struct {
 	err error
 }
 
-func (e *customError) Equals(tag CustomErrorTag) bool {
-	if e == nil {
-		return false
-	}
-	return e.tag == tag
+func (e *AuthenticationError) Error() string {
+	return e.err.Error()
 }
 
-func (e *customError) Error() string {
-	return e.err.Error()
+func NewCustomError(err error, msg string) *CustomError {
+	return &CustomError{err: errors.Wrap(err, msg)}
+}
+
+type CustomError struct {
+	err        error
+	supplement CustomErrorSupplement
+}
+
+type CustomErrorSupplement interface {
+}
+
+// AuthenticationErrorSupplement is 認証エラー補足情報
+type AuthenticationErrorSupplement struct {
+	userID int
+}
+
+func NewAuthenticationErrorSupplement(userID int) CustomErrorSupplement {
+	return &AuthenticationErrorSupplement{userID: userID}
+}
+
+// AuthorizationErrorSupplement is 認可エラー補足情報
+type AuthorizationErrorSupplement struct {
+	userID int
+	funcID int
+}
+
+func NewAuthorizationErrorSupplement(userID, funcID int) CustomErrorSupplement {
+	return &AuthorizationErrorSupplement{userID: userID, funcID: funcID}
+}
+
+// ValidationErrorSupplement is バリデーションエラー補足情報
+type ValidationErrorSupplement struct {
+	userID  int
+	details []ValidationErrorDetail
+}
+
+type ValidationErrorDetail struct {
+	field string
+	value any
+}
+
+func NewValidationErrorSupplement(userID int, details []ValidationErrorDetail) CustomErrorSupplement {
+	return &ValidationErrorSupplement{userID: userID, details: details}
+}
+
+// UnexpectedErrorSupplement is 予期せぬエラー補足情報
+type UnexpectedErrorSupplement struct {
+	userID int
+}
+
+func NewUnexpectedErrorSupplement(userID int) CustomErrorSupplement {
+	return &UnexpectedErrorSupplement{userID: userID}
 }

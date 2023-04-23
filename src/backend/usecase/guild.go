@@ -24,10 +24,14 @@ type guildInteractor struct {
 
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
 func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error) {
+	if err := name.Validate(); err != nil {
+
+	}
+
 	// ギルドの仮登録
 	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
 	if err != nil {
-		return "", app.WrapErrorWithMsgf(err, "name: %s", name.ToVal())
+		return "", app.WrapError(err, app.UnexpectedFailure)
 	}
 	// FIXME:
 	fmt.Println(guildAggregate)

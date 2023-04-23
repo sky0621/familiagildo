@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/vektah/gqlparser/v2/gqlerror"
@@ -19,7 +20,7 @@ type CustomError struct {
 	value string
 }
 
-func (e *CustomError) AddGraphQLError(ctx context.Context) {
+func (e *CustomError) AddGraphQLError(ctx context.Context, msg string) {
 	extensions := map[string]interface{}{
 		"status_code": e.httpStatusCode,
 		"error_code":  e.appErrorCode,
@@ -31,7 +32,7 @@ func (e *CustomError) AddGraphQLError(ctx context.Context) {
 		extensions["value"] = e.value
 	}
 	graphql.AddError(ctx, &gqlerror.Error{
-		Message:    "",
+		Message:    msg,
 		Extensions: extensions,
 	})
 }
@@ -102,15 +103,22 @@ func WithValue(v string) CustomErrorOption {
 	}
 }
 
-func AddGraphQLError(ctx context.Context, tag app.CustomErrorTag, opts ...CustomErrorOption) {
-	switch tag {
-	case app.AuthenticationFailure:
-		AuthenticationError(opts...).AddGraphQLError(ctx)
-	case app.AuthorizationFailure:
-		AuthorizationError(opts...).AddGraphQLError(ctx)
-	case app.ValidationFailure:
-		ValidationError("", "", opts...).AddGraphQLError(ctx)
-	default:
-		InternalServerError(opts...).AddGraphQLError(ctx)
+func AddGraphQLError(ctx context.Context, err error) {
+	var cerr *app.CustomError
+	if errors.As(err, &cerr) {
+		if cerr.Equals(app.AuthenticationFailure) {
+			AuthenticationError().AddGraphQLError(ctx, "認証に失敗しました。")
+			return
+		}
+		if cerr.Equals(app.AuthorizationFailure) {
+			AuthorizationError().AddGraphQLError(ctx, "")
+			return
+		}
+		if cerr.Equals(app.ValidationFailure) {
+			ValidationError("", "").AddGraphQLError(ctx, "")
+			return
+		}
+		InternalServerError().AddGraphQLError(ctx, "")
 	}
+	// FIXME:
 }

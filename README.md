@@ -149,3 +149,11 @@ https://github.com/rubenv/sql-migrate
 ```
 go install github.com/rubenv/sql-migrate/...@latest
 ```
+
+### ozzo-validation
+
+https://github.com/go-ozzo/ozzo-validation
+
+```
+go get github.com/go-ozzo/ozzo-validation
+```
