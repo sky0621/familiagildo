@@ -39,5 +39,5 @@ func localLogger() {
 	output.FormatLevel = func(i interface{}) string {
 		return strings.ToUpper(fmt.Sprintf("| %-6s |", i))
 	}
-	log.Logger = zerolog.New(output).With().Timestamp().Caller().Logger()
+	log.Logger = zerolog.New(output).With().Stack().Timestamp().Caller().Logger()
 }

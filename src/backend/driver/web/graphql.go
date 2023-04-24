@@ -2,13 +2,13 @@ package web
 
 import (
 	"context"
+	"fmt"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/handler/extension"
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/rs/zerolog/log"
-	"github.com/sky0621/familiagildo/adapter/controller"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
@@ -33,14 +33,19 @@ func graphQlServer(es graphql.ExecutableSchema) *handler.Server {
 
 	srv.SetErrorPresenter(func(ctx context.Context, err error) *gqlerror.Error {
 		// FIXME:
-		log.Err(err).Msgf("failed to graphQL service: %+v", err)
-		controller.AddGraphQLError(ctx, err)
-		return nil
+		e := err.(*gqlerror.Error)
+		log.Err(e).Msg("failed to graphQL service")
+		return e
 	})
 
 	srv.SetRecoverFunc(func(ctx context.Context, err any) error {
 		// FIXME:
-		controller.AddGraphQLError(ctx, err)
+		if e, ok := err.(error); ok {
+			log.Err(e).Msg("failed to graphQL service")
+		} else {
+			e := fmt.Errorf("%v", err)
+			log.Err(e).Msg("failed to graphQL service")
+		}
 		return nil
 	})
 

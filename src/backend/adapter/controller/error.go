@@ -135,5 +135,10 @@ func AddGraphQLError(ctx context.Context, err error) {
 		InternalServerError(WithCustomErrorDetail(CustomErrorDetail{
 			Field: "userID", Value: uErr.GetUserID(),
 		})).AddGraphQLError(ctx, "予期せぬエラーが発生しました。") // FIXME: i18n
+		return
 	}
+
+	cErr := &CustomError{}
+	cErr.AddGraphQLError(ctx, err.Error()) // FIXME: i18n
+
 }
