@@ -25,15 +25,17 @@ type guildInteractor struct {
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
 func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error) {
 	// バリデーション
+	var validationErrors app.ValidationErrors
 	if err := name.Validate(); err != nil {
-		return "", app.NewValidationError(err, app.Unknown, []app.ValidationErrorDetail{
-			app.NewValidationErrorDetail("guildName", name.ToVal()),
-		})
+		validationErrors = append(validationErrors, app.NewValidationError(err,
+			&app.ValidationErrorDetail{Field: "guildName", Value: name.ToVal()}))
 	}
 	if err := mail.Validate(); err != nil {
-		return "", app.NewValidationError(err, app.Unknown, []app.ValidationErrorDetail{
-			app.NewValidationErrorDetail("ownerMail", mail.ToVal()),
-		})
+		validationErrors = append(validationErrors, app.NewValidationError(err,
+			&app.ValidationErrorDetail{Field: "ownerMail", Value: mail.ToVal()}))
+	}
+	if len(validationErrors) > 0 {
+		return "", validationErrors
 	}
 
 	// ギルドの仮登録

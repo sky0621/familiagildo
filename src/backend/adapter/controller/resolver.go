@@ -7,9 +7,9 @@ import "github.com/sky0621/familiagildo/usecase"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	Guild usecase.GuildInputPort
+	GuildUsecase usecase.GuildInputPort
 }
 
 func NewResolver(guild usecase.GuildInputPort) *Resolver {
-	return &Resolver{Guild: guild}
+	return &Resolver{GuildUsecase: guild}
 }

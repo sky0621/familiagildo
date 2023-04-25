@@ -223,35 +223,35 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GuestToken.Token(childComplexity), true
 
-	case "Guild.id":
+	case "GuildUsecase.id":
 		if e.complexity.Guild.ID == nil {
 			break
 		}
 
 		return e.complexity.Guild.ID(childComplexity), true
 
-	case "Guild.name":
+	case "GuildUsecase.name":
 		if e.complexity.Guild.Name == nil {
 			break
 		}
 
 		return e.complexity.Guild.Name(childComplexity), true
 
-	case "Guild.owner":
+	case "GuildUsecase.owner":
 		if e.complexity.Guild.Owner == nil {
 			break
 		}
 
 		return e.complexity.Guild.Owner(childComplexity), true
 
-	case "Guild.participants":
+	case "GuildUsecase.participants":
 		if e.complexity.Guild.Participants == nil {
 			break
 		}
 
 		return e.complexity.Guild.Participants(childComplexity), true
 
-	case "Guild.tasks":
+	case "GuildUsecase.tasks":
 		if e.complexity.Guild.Tasks == nil {
 			break
 		}
@@ -826,7 +826,7 @@ type GuestToken implements Node {
     accepted_number: String!
 }`, BuiltIn: false},
 	{Name: "../../../../schema/graphql/guild.graphqls", Input: `"ギルド"
-type Guild implements Node {
+type GuildUsecase implements Node {
     "ID"
     id: ID!
 
@@ -845,7 +845,7 @@ type Guild implements Node {
 `, BuiltIn: false},
 	{Name: "../../../../schema/graphql/mutation/admin.guild.graphqls", Input: `extend type Mutation {
     "ギルドを登録"
-    createGuildByAdmin(input: AdminGuildInput!): Guild
+    createGuildByAdmin(input: AdminGuildInput!): GuildUsecase
 }
 
 "ギルドインプット"
@@ -952,11 +952,11 @@ type Notice {
 `, BuiltIn: false},
 	{Name: "../../../../schema/graphql/query/admin.guild.graphqls", Input: `extend type Query {
     "ギルドの一覧を参照する"
-    listGuildByAdmin: [Guild!]!
+    listGuildByAdmin: [GuildUsecase!]!
     "条件に合致するギルドの一覧を参照する"
-    findGuildByAdmin(filter: AdminGuildFilter): [Guild!]!
+    findGuildByAdmin(filter: AdminGuildFilter): [GuildUsecase!]!
     "１ギルドの詳細を参照する"
-    getGuildByAdmin(id: ID!): Guild
+    getGuildByAdmin(id: ID!): GuildUsecase
 }
 
 "ギルドフィルター条件"
@@ -1104,7 +1104,7 @@ type Owner {
     mail: String!
 
     "所属ギルド"
-    guild: Guild!
+    guild: GuildUsecase!
 
     "自分が登録したタスクリスト"
     myTasks: [OwnerTask!]!
@@ -1118,7 +1118,7 @@ type Participant {
     mail: String
 
     "所属ギルド"
-    guild: Guild!
+    guild: GuildUsecase!
 
     "自分が登録したタスクリスト"
     myTasks: [ParticipantTask!]!
@@ -1734,7 +1734,7 @@ func (ec *executionContext) _Guild_id(ctx context.Context, field graphql.Collect
 
 func (ec *executionContext) fieldContext_Guild_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Guild",
+		Object:     "GuildUsecase",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1778,7 +1778,7 @@ func (ec *executionContext) _Guild_name(ctx context.Context, field graphql.Colle
 
 func (ec *executionContext) fieldContext_Guild_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Guild",
+		Object:     "GuildUsecase",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1822,7 +1822,7 @@ func (ec *executionContext) _Guild_owner(ctx context.Context, field graphql.Coll
 
 func (ec *executionContext) fieldContext_Guild_owner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Guild",
+		Object:     "GuildUsecase",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1878,7 +1878,7 @@ func (ec *executionContext) _Guild_participants(ctx context.Context, field graph
 
 func (ec *executionContext) fieldContext_Guild_participants(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Guild",
+		Object:     "GuildUsecase",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1934,7 +1934,7 @@ func (ec *executionContext) _Guild_tasks(ctx context.Context, field graphql.Coll
 
 func (ec *executionContext) fieldContext_Guild_tasks(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Guild",
+		Object:     "GuildUsecase",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -2048,7 +2048,7 @@ func (ec *executionContext) fieldContext_Mutation_createGuildByAdmin(ctx context
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
 		},
 	}
 	defer func() {
@@ -3230,7 +3230,7 @@ func (ec *executionContext) fieldContext_Owner_guild(ctx context.Context, field 
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
 		},
 	}
 	return fc, nil
@@ -3688,7 +3688,7 @@ func (ec *executionContext) fieldContext_Participant_guild(ctx context.Context, 
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
 		},
 	}
 	return fc, nil
@@ -4069,7 +4069,7 @@ func (ec *executionContext) fieldContext_Query_listGuildByAdmin(ctx context.Cont
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
 		},
 	}
 	return fc, nil
@@ -4125,7 +4125,7 @@ func (ec *executionContext) fieldContext_Query_findGuildByAdmin(ctx context.Cont
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
 		},
 	}
 	defer func() {
@@ -4189,7 +4189,7 @@ func (ec *executionContext) fieldContext_Query_getGuildByAdmin(ctx context.Conte
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
 		},
 	}
 	defer func() {
@@ -7079,7 +7079,7 @@ func (ec *executionContext) _GuestToken(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var guildImplementors = []string{"Guild", "Node"}
+var guildImplementors = []string{"GuildUsecase", "Node"}
 
 func (ec *executionContext) _Guild(ctx context.Context, sel ast.SelectionSet, obj *Guild) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, guildImplementors)
@@ -7088,7 +7088,7 @@ func (ec *executionContext) _Guild(ctx context.Context, sel ast.SelectionSet, ob
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Guild")
+			out.Values[i] = graphql.MarshalString("GuildUsecase")
 		case "id":
 
 			out.Values[i] = ec._Guild_id(ctx, field, obj)

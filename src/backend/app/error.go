@@ -6,114 +6,52 @@ import (
 	"strings"
 )
 
-const (
-	// Unknown is ユーザーID不明
-	// FIXME:
-	Unknown = -1
-)
+type ValidationErrors []ValidationError
 
-// NewAuthenticationError is 認証エラーを生成
-func NewAuthenticationError(err error, userID int) *AuthenticationError {
-	return &AuthenticationError{err: errors.WithStack(err), userID: userID}
+func (e ValidationErrors) Error() string {
+	var sb strings.Builder
+	for _, x := range e {
+		sb.WriteString(x.Error())
+	}
+	return sb.String()
 }
 
-type AuthenticationError struct {
-	err    error
-	userID int
-}
-
-func (e *AuthenticationError) Error() string {
-	return errors.WithDetailf(e.err, "[UserID:%d]", e.userID).Error()
-}
-
-func (e *AuthenticationError) GetUserID() int {
-	return e.userID
-}
-
-// NewAuthorizationError is 認可エラーを生成
-func NewAuthorizationError(err error, userID, funcID int) *AuthorizationError {
-	return &AuthorizationError{err: errors.WithStack(err), userID: userID, funcID: funcID}
-}
-
-type AuthorizationError struct {
-	err    error
-	userID int
-	funcID int
-}
-
-func (e *AuthorizationError) Error() string {
-	return errors.WithDetailf(e.err, "[UserID:%d][FuncID:%d]", e.userID, e.funcID).Error()
-}
-
-func (e *AuthorizationError) GetUserID() int {
-	return e.userID
-}
-
-func (e *AuthorizationError) GetFuncID() int {
-	return e.funcID
-}
-
-// NewValidationError is バリデーションエラーを生成
-func NewValidationError(err error, userID int, details []ValidationErrorDetail) *ValidationError {
-	return &ValidationError{err: errors.WithStack(err), userID: userID, details: details}
+func NewValidationError(err error, detail *ValidationErrorDetail) ValidationError {
+	return ValidationError{err: err, detail: detail}
 }
 
 type ValidationError struct {
-	err     error
-	userID  int
-	details []ValidationErrorDetail
+	err    error
+	detail *ValidationErrorDetail
 }
 
 type ValidationErrorDetail struct {
-	field string
-	value any
-}
-
-func (d *ValidationErrorDetail) GetField() string {
-	return d.field
-}
-
-func (d *ValidationErrorDetail) GetValue() any {
-	return d.value
-}
-
-func NewValidationErrorDetail(field string, value any) ValidationErrorDetail {
-	return ValidationErrorDetail{field: field, value: value}
+	Field string
+	Value any
 }
 
 func (e *ValidationError) Error() string {
 	sb := strings.Builder{}
-	for _, d := range e.details {
-		sb.WriteString(fmt.Sprintf("[field:%s, value:%v]", d.field, d.value))
-	}
-	return errors.WithDetailf(e.err, "[UserID:%d]%s", e.userID, sb.String()).Error()
+	sb.WriteString(fmt.Sprintf("[Field:%s, Value:%v]", e.detail.Field, e.detail.Value))
+	return errors.WithDetailf(e.err, "%s", sb.String()).Error()
 }
 
-func (e *ValidationError) GetUserID() int {
-	return e.userID
-}
-
-func (e *ValidationError) GetDetails() []ValidationErrorDetail {
-	return e.details
+func (e *ValidationError) GetDetail() *ValidationErrorDetail {
+	return e.detail
 }
 
 // NewUnexpectedError is 予期せぬエラーを生成
-func NewUnexpectedError(err error, userID int, message string) *UnexpectedError {
-	return &UnexpectedError{err: errors.WithStack(err), userID: userID, message: message}
+func NewUnexpectedError(err error, message string) *UnexpectedError {
+	return &UnexpectedError{err: errors.WithStack(err), message: message}
 }
 
 type UnexpectedError struct {
 	err     error
-	userID  int
 	message string
 }
 
 func (e *UnexpectedError) Error() string {
-	return errors.WithDetailf(e.err, "%s [UserID:%d]", e.message, e.userID).Error()
-}
-
-func (e *UnexpectedError) GetUserID() int {
-	return e.userID
+	return errors.WithDetailf(e.err, "%s", e.message).Error()
 }
 
 /*

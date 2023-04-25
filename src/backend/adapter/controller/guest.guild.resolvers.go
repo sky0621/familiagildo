@@ -13,10 +13,11 @@ import (
 
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
-	acceptedNumber, err := r.Guild.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
+	// FIXME: middleware で ctx に積んだ user_id, role 等から、認証チェック・認可チェックを行う！（このHandlerを実行してよいか否かのチェックはHandlerの責務）
+
+	acceptedNumber, err := r.GuildUsecase.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
-		AddGraphQLError(ctx, err)
-		return nil, nil
+		return nil, CreateGQLError(ctx, err)
 	}
 	return &GuestToken{
 		AcceptedNumber: acceptedNumber,

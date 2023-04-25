@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"net/http"
@@ -25,7 +24,7 @@ type CustomErrorDetail struct {
 	Value any
 }
 
-func (e *CustomError) AddGraphQLError(ctx context.Context, msg string) {
+func (e *CustomError) CreateGQLError(ctx context.Context, msg string) *gqlerror.Error {
 	extensions := map[string]interface{}{
 		"status_code": e.httpStatusCode,
 		"error_code":  e.appErrorCode,
@@ -34,10 +33,10 @@ func (e *CustomError) AddGraphQLError(ctx context.Context, msg string) {
 		extensions[fmt.Sprintf("field_%d", i+1)] = d.Field
 		extensions[fmt.Sprintf("value_%d", i+1)] = d.Value
 	}
-	graphql.AddError(ctx, &gqlerror.Error{
+	return &gqlerror.Error{
 		Message:    msg,
 		Extensions: extensions,
-	})
+	}
 }
 
 func NewCustomError(httpStatusCode int, appErrorCode CustomErrorCode, opts ...CustomErrorOption) *CustomError {
@@ -103,42 +102,25 @@ func WithCustomErrorDetail(v CustomErrorDetail) CustomErrorOption {
 	}
 }
 
-func AddGraphQLError(ctx context.Context, err error) {
-	var anErr *app.AuthenticationError
-	if errors.As(err, &anErr) {
-		AuthenticationError().AddGraphQLError(ctx, "認証に失敗しました。") // FIXME: i18n
-		return
-	}
-
-	var azErr *app.AuthorizationError
-	if errors.As(err, &azErr) {
-		AuthorizationError(WithCustomErrorDetail(CustomErrorDetail{
-			Field: "userID", Value: azErr.GetUserID(),
-		})).AddGraphQLError(ctx, "認可に失敗しました。") // FIXME: i18n
-		return
-	}
-
+func CreateGQLError(ctx context.Context, err error) *gqlerror.Error {
 	var vnErr *app.ValidationError
 	if errors.As(err, &vnErr) {
 		var cErrs []CustomErrorDetail
 		for _, d := range vnErr.GetDetails() {
 			cErrs = append(cErrs, CustomErrorDetail{Field: d.GetField(), Value: d.GetValue()})
 		}
-		ValidationError(cErrs, WithCustomErrorDetail(CustomErrorDetail{
+		return ValidationError(cErrs, WithCustomErrorDetail(CustomErrorDetail{
 			Field: "userID", Value: vnErr.GetUserID(),
-		})).AddGraphQLError(ctx, "バリデーションに失敗しました。") // FIXME: i18n
-		return
+		})).CreateGQLError(ctx, "バリデーションに失敗しました。") // FIXME: i18n
 	}
 
 	var uErr *app.UnexpectedError
 	if errors.As(err, &uErr) {
-		InternalServerError(WithCustomErrorDetail(CustomErrorDetail{
+		return InternalServerError(WithCustomErrorDetail(CustomErrorDetail{
 			Field: "userID", Value: uErr.GetUserID(),
-		})).AddGraphQLError(ctx, "予期せぬエラーが発生しました。") // FIXME: i18n
-		return
+		})).CreateGQLError(ctx, "予期せぬエラーが発生しました。") // FIXME: i18n
 	}
 
 	cErr := &CustomError{}
-	cErr.AddGraphQLError(ctx, err.Error()) // FIXME: i18n
-
+	return cErr.CreateGQLError(ctx, err.Error()) // FIXME: i18n
 }

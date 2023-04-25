@@ -34,17 +34,17 @@ func graphQlServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.SetErrorPresenter(func(ctx context.Context, err error) *gqlerror.Error {
 		// FIXME:
 		e := err.(*gqlerror.Error)
-		log.Err(e).Msg("failed to graphQL service")
+		log.Err(e).Msg("[ERROR] failed to graphQL service")
 		return e
 	})
 
 	srv.SetRecoverFunc(func(ctx context.Context, err any) error {
 		// FIXME:
 		if e, ok := err.(error); ok {
-			log.Err(e).Msg("failed to graphQL service")
+			log.Err(e).Msg("[PANIC] failed to graphQL service")
 		} else {
 			e := fmt.Errorf("%v", err)
-			log.Err(e).Msg("failed to graphQL service")
+			log.Err(e).Msg("[PANIC] failed to graphQL service")
 		}
 		return nil
 	})
