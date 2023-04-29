@@ -25,23 +25,22 @@ type guildInteractor struct {
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
 func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error) {
 	// バリデーション
-	var validationErrors app.ValidationErrors
-	if err := name.Validate(); err != nil {
-		validationErrors = append(validationErrors, app.NewValidationError(err,
-			&app.ValidationErrorDetail{Field: "guildName", Value: name.ToVal()}))
+	var customErrors app.CustomErrors
+	for _, v := range []vo.ValueObject[string]{name, mail} {
+		if err := v.Validate(); err != nil {
+			d := app.NewCustomErrorDetail(v.FieldName(), v.ToVal())
+			ce := app.NewCustomError(err, app.ValidationFailure, d)
+			customErrors = append(customErrors, ce)
+		}
 	}
-	if err := mail.Validate(); err != nil {
-		validationErrors = append(validationErrors, app.NewValidationError(err,
-			&app.ValidationErrorDetail{Field: "ownerMail", Value: mail.ToVal()}))
-	}
-	if len(validationErrors) > 0 {
-		return "", validationErrors
+	if len(customErrors) > 0 {
+		return "", customErrors
 	}
 
 	// ギルドの仮登録
 	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
 	if err != nil {
-		return "", app.WrapError(err, "failed to CreateWithRegistering")
+		return "", app.NewCustomError(err, app.UnexpectedFailure, nil)
 	}
 	// FIXME:
 	fmt.Println(guildAggregate)

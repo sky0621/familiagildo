@@ -17,6 +17,10 @@ func (v OwnerMail) Validate() error {
 	return nil
 }
 
+func (v OwnerMail) FieldName() string {
+	return "ownerMail"
+}
+
 func (v OwnerMail) ToVal() string {
 	return string(v)
 }

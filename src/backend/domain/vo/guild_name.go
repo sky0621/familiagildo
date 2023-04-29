@@ -16,6 +16,10 @@ func (v GuildName) Validate() error {
 	return nil
 }
 
+func (v GuildName) FieldName() string {
+	return "guildName"
+}
+
 func (v GuildName) ToVal() string {
 	return string(v)
 }

@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-type ValidationErrors []ValidationError
+type CustomErrors []CustomError
 
-func (e ValidationErrors) Error() string {
+func (e CustomErrors) Error() string {
 	var sb strings.Builder
 	for _, x := range e {
 		sb.WriteString(x.Error())
@@ -16,42 +16,61 @@ func (e ValidationErrors) Error() string {
 	return sb.String()
 }
 
-func NewValidationError(err error, detail *ValidationErrorDetail) ValidationError {
-	return ValidationError{err: err, detail: detail}
+func NewCustomError(err error, errorCode CustomErrorCode, detail *CustomErrorDetail) CustomError {
+	return CustomError{err: errors.WithStack(err), errorCode: errorCode, detail: detail}
 }
 
-type ValidationError struct {
-	err    error
-	detail *ValidationErrorDetail
+type CustomError struct {
+	err       error
+	errorCode CustomErrorCode
+	detail    *CustomErrorDetail
 }
 
-type ValidationErrorDetail struct {
-	Field string
-	Value any
+func (e CustomError) Error() string {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("[err:%s]", e.err.Error()))
+	sb.WriteString(fmt.Sprintf("[error_code:%v]", e.errorCode))
+	sb.WriteString(fmt.Sprintf("[field:%s][value:%v]", e.detail.Field, e.detail.Value))
+	return sb.String()
 }
 
-func (e *ValidationError) Error() string {
-	sb := strings.Builder{}
-	sb.WriteString(fmt.Sprintf("[Field:%s, Value:%v]", e.detail.Field, e.detail.Value))
-	return errors.WithDetailf(e.err, "%s", sb.String()).Error()
+func (e CustomError) GetCause() error {
+	return e.err
 }
 
-func (e *ValidationError) GetDetail() *ValidationErrorDetail {
+func (e CustomError) GetErrorCode() CustomErrorCode {
+	return e.errorCode
+}
+
+func (e CustomError) GetErrorDetail() *CustomErrorDetail {
 	return e.detail
 }
 
-// NewUnexpectedError is 予期せぬエラーを生成
-func NewUnexpectedError(err error, message string) *UnexpectedError {
-	return &UnexpectedError{err: errors.WithStack(err), message: message}
+type CustomErrorCode string
+
+func (c CustomErrorCode) ToString() string {
+	return string(c)
 }
 
-type UnexpectedError struct {
-	err     error
-	message string
+const (
+	// AuthenticationFailure is 認証エラー
+	AuthenticationFailure CustomErrorCode = "AUTHENTICATION_FAILURE"
+	// AuthorizationFailure is 認可エラー
+	AuthorizationFailure CustomErrorCode = "AUTHORIZATION_FAILURE"
+	// ValidationFailure is バリデーションエラー
+	ValidationFailure CustomErrorCode = "VALIDATION_FAILURE"
+
+	// UnexpectedFailure is その他の予期せぬエラー
+	UnexpectedFailure CustomErrorCode = "UNEXPECTED_FAILURE"
+)
+
+func NewCustomErrorDetail(field string, value any) *CustomErrorDetail {
+	return &CustomErrorDetail{Field: field, Value: value}
 }
 
-func (e *UnexpectedError) Error() string {
-	return errors.WithDetailf(e.err, "%s", e.message).Error()
+type CustomErrorDetail struct {
+	Field string
+	Value any
 }
 
 /*

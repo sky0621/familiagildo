@@ -3,124 +3,47 @@ package controller
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/vektah/gqlparser/v2/gqlerror"
-	"net/http"
 )
 
-type CustomError struct {
-	httpStatusCode int             // http.StatusCodeXXXXXXX を入れる
-	appErrorCode   CustomErrorCode // サービス固有に定義したエラーコード
-
-	/*
-	 * 以下、全てのエラー表現に必須ではない要素（オプションとして設定可能）
-	 */
-	details []CustomErrorDetail
+func toMapFromCustomError(e app.CustomError) map[string]any {
+	detail := map[string]any{
+		"code":  e.GetErrorCode(),
+		"cause": e.GetCause().Error(),
+	}
+	if e.GetErrorDetail() != nil {
+		detail["field"] = e.GetErrorDetail().Field
+		detail["value"] = e.GetErrorDetail().Value
+	}
+	return detail
 }
 
-type CustomErrorDetail struct {
-	Field string
-	Value any
-}
-
-func (e *CustomError) CreateGQLError(ctx context.Context, msg string) *gqlerror.Error {
-	extensions := map[string]interface{}{
-		"status_code": e.httpStatusCode,
-		"error_code":  e.appErrorCode,
-	}
-	for i, d := range e.details {
-		extensions[fmt.Sprintf("field_%d", i+1)] = d.Field
-		extensions[fmt.Sprintf("value_%d", i+1)] = d.Value
-	}
-	return &gqlerror.Error{
-		Message:    msg,
-		Extensions: extensions,
-	}
-}
-
-func NewCustomError(httpStatusCode int, appErrorCode CustomErrorCode, opts ...CustomErrorOption) *CustomError {
-	a := &CustomError{
-		httpStatusCode: httpStatusCode,
-		appErrorCode:   appErrorCode,
-	}
-
-	for _, o := range opts {
-		o(a)
-	}
-
-	return a
-}
-
-// AuthenticationError is 認証エラー用
-func AuthenticationError(opts ...CustomErrorOption) *CustomError {
-	return NewCustomError(http.StatusUnauthorized, AuthenticationFailure, opts...)
-}
-
-// AuthorizationError is 認可エラー用
-func AuthorizationError(opts ...CustomErrorOption) *CustomError {
-	return NewCustomError(http.StatusForbidden, AuthorizationFailure, opts...)
-}
-
-// ValidationError is バリデーションエラー用
-func ValidationError(details []CustomErrorDetail, opts ...CustomErrorOption) *CustomError {
-	var options []CustomErrorOption
-	for _, d := range details {
-		options = append(options, WithCustomErrorDetail(d))
-	}
-	for _, opt := range opts {
-		options = append(options, opt)
-	}
-	return NewCustomError(http.StatusBadRequest, ValidationFailure, options...)
-}
-
-// InternalServerError is その他エラー用
-func InternalServerError(opts ...CustomErrorOption) *CustomError {
-	return NewCustomError(http.StatusInternalServerError, UnexpectedFailure, opts...)
-}
-
-type CustomErrorCode string
-
-// MEMO: サービスの定義によっては意味のある文字列よりもコード体系を決めるのもあり。
-const (
-	// AuthenticationFailure is 認証エラー
-	AuthenticationFailure CustomErrorCode = "AUTHENTICATION_FAILURE"
-	// AuthorizationFailure is 認可エラー
-	AuthorizationFailure CustomErrorCode = "AUTHORIZATION_FAILURE"
-	// ValidationFailure is バリデーションエラー
-	ValidationFailure CustomErrorCode = "VALIDATION_FAILURE"
-
-	// UnexpectedFailure is その他の予期せぬエラー
-	UnexpectedFailure CustomErrorCode = "UNEXPECTED_FAILURE"
-)
-
-type CustomErrorOption func(*CustomError)
-
-func WithCustomErrorDetail(v CustomErrorDetail) CustomErrorOption {
-	return func(a *CustomError) {
-		a.details = append(a.details, v)
-	}
+func toMapFromError(e error) map[string]any {
+	return map[string]any{"cause": e.Error()}
 }
 
 func CreateGQLError(ctx context.Context, err error) *gqlerror.Error {
-	var vnErr *app.ValidationError
-	if errors.As(err, &vnErr) {
-		var cErrs []CustomErrorDetail
-		for _, d := range vnErr.GetDetails() {
-			cErrs = append(cErrs, CustomErrorDetail{Field: d.GetField(), Value: d.GetValue()})
+	var cErrs app.CustomErrors
+	if errors.As(err, &cErrs) {
+		var details []map[string]any
+		for _, cErr := range cErrs {
+			details = append(details, toMapFromCustomError(cErr))
 		}
-		return ValidationError(cErrs, WithCustomErrorDetail(CustomErrorDetail{
-			Field: "userID", Value: vnErr.GetUserID(),
-		})).CreateGQLError(ctx, "バリデーションに失敗しました。") // FIXME: i18n
+		return &gqlerror.Error{
+			Extensions: map[string]any{"details": details},
+		}
 	}
 
-	var uErr *app.UnexpectedError
-	if errors.As(err, &uErr) {
-		return InternalServerError(WithCustomErrorDetail(CustomErrorDetail{
-			Field: "userID", Value: uErr.GetUserID(),
-		})).CreateGQLError(ctx, "予期せぬエラーが発生しました。") // FIXME: i18n
+	var cErr app.CustomError
+	if errors.As(err, &cErr) {
+		return &gqlerror.Error{
+			Extensions: map[string]any{"details": []map[string]any{toMapFromCustomError(cErr)}},
+		}
 	}
 
-	cErr := &CustomError{}
-	return cErr.CreateGQLError(ctx, err.Error()) // FIXME: i18n
+	re := &gqlerror.Error{
+		Extensions: map[string]any{"details": []map[string]any{toMapFromError(err)}},
+	}
+	return re
 }
