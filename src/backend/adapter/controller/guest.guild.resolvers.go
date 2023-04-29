@@ -19,6 +19,7 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 	if err != nil {
 		return nil, CreateGQLError(ctx, err)
 	}
+
 	return &GuestToken{
 		AcceptedNumber: acceptedNumber,
 	}, err

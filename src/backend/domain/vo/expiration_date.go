@@ -9,6 +9,10 @@ func (v ExpirationDate) Validate() bool {
 	return true
 }
 
+func (v ExpirationDate) FieldName() string {
+	return "expirationDate"
+}
+
 func (v ExpirationDate) ToVal() time.Time {
 	return time.Time(v)
 }

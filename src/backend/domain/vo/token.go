@@ -10,6 +10,10 @@ func (v Token) Validate() bool {
 	return true
 }
 
+func (v Token) FieldName() string {
+	return "token"
+}
+
 func (v Token) ToVal() string {
 	return string(v)
 }

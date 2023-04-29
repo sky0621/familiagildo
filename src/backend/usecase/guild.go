@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/repository"
@@ -14,11 +15,12 @@ type GuildInputPort interface {
 	RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error)
 }
 
-func NewGuild(r repository.GuildRepository) GuildInputPort {
-	return &guildInteractor{guildRepository: r}
+func NewGuild(tr repository.GuestTokenRepository, gr repository.GuildRepository) GuildInputPort {
+	return &guildInteractor{tokenRepository: tr, guildRepository: gr}
 }
 
 type guildInteractor struct {
+	tokenRepository repository.GuestTokenRepository
 	guildRepository repository.GuildRepository
 }
 
@@ -29,7 +31,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		for _, v := range []vo.ValueObject[string]{name, mail} {
 			if err := v.Validate(); err != nil {
 				customErrors = append(customErrors, app.NewCustomError(
-					err, app.ValidationFailure, app.NewCustomErrorDetail(v.FieldName(), v.ToVal())))
+					err, app.ValidationError, app.NewCustomErrorDetail(v.FieldName(), v.ToVal())))
 			}
 		}
 		if len(customErrors) > 0 {
@@ -37,10 +39,22 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		}
 	}
 
-	// ギルドの仮登録
+	validToken, err := g.tokenRepository.GetByOwnerMailWithinValidPeriod(ctx, mail)
+	if err != nil {
+		return "", app.NewCustomError(err, app.UnexpectedError, nil)
+	}
+
+	if validToken != nil {
+		r := validToken.Root
+		if r == nil {
+			return "", app.NewCustomError(errors.New("validToken.Root is nil"), app.UnexpectedError, nil)
+		}
+		return "", app.NewCustomError(nil, app.AlreadyExistsError, app.NewCustomErrorDetail(r.Token.FieldName(), r.Token.ToVal()))
+	}
+
 	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
 	if err != nil {
-		return "", app.NewCustomError(err, app.UnexpectedFailure, nil)
+		return "", app.NewCustomError(err, app.UnexpectedError, nil)
 	}
 	// FIXME:
 	fmt.Println(guildAggregate)

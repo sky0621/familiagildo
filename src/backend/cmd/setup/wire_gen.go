@@ -22,9 +22,10 @@ func InitializeApp(dsn string, option app.DBSetOption, env app.Env, isTrace bool
 	if err != nil {
 		return App{}, err
 	}
+	guestTokenRepository := gateway.NewGuestTokenRepository(client)
 	guildRepository := gateway.NewGuildRepository(client)
-	guild := usecase.NewGuild(guildRepository)
-	resolver := controller.NewResolver(guild)
+	guildInputPort := usecase.NewGuild(guestTokenRepository, guildRepository)
+	resolver := controller.NewResolver(guildInputPort)
 	server, err := web.NewServer(env, isTrace, resolver)
 	if err != nil {
 		return App{}, err

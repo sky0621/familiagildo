@@ -20,7 +20,7 @@ type guildRepository struct {
 	db *generated.Queries
 }
 
-func (r *guildRepository) CreateWithRegistering(ctx context.Context, name vo.GuildName) (*aggregate.GuildAggregate, error) {
+func (r *guildRepository) CreateWithRegistering(ctx context.Context, name vo.GuildName) (*aggregate.Guild, error) {
 	record, err := r.db.CreateGuildWithRegistering(ctx, name.ToVal())
 	if err != nil {
 		return nil, app.WrapError(err, fmt.Sprintf("failed to CreateGuildWithRegistering [guildName:%s]", name.ToVal()))
@@ -28,7 +28,7 @@ func (r *guildRepository) CreateWithRegistering(ctx context.Context, name vo.Gui
 	return convert.GuildAggregateFromDBToDomain(record), nil
 }
 
-func (r *guildRepository) UpdateWithRegistered(ctx context.Context, id vo.ID) (*aggregate.GuildAggregate, error) {
+func (r *guildRepository) UpdateWithRegistered(ctx context.Context, id vo.ID) (*aggregate.Guild, error) {
 	record, err := r.db.UpdateGuildWithRegistered(ctx, id.ToVal())
 	if err != nil {
 		return nil, app.WrapError(err, fmt.Sprintf("failed to UpdateGuildWithRegistered [id:%d]", id.ToVal()))

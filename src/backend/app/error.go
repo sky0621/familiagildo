@@ -53,15 +53,17 @@ func (c CustomErrorCode) ToString() string {
 }
 
 const (
-	// AuthenticationFailure is 認証エラー
-	AuthenticationFailure CustomErrorCode = "AUTHENTICATION_FAILURE"
-	// AuthorizationFailure is 認可エラー
-	AuthorizationFailure CustomErrorCode = "AUTHORIZATION_FAILURE"
-	// ValidationFailure is バリデーションエラー
-	ValidationFailure CustomErrorCode = "VALIDATION_FAILURE"
+	// AuthenticationError is 認証エラー
+	AuthenticationError CustomErrorCode = "AUTHENTICATION_ERROR"
+	// AuthorizationError is 認可エラー
+	AuthorizationError CustomErrorCode = "AUTHORIZATION_ERROR"
+	// ValidationError is バリデーションエラー
+	ValidationError CustomErrorCode = "VALIDATION_ERROR"
+	// AlreadyExistsError is 存在チェックエラー
+	AlreadyExistsError CustomErrorCode = "ALREADY_EXISTS_ERROR"
 
-	// UnexpectedFailure is その他の予期せぬエラー
-	UnexpectedFailure CustomErrorCode = "UNEXPECTED_FAILURE"
+	// UnexpectedError is その他の予期せぬエラー
+	UnexpectedError CustomErrorCode = "UNEXPECTED_ERROR"
 )
 
 func NewCustomErrorDetail(field string, value any) *CustomErrorDetail {

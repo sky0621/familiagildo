@@ -9,8 +9,10 @@ import (
 
 func toMapFromCustomError(e app.CustomError) map[string]any {
 	detail := map[string]any{
-		"code":  e.GetErrorCode(),
-		"cause": e.GetCause().Error(),
+		"code": e.GetErrorCode(),
+	}
+	if e.GetCause() != nil {
+		detail["cause"] = e.GetCause().Error()
 	}
 	if e.GetErrorDetail() != nil {
 		detail["field"] = e.GetErrorDetail().Field

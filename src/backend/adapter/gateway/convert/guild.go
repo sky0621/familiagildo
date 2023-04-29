@@ -7,9 +7,9 @@ import (
 	"github.com/sky0621/familiagildo/driver/db/generated"
 )
 
-func GuildAggregateFromDBToDomain(src generated.Guild) *aggregate.GuildAggregate {
-	return &aggregate.GuildAggregate{
-		Guild: GuildFromDBToDomain(src),
+func GuildAggregateFromDBToDomain(src generated.Guild) *aggregate.Guild {
+	return &aggregate.Guild{
+		Root: GuildFromDBToDomain(src),
 		AuditItem: AuditFromDBToDomain(
 			src.CreateUserID, src.UpdateUserID,
 			src.DeleteUserID, src.CreatedAt,

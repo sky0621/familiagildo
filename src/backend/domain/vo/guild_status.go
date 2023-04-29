@@ -18,6 +18,10 @@ func (v GuildStatus) Validate() bool {
 	return true
 }
 
+func (v GuildStatus) FieldName() string {
+	return "guildStatus"
+}
+
 func (v GuildStatus) ToVal() int16 {
 	return int16(v)
 }
