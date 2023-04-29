@@ -7,6 +7,8 @@ import (
 )
 
 type GuildRepository interface {
+	// CreateWithRegistering is ギルドの仮登録
 	CreateWithRegistering(ctx context.Context, name vo.GuildName) (*aggregate.GuildAggregate, error)
+	// UpdateWithRegistered is ギルドの本登録
 	UpdateWithRegistered(ctx context.Context, id vo.ID) (*aggregate.GuildAggregate, error)
 }
