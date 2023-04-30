@@ -15,6 +15,7 @@ import (
 type Client struct {
 	Q         *generated.Queries
 	CloseFunc func()
+	DB        *sql.DB
 }
 
 func NewQueries(dsn string, option app.DBSetOption) (*Client, error) {
@@ -43,5 +44,5 @@ func NewQueries(dsn string, option app.DBSetOption) (*Client, error) {
 		}
 	}
 
-	return &Client{Q: queries, CloseFunc: closeFunc}, nil
+	return &Client{Q: queries, CloseFunc: closeFunc, DB: db}, nil
 }

@@ -15,13 +15,14 @@ type GuildInputPort interface {
 	RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error)
 }
 
-func NewGuild(tr repository.GuestTokenRepository, gr repository.GuildRepository) GuildInputPort {
-	return &guildInteractor{tokenRepository: tr, guildRepository: gr}
+func NewGuild(tr repository.TransactionRepository, gtr repository.GuestTokenRepository, gr repository.GuildRepository) GuildInputPort {
+	return &guildInteractor{transactionRepository: tr, tokenRepository: gtr, guildRepository: gr}
 }
 
 type guildInteractor struct {
-	tokenRepository repository.GuestTokenRepository
-	guildRepository repository.GuildRepository
+	transactionRepository repository.TransactionRepository
+	tokenRepository       repository.GuestTokenRepository
+	guildRepository       repository.GuildRepository
 }
 
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す

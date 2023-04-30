@@ -1,0 +1,47 @@
+package gateway
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+	"github.com/cockroachdb/errors"
+	"github.com/sky0621/familiagildo/app"
+	"github.com/sky0621/familiagildo/domain/repository"
+	"github.com/sky0621/familiagildo/driver/db"
+)
+
+func NewTransactionRepository(cli *db.Client) repository.TransactionRepository {
+	return &transactionRepository{db: cli.DB}
+}
+
+type transactionRepository struct {
+	db   *sql.DB
+	opts *sql.TxOptions
+}
+
+func (r *transactionRepository) ExecInTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
+	tx, err := r.db.BeginTx(ctx, r.opts)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	c := context.WithValue(ctx, app.TxCtxKey, tx)
+
+	defer func() {
+		if tx != nil {
+			if err := tx.Rollback(); err != nil {
+				fmt.Println(err)
+			}
+		}
+	}()
+
+	if err := fn(c); err != nil {
+		return errors.WithStack(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return errors.WithStack(err)
+	}
+
+	return nil
+}

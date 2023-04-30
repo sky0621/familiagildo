@@ -16,6 +16,7 @@ func InitializeApp(dsn string, option app.DBSetOption, env app.Env, isTrace bool
 	wire.Build(
 		db.NewQueries,
 
+		gateway.NewTransactionRepository,
 		gateway.NewGuestTokenRepository,
 		gateway.NewGuildRepository,
 		usecase.NewGuild,
