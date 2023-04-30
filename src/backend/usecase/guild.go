@@ -2,8 +2,8 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/cockroachdb/errors"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/repository"
 	"github.com/sky0621/familiagildo/domain/service"
@@ -51,6 +51,19 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 			return "", app.NewCustomError(errors.New("validToken.Root is nil"), app.UnexpectedError, nil)
 		}
 		return "", app.NewCustomError(nil, app.AlreadyExistsError, app.NewCustomErrorDetail(r.Token.FieldName(), r.Token.ToVal()))
+	}
+
+	if err := g.transactionRepository.ExecInTransaction(ctx, func(ctx context.Context) error {
+		guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+		// FIXME:
+		fmt.Println(guildAggregate)
+
+		return nil
+	}); err != nil {
+		return "", app.NewCustomError(err, app.UnexpectedError, nil)
 	}
 
 	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
