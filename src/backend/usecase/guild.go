@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/sky0621/familiagildo/app"
+	"github.com/sky0621/familiagildo/domain/entity"
 	"github.com/sky0621/familiagildo/domain/repository"
 	"github.com/sky0621/familiagildo/domain/service"
 	"github.com/sky0621/familiagildo/domain/vo"
@@ -16,12 +17,12 @@ type GuildInputPort interface {
 }
 
 func NewGuild(tr repository.TransactionRepository, gtr repository.GuestTokenRepository, gr repository.GuildRepository) GuildInputPort {
-	return &guildInteractor{transactionRepository: tr, tokenRepository: gtr, guildRepository: gr}
+	return &guildInteractor{transactionRepository: tr, guestTokenRepository: gtr, guildRepository: gr}
 }
 
 type guildInteractor struct {
 	transactionRepository repository.TransactionRepository
-	tokenRepository       repository.GuestTokenRepository
+	guestTokenRepository  repository.GuestTokenRepository
 	guildRepository       repository.GuildRepository
 }
 
@@ -40,7 +41,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		}
 	}
 
-	validToken, err := g.tokenRepository.GetByOwnerMailWithinValidPeriod(ctx, mail)
+	validToken, err := g.guestTokenRepository.GetByOwnerMailWithinValidPeriod(ctx, mail)
 	if err != nil {
 		return "", app.NewCustomError(err, app.UnexpectedError, nil)
 	}
@@ -53,6 +54,15 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		return "", app.NewCustomError(nil, app.AlreadyExistsError, app.NewCustomErrorDetail(r.Token.FieldName(), r.Token.ToVal()))
 	}
 
+	// トークンの生成
+	token := service.CreateToken()
+
+	// 有効期限も生成
+	expirationDate := service.CreateExpirationDate()
+
+	// 受付番号の生成
+	acceptedNumber := service.CreateAcceptedNumber()
+
 	if err := g.transactionRepository.ExecInTransaction(ctx, func(ctx context.Context) error {
 		guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
 		if err != nil {
@@ -61,30 +71,22 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		// FIXME:
 		fmt.Println(guildAggregate)
 
+		guestTokenAggregate, err := g.guestTokenRepository.Create(ctx, guildAggregate.Root.ID, mail,
+			&entity.GuestToken{Token: vo.ParseToken(token), ExpirationDate: vo.ParseExpirationDate(expirationDate)},
+			vo.ParseAcceptedNumber(acceptedNumber))
+		if err != nil {
+			return errors.WithStack(err)
+		}
+
+		// FIXME:
+		fmt.Println(guestTokenAggregate)
+
 		return nil
 	}); err != nil {
 		return "", app.NewCustomError(err, app.UnexpectedError, nil)
 	}
 
-	guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
-	if err != nil {
-		return "", app.NewCustomError(err, app.UnexpectedError, nil)
-	}
-	// FIXME:
-	fmt.Println(guildAggregate)
-
-	// トークンの生成
-	// FIXME: 有効期限も生成
-	token := service.CreateToken()
-	// FIXME:
-	fmt.Println(token)
-
-	// トークンの保存
-
 	// メール送信
-
-	// 受付番号の生成
-	acceptedNumber := service.CreateAcceptNumber()
 
 	return acceptedNumber, nil
 }

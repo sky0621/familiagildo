@@ -6,4 +6,6 @@ cd "${SCRIPT_DIR}" && cd ../
 
 cd ./schema/db
 
+# $1=up or down
+# $2=local or localtest
 sql-migrate "$1" -env="$2"

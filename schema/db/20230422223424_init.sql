@@ -26,7 +26,7 @@ CREATE TABLE guest_token (
     mail VARCHAR(256) NOT NULL,
     token VARCHAR(256) NOT NULL,
     expiration_date TIMESTAMP WITH TIME ZONE NOT NULL,
-    accepted_number BIGINT NOT NULL
+    accepted_number VARCHAR(64) NOT NULL
 );
 
 CREATE TABLE owner (

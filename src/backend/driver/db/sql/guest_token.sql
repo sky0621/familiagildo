@@ -1,5 +1,5 @@
 -- name: CreateGuestToken :one
-INSERT INTO guest_token (mail, token, expiration_date) VALUES ($1, $2, $3)
+INSERT INTO guest_token (guild_id, mail, token, expiration_date, accepted_number) VALUES ($1, $2, $3, $4, $5)
 RETURNING *;
 
 -- name: GetGuestTokenByToken :one

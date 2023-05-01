@@ -11,18 +11,26 @@ import (
 )
 
 const createGuestToken = `-- name: CreateGuestToken :one
-INSERT INTO guest_token (mail, token, expiration_date) VALUES ($1, $2, $3)
+INSERT INTO guest_token (guild_id, mail, token, expiration_date, accepted_number) VALUES ($1, $2, $3, $4, $5)
 RETURNING id, guild_id, mail, token, expiration_date, accepted_number
 `
 
 type CreateGuestTokenParams struct {
+	GuildID        int64
 	Mail           string
 	Token          string
 	ExpirationDate time.Time
+	AcceptedNumber string
 }
 
 func (q *Queries) CreateGuestToken(ctx context.Context, arg CreateGuestTokenParams) (GuestToken, error) {
-	row := q.db.QueryRowContext(ctx, createGuestToken, arg.Mail, arg.Token, arg.ExpirationDate)
+	row := q.db.QueryRowContext(ctx, createGuestToken,
+		arg.GuildID,
+		arg.Mail,
+		arg.Token,
+		arg.ExpirationDate,
+		arg.AcceptedNumber,
+	)
 	var i GuestToken
 	err := row.Scan(
 		&i.ID,

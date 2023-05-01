@@ -10,13 +10,13 @@ participant メール送信サービス as mail
 
 guest -> form:ギルド登録を依頼
 form -> handler:ギルド名、メールアドレス
-handler -> handler:トランザクション開始
 handler -> guest_token:既存トークン取得(メールアドレス、有効期限内)
 guest_token -> handler:トークン
 alt has valid token
 handler -> form:トークン
 form -> handler2:リダイレクト(トークン)
 end
+handler -> handler:トランザクション開始
 handler -> guild:ギルド登録(ギルド名、ステータス＝仮登録)
 guild -> handler:ギルドID
 handler -> handler:トークン生成、有効期限決定

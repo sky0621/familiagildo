@@ -22,7 +22,7 @@ type GuestToken struct {
 	Mail           string
 	Token          string
 	ExpirationDate time.Time
-	AcceptedNumber int64
+	AcceptedNumber string
 }
 
 type Guild struct {

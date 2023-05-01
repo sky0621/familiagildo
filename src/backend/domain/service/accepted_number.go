@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-func CreateAcceptNumber() string {
+func CreateAcceptedNumber() string {
 	// FIXME:
 	m := md5.New()
 	return fmt.Sprintf("%x", m.Sum(nil))
