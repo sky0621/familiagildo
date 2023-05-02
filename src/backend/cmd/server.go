@@ -6,6 +6,7 @@ package cmd
 import (
 	"github.com/rs/zerolog/log"
 	"github.com/sky0621/familiagildo/app"
+	log2 "github.com/sky0621/familiagildo/app/log"
 	"github.com/sky0621/familiagildo/cmd/setup"
 	"github.com/spf13/cobra"
 	"os"
@@ -20,7 +21,7 @@ var serverCmd = &cobra.Command{
 	Long:  `start api server`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cfg := app.ReadConfig()
-		app.Logger(cfg.Env)
+		log2.Logger(cfg.Env)
 
 		app, err := setup.InitializeApp(cfg.Dsn(), cfg.ToDBSetOption(), cfg.Env, cfg.Trace)
 		if err != nil {

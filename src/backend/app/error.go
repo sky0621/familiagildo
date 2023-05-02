@@ -20,6 +20,22 @@ func NewCustomError(err error, errorCode CustomErrorCode, detail *CustomErrorDet
 	return CustomError{err: errors.WithStack(err), errorCode: errorCode, detail: detail}
 }
 
+func NewValidationError(err error, field string, val any) CustomError {
+	return CustomError{err: errors.WithStack(err), errorCode: ValidationError, detail: NewCustomErrorDetail(field, val)}
+}
+
+func NewAlreadyExistsError(field string, val any) CustomError {
+	return CustomError{errorCode: AlreadyExistsError, detail: NewCustomErrorDetail(field, val)}
+}
+
+func NewUnexpectedError(err error) CustomError {
+	return CustomError{err: errors.WithStack(err), errorCode: UnexpectedError}
+}
+
+func NewUnexpectedErrorWithDetail(err error, field string, val any) CustomError {
+	return CustomError{err: errors.WithStack(err), errorCode: UnexpectedError, detail: NewCustomErrorDetail(field, val)}
+}
+
 type CustomError struct {
 	err       error
 	errorCode CustomErrorCode
@@ -28,14 +44,18 @@ type CustomError struct {
 
 func (e CustomError) Error() string {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("[err:%s]", e.err.Error()))
+	if e.err != nil {
+		sb.WriteString(fmt.Sprintf("[err:%s]", e.err.Error()))
+	}
 	sb.WriteString(fmt.Sprintf("[error_code:%v]", e.errorCode))
-	sb.WriteString(fmt.Sprintf("[field:%s][value:%v]", e.detail.Field, e.detail.Value))
+	if e.detail != nil {
+		sb.WriteString(fmt.Sprintf("[field:%s][value:%v]", e.detail.Field, e.detail.Value))
+	}
 	return sb.String()
 }
 
 func (e CustomError) GetCause() error {
-	return e.err
+	return errors.UnwrapAll(e.err)
 }
 
 func (e CustomError) GetErrorCode() CustomErrorCode {

@@ -9,7 +9,6 @@ import (
 	"github.com/99designs/gqlgen/graphql/handler/lru"
 	"github.com/99designs/gqlgen/graphql/handler/transport"
 	"github.com/rs/zerolog/log"
-	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
 func graphQlServer(es graphql.ExecutableSchema) *handler.Server {
@@ -29,13 +28,6 @@ func graphQlServer(es graphql.ExecutableSchema) *handler.Server {
 	srv.AddTransport(transport.MultipartForm{
 		MaxMemory:     128 * mb,
 		MaxUploadSize: 100 * mb,
-	})
-
-	srv.SetErrorPresenter(func(ctx context.Context, err error) *gqlerror.Error {
-		// FIXME:
-		e := err.(*gqlerror.Error)
-		log.Err(e).Msg("[ERROR] failed to graphQL service")
-		return e
 	})
 
 	srv.SetRecoverFunc(func(ctx context.Context, err any) error {

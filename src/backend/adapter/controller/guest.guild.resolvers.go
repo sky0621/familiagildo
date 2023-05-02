@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
+	"github.com/sky0621/familiagildo/app/log"
 	"github.com/sky0621/familiagildo/domain/vo"
 )
 
@@ -17,6 +18,7 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 
 	acceptedNumber, err := r.GuildUsecase.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
+		log.ErrorSend(err)
 		return nil, CreateGQLError(ctx, err)
 	}
 

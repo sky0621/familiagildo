@@ -2,7 +2,7 @@ package controller
 
 import (
 	"context"
-	"errors"
+	"github.com/cockroachdb/errors"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
@@ -25,27 +25,27 @@ func toMapFromError(e error) map[string]any {
 	return map[string]any{"cause": e.Error()}
 }
 
-func CreateGQLError(ctx context.Context, err error) *gqlerror.Error {
+func CreateGQLError(ctx context.Context, err error) gqlerror.List {
 	var cErrs app.CustomErrors
 	if errors.As(err, &cErrs) {
-		var details []map[string]any
+		var gErrList gqlerror.List
 		for _, cErr := range cErrs {
-			details = append(details, toMapFromCustomError(cErr))
+			gErrList = append(gErrList, &gqlerror.Error{
+				Extensions: toMapFromCustomError(cErr),
+			})
 		}
-		return &gqlerror.Error{
-			Extensions: map[string]any{"details": details},
-		}
+		return gErrList
 	}
 
 	var cErr app.CustomError
 	if errors.As(err, &cErr) {
-		return &gqlerror.Error{
+		return gqlerror.List{&gqlerror.Error{
 			Extensions: map[string]any{"details": []map[string]any{toMapFromCustomError(cErr)}},
-		}
+		}}
 	}
 
-	re := &gqlerror.Error{
+	re := gqlerror.List{&gqlerror.Error{
 		Extensions: map[string]any{"details": []map[string]any{toMapFromError(err)}},
-	}
+	}}
 	return re
 }

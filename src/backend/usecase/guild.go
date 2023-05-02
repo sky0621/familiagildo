@@ -31,8 +31,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		var customErrors app.CustomErrors
 		for _, v := range []vo.ValueObject[string]{name, mail} {
 			if err := v.Validate(); err != nil {
-				customErrors = append(customErrors, app.NewCustomError(
-					err, app.ValidationError, app.NewCustomErrorDetail(v.FieldName(), v.ToVal())))
+				customErrors = append(customErrors, app.NewValidationError(err, v.FieldName(), v.ToVal()))
 			}
 		}
 		if len(customErrors) > 0 {
@@ -40,17 +39,19 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		}
 	}
 
-	validToken, err := g.guestTokenRepository.GetByOwnerMailWithinValidPeriod(ctx, mail)
-	if err != nil {
-		return "", app.NewCustomError(err, app.UnexpectedError, nil)
-	}
-
-	if validToken != nil {
-		r := validToken.Root
-		if r == nil {
-			return "", app.NewCustomError(errors.New("validToken.Root is nil"), app.UnexpectedError, nil)
+	{
+		validToken, err := g.guestTokenRepository.GetByOwnerMailWithinValidPeriod(ctx, mail)
+		if err != nil {
+			return "", app.NewUnexpectedError(err)
 		}
-		return "", app.NewCustomError(nil, app.AlreadyExistsError, app.NewCustomErrorDetail(r.Token.FieldName(), r.Token.ToVal()))
+
+		if validToken != nil {
+			r := validToken.Root
+			if r == nil {
+				return "", app.NewUnexpectedError(errors.New("validToken.Root is nil"))
+			}
+			return "", app.NewAlreadyExistsError(r.Token.FieldName(), r.Token.ToVal())
+		}
 	}
 
 	// トークンの生成
@@ -77,7 +78,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 
 		return nil
 	}); err != nil {
-		return "", app.NewCustomError(err, app.UnexpectedError, nil)
+		return "", app.NewUnexpectedError(err)
 	}
 
 	// FIXME: メール送信
