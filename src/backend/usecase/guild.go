@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"github.com/cockroachdb/errors"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/entity"
@@ -58,7 +57,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 	token := service.CreateToken()
 
 	// 有効期限も生成
-	expirationDate := service.CreateExpirationDate()
+	expirationDate := service.CreateGuestTokenExpirationDate()
 
 	// 受付番号の生成
 	acceptedNumber := service.CreateAcceptedNumber()
@@ -68,25 +67,20 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		if err != nil {
 			return errors.WithStack(err)
 		}
-		// FIXME:
-		fmt.Println(guildAggregate)
 
-		guestTokenAggregate, err := g.guestTokenRepository.Create(ctx, guildAggregate.Root.ID, mail,
+		_, err = g.guestTokenRepository.Create(ctx, guildAggregate.Root.ID, mail,
 			&entity.GuestToken{Token: vo.ParseToken(token), ExpirationDate: vo.ParseExpirationDate(expirationDate)},
 			vo.ParseAcceptedNumber(acceptedNumber))
 		if err != nil {
 			return errors.WithStack(err)
 		}
 
-		// FIXME:
-		fmt.Println(guestTokenAggregate)
-
 		return nil
 	}); err != nil {
 		return "", app.NewCustomError(err, app.UnexpectedError, nil)
 	}
 
-	// メール送信
+	// FIXME: メール送信
 
 	return acceptedNumber, nil
 }

@@ -23,14 +23,14 @@ type guestTokenRepository struct {
 }
 
 func (r *guestTokenRepository) GetByOwnerMailWithinValidPeriod(ctx context.Context, mail vo.OwnerMail) (*aggregate.GuestToken, error) {
-	// FIXME: implement me
-	/*	return &aggregate.GuestToken{
-			Root: &entity.GuestToken{
-				Token: vo.ParseToken(uuid.New().String()),
-			},
-		}, nil
-	*/
-	return nil, nil
+	record, err := r.db.GetGuestTokenByMailWithinExpirationDate(ctx, mail.ToVal())
+	if err != nil {
+		if IsNoRecords(err) {
+			return nil, nil
+		}
+		return nil, app.WrapError(err, fmt.Sprintf("failed to GetByOwnerMailWithinValidPeriod [mail:%s]", mail.ToVal()))
+	}
+	return convert.GuestTokenAggregateFromDBToDomain(record), nil
 }
 
 func (r *guestTokenRepository) Create(ctx context.Context, guildID vo.ID, mail vo.OwnerMail, guestToken *entity.GuestToken, acceptedNumber vo.AcceptedNumber) (*aggregate.GuestToken, error) {

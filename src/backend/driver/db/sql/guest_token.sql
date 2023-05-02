@@ -5,8 +5,8 @@ RETURNING *;
 -- name: GetGuestTokenByToken :one
 SELECT * FROM guest_token WHERE token = $1;
 
--- name: GetGuestTokenByMailAndToken :one
-SELECT * FROM guest_token WHERE mail = $1 AND token = $2;
+-- name: GetGuestTokenByMailWithinExpirationDate :one
+SELECT * FROM guest_token WHERE mail = $1 AND expiration_date > now();
 
 -- name: DeleteGuestToken :exec
 DELETE FROM guest_token WHERE id = $1;

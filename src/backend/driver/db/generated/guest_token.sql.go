@@ -52,17 +52,12 @@ func (q *Queries) DeleteGuestToken(ctx context.Context, id int64) error {
 	return err
 }
 
-const getGuestTokenByMailAndToken = `-- name: GetGuestTokenByMailAndToken :one
-SELECT id, guild_id, mail, token, expiration_date, accepted_number FROM guest_token WHERE mail = $1 AND token = $2
+const getGuestTokenByMailWithinExpirationDate = `-- name: GetGuestTokenByMailWithinExpirationDate :one
+SELECT id, guild_id, mail, token, expiration_date, accepted_number FROM guest_token WHERE mail = $1 AND expiration_date > now()
 `
 
-type GetGuestTokenByMailAndTokenParams struct {
-	Mail  string
-	Token string
-}
-
-func (q *Queries) GetGuestTokenByMailAndToken(ctx context.Context, arg GetGuestTokenByMailAndTokenParams) (GuestToken, error) {
-	row := q.db.QueryRowContext(ctx, getGuestTokenByMailAndToken, arg.Mail, arg.Token)
+func (q *Queries) GetGuestTokenByMailWithinExpirationDate(ctx context.Context, mail string) (GuestToken, error) {
+	row := q.db.QueryRowContext(ctx, getGuestTokenByMailWithinExpirationDate, mail)
 	var i GuestToken
 	err := row.Scan(
 		&i.ID,
