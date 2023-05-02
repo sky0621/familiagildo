@@ -25,6 +25,11 @@ type Config struct {
 	// Webサーバ設定用
 	WebPort string `split_words:"true" default:"8080"`
 
+	// メール送信設定用
+	SmtpHost string `split_words:"true" default:"localhost"`
+	SmtpPort string `split_words:"true" default:"1025"`
+	SmtpFrom string `split_words:"true" default:"familiaglido@example.com"`
+
 	// トレース設定用
 	Trace bool `split_words:"true" default:"false"`
 }
