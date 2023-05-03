@@ -20,8 +20,13 @@ type guildEvent struct {
 func (e *guildEvent) CreateRequested(ctx context.Context, input event.CreateRequestedInput) error {
 	m := gomail.NewMsg()
 	if err := m.From(e.c.GetFrom()); err != nil {
-		return app.WrapError(err, fmt.Sprintf("failed to CreateRequested [token:%s][expirationDate:%v][ownerMail:%s][acceptedNumber:%s]",
+		return app.WrapError(err, fmt.Sprintf("failed to set From at CreateRequested [token:%s][expirationDate:%v][ownerMail:%s][acceptedNumber:%s]",
 			input.Token, input.ExpirationDate, input.OwnerMail, input.AcceptedNumber))
 	}
+	if err := m.To(input.OwnerMail.ToVal()); err != nil {
+		return app.WrapError(err, fmt.Sprintf("failed to set To at CreateRequested [token:%s][expirationDate:%v][ownerMail:%s][acceptedNumber:%s]",
+			input.Token, input.ExpirationDate, input.OwnerMail, input.AcceptedNumber))
+	}
+	// FIXME:
 	return nil
 }

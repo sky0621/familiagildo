@@ -62,10 +62,6 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		}
 	}
 
-	token := service.CreateToken()
-
-	expirationDate := service.CreateGuestTokenExpirationDate()
-
 	acceptedNumber := service.CreateAcceptedNumber()
 
 	if err := g.transactionRepository.ExecInTransaction(ctx, func(ctx context.Context) error {
@@ -73,6 +69,10 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		if err != nil {
 			return errors.WithStack(err)
 		}
+
+		token := service.CreateToken()
+
+		expirationDate := service.CreateGuestTokenExpirationDate()
 
 		_, err = g.guestTokenRepository.Create(ctx, guildAggregate.Root.ID, mail,
 			&entity.GuestToken{Token: token, ExpirationDate: expirationDate},

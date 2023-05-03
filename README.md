@@ -1,5 +1,5 @@
 # familia gildo
-familia gildo means "trade" in Esperanto.
+familia gildo means "family guild" in Esperanto.
 
 ## outline
 
