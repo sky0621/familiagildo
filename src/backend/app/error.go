@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"github.com/cockroachdb/errors"
 	"strings"
@@ -16,28 +17,45 @@ func (e CustomErrors) Error() string {
 	return sb.String()
 }
 
-func NewCustomError(err error, errorCode CustomErrorCode, detail *CustomErrorDetail) CustomError {
+func NewCustomError(ctx context.Context, err error, errorCode CustomErrorCode, detail *CustomErrorDetail) CustomError {
+	traceID, ok := ctx.Value(TraceIDCtxKey).(string)
+	if ok {
+		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: errorCode, detail: detail}
+	}
 	return CustomError{err: errors.WithStack(err), errorCode: errorCode, detail: detail}
 }
 
-func NewValidationError(err error, field string, val any) CustomError {
+func NewValidationError(ctx context.Context, err error, field string, val any) CustomError {
+	traceID, ok := ctx.Value(TraceIDCtxKey).(string)
+	if ok {
+		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: ValidationError, detail: NewCustomErrorDetail(field, val)}
+	}
 	return CustomError{err: errors.WithStack(err), errorCode: ValidationError, detail: NewCustomErrorDetail(field, val)}
 }
 
-func NewAlreadyExistsError(field string, val any) CustomError {
+func NewAlreadyExistsError(ctx context.Context, field string, val any) CustomError {
+	traceID, ok := ctx.Value(TraceIDCtxKey).(string)
+	if ok {
+		return CustomError{traceID: traceID, errorCode: AlreadyExistsError, detail: NewCustomErrorDetail(field, val)}
+	}
 	return CustomError{errorCode: AlreadyExistsError, detail: NewCustomErrorDetail(field, val)}
 }
 
-func NewUnexpectedError(err error) CustomError {
+func NewUnexpectedError(ctx context.Context, err error) CustomError {
+	traceID, ok := ctx.Value(TraceIDCtxKey).(string)
+	if ok {
+		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: UnexpectedError}
+	}
 	return CustomError{err: errors.WithStack(err), errorCode: UnexpectedError}
 }
 
-func NewUnexpectedErrorWithDetail(err error, field string, val any) CustomError {
+func NewUnexpectedErrorWithDetail(ctx context.Context, err error, field string, val any) CustomError {
 	return CustomError{err: errors.WithStack(err), errorCode: UnexpectedError, detail: NewCustomErrorDetail(field, val)}
 }
 
 type CustomError struct {
 	err       error
+	traceID   string
 	errorCode CustomErrorCode
 	detail    *CustomErrorDetail
 }

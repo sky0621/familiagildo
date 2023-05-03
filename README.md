@@ -157,3 +157,11 @@ https://github.com/go-ozzo/ozzo-validation
 ```
 go get github.com/go-ozzo/ozzo-validation
 ```
+
+### go-mail
+
+https://go-mail.dev/
+
+```
+go get github.com/wneessen/go-mail
+```

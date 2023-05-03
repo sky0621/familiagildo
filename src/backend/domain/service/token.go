@@ -1,8 +1,11 @@
 package service
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"github.com/sky0621/familiagildo/domain/vo"
+)
 
-func CreateToken() string {
+func CreateToken() vo.Token {
 	// FIXME:
-	return uuid.New().String()
+	return vo.ParseToken(uuid.New().String())
 }

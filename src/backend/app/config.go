@@ -27,7 +27,7 @@ type Config struct {
 
 	// メール送信設定用
 	SmtpHost string `split_words:"true" default:"localhost"`
-	SmtpPort string `split_words:"true" default:"1025"`
+	SmtpPort int    `split_words:"true" default:"1025"`
 	SmtpFrom string `split_words:"true" default:"familiaglido@example.com"`
 
 	// トレース設定用

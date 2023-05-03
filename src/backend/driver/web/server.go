@@ -20,10 +20,10 @@ type Server struct {
 	CloseFunc func()
 }
 
-func NewServer(env app.Env, isTrace bool, resolver *controller.Resolver) (*Server, error) {
+func NewServer(cfg app.Config, resolver *controller.Resolver) (*Server, error) {
 	ctx := context.Background()
 
-	r, err := router(controller.NewExecutableSchema(controller.Config{Resolvers: resolver}), env)
+	r, err := router(controller.NewExecutableSchema(controller.Config{Resolvers: resolver}), cfg.Env)
 	if err != nil {
 		return nil, errors.Join(err)
 	}
@@ -42,7 +42,7 @@ func NewServer(env app.Env, isTrace bool, resolver *controller.Resolver) (*Serve
 		Driver: &server.DefaultDriver{},
 	}
 
-	if isTrace {
+	if cfg.Trace {
 		traceExporter, err := setupTraceExporter(ctx)
 		if err != nil {
 			return nil, errors.Join(err)

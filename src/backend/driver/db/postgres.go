@@ -18,13 +18,15 @@ type Client struct {
 	DB        *sql.DB
 }
 
-func NewQueries(dsn string, option app.DBSetOption) (*Client, error) {
+func NewQueries(cfg app.Config) (*Client, error) {
 	var connector driver.Connector
-	connector, err := pq.NewConnector(dsn)
+	connector, err := pq.NewConnector(cfg.Dsn())
 	if err != nil {
 		return nil, errors.Join(err)
 	}
 	connector = ocsql.WrapConnector(connector, ocsql.WithAllTraceOptions())
+
+	option := cfg.ToDBSetOption()
 
 	db := sql.OpenDB(connector)
 	db.SetMaxIdleConns(option.DBMaxIdleConnections)

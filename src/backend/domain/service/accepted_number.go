@@ -3,10 +3,11 @@ package service
 import (
 	"crypto/md5"
 	"fmt"
+	"github.com/sky0621/familiagildo/domain/vo"
 )
 
-func CreateAcceptedNumber() string {
+func CreateAcceptedNumber() vo.AcceptedNumber {
 	// FIXME:
 	m := md5.New()
-	return fmt.Sprintf("%x", m.Sum(nil))
+	return vo.ParseAcceptedNumber(fmt.Sprintf("%x", m.Sum(nil)))
 }

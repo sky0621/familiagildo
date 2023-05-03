@@ -11,23 +11,29 @@ import (
 	"github.com/sky0621/familiagildo/adapter/gateway"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/driver/db"
+	"github.com/sky0621/familiagildo/driver/mail"
 	"github.com/sky0621/familiagildo/driver/web"
 	"github.com/sky0621/familiagildo/usecase"
 )
 
 // Injectors from wire.go:
 
-func InitializeApp(dsn string, option app.DBSetOption, env app.Env, isTrace bool) (App, error) {
-	client, err := db.NewQueries(dsn, option)
+func InitializeApp(cfg app.Config) (App, error) {
+	client, err := db.NewQueries(cfg)
 	if err != nil {
 		return App{}, err
 	}
 	transactionRepository := gateway.NewTransactionRepository(client)
 	guestTokenRepository := gateway.NewGuestTokenRepository(client)
 	guildRepository := gateway.NewGuildRepository(client)
-	guildInputPort := usecase.NewGuild(transactionRepository, guestTokenRepository, guildRepository)
+	mailClient, err := mail.NewClient(cfg)
+	if err != nil {
+		return App{}, err
+	}
+	guildEvent := gateway.NewGuildEvent(mailClient)
+	guildInputPort := usecase.NewGuild(transactionRepository, guestTokenRepository, guildRepository, guildEvent)
 	resolver := controller.NewResolver(guildInputPort)
-	server, err := web.NewServer(env, isTrace, resolver)
+	server, err := web.NewServer(cfg, resolver)
 	if err != nil {
 		return App{}, err
 	}
