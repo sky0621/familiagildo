@@ -7,7 +7,9 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/cockroachdb/errors"
 	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
+	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/app/log"
 	"github.com/sky0621/familiagildo/domain/vo"
 )
@@ -18,7 +20,12 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 
 	acceptedNumber, err := r.GuildUsecase.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
-		log.ErrorSend(err)
+		var cErr app.CustomError
+		if errors.As(err, &cErr) && cErr.GetErrorCode() == app.AlreadyExistsError {
+			log.Warn(cErr.Error())
+		} else {
+			log.ErrorSend(err)
+		}
 		return nil, CreateGQLError(ctx, err)
 	}
 

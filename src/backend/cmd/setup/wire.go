@@ -15,7 +15,7 @@ import (
 
 func InitializeApp(cfg app.Config) (App, error) {
 	wire.Build(
-		db.NewQueries,
+		db.NewClient,
 		mail.NewClient,
 
 		gateway.NewTransactionRepository,

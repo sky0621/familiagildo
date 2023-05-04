@@ -6,5 +6,5 @@ import (
 )
 
 func CreateGuestTokenExpirationDate() vo.ExpirationDate {
-	return vo.ParseExpirationDate(time.Now().Add(1 * time.Hour))
+	return vo.ParseExpirationDate(time.Now().Add(24 * time.Hour))
 }

@@ -165,3 +165,11 @@ https://go-mail.dev/
 ```
 go get github.com/wneessen/go-mail
 ```
+
+### stringer
+
+https://pkg.go.dev/golang.org/x/tools/cmd/stringer
+
+```
+go install golang.org/x/tools/cmd/stringer
+```

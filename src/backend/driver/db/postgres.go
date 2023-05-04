@@ -18,7 +18,7 @@ type Client struct {
 	DB        *sql.DB
 }
 
-func NewQueries(cfg app.Config) (*Client, error) {
+func NewClient(cfg app.Config) (*Client, error) {
 	var connector driver.Connector
 	connector, err := pq.NewConnector(cfg.Dsn())
 	if err != nil {

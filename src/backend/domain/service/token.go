@@ -1,11 +1,17 @@
 package service
 
 import (
-	"github.com/google/uuid"
+	"crypto/rand"
+	"encoding/hex"
 	"github.com/sky0621/familiagildo/domain/vo"
+	"io"
 )
 
 func CreateToken() vo.Token {
-	// FIXME:
-	return vo.ParseToken(uuid.New().String())
+	b := make([]byte, 32)
+	_, err := io.ReadFull(rand.Reader, b)
+	if err != nil {
+		panic(err)
+	}
+	return vo.ParseToken(hex.EncodeToString(b))
 }

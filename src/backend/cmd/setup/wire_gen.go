@@ -19,7 +19,7 @@ import (
 // Injectors from wire.go:
 
 func InitializeApp(cfg app.Config) (App, error) {
-	client, err := db.NewQueries(cfg)
+	client, err := db.NewClient(cfg)
 	if err != nil {
 		return App{}, err
 	}
@@ -37,6 +37,6 @@ func InitializeApp(cfg app.Config) (App, error) {
 	if err != nil {
 		return App{}, err
 	}
-	setupApp := NewApp(client, server)
+	setupApp := NewApp(client, server, mailClient)
 	return setupApp, nil
 }

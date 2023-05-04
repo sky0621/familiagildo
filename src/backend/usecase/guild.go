@@ -82,6 +82,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		}
 
 		if err := g.guildEvent.CreateRequested(ctx, event.CreateRequestedInput{
+			GuildName:      name,
 			Token:          token,
 			ExpirationDate: expirationDate,
 			OwnerMail:      mail,

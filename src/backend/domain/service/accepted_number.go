@@ -1,13 +1,13 @@
 package service
 
 import (
-	"crypto/md5"
 	"fmt"
 	"github.com/sky0621/familiagildo/domain/vo"
+	"math/rand"
+	"time"
 )
 
 func CreateAcceptedNumber() vo.AcceptedNumber {
-	// FIXME:
-	m := md5.New()
-	return vo.ParseAcceptedNumber(fmt.Sprintf("%x", m.Sum(nil)))
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return vo.ParseAcceptedNumber(fmt.Sprintf("%010d", r.Int31()))
 }
