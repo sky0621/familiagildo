@@ -3,6 +3,7 @@ package event
 import (
 	"context"
 	"fmt"
+	"github.com/sky0621/familiagildo/domain/service"
 	"github.com/sky0621/familiagildo/domain/vo"
 )
 
@@ -21,4 +22,8 @@ type CreateRequestedInput struct {
 func (i CreateRequestedInput) String() string {
 	return fmt.Sprintf("CreateRequestedInput { GuildName:%s, Token:%s, ExpirationDate:%v, OwnerMail:%s, AcceptedNumber:%s }",
 		i.GuildName.ToVal(), i.Token.ToVal(), i.ExpirationDate.ToVal(), i.OwnerMail.ToVal(), i.AcceptedNumber.ToVal())
+}
+
+func (i CreateRequestedInput) FormattedExpirationDate() string {
+	return service.ToMailFormattedDatetime(i.ExpirationDate.ToVal())
 }

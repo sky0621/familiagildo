@@ -6,7 +6,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/sky0621/familiagildo/domain/service"
-
 	"github.com/spf13/cobra"
 )
 
@@ -24,6 +23,9 @@ to quickly create a Cobra application.`,
 		fmt.Println("try called")
 		fmt.Println(service.CreateToken())
 		fmt.Println(service.CreateAcceptedNumber())
+		edt := service.CreateGuestTokenExpirationDate().ToVal()
+		fmt.Println(edt)
+		fmt.Println(service.ToMailFormattedDatetime(edt))
 	},
 }
 
