@@ -65,8 +65,8 @@ type ComplexityRoot struct {
 		AcceptTaskByOwner         func(childComplexity int, id *string) int
 		AcceptTaskByParticipant   func(childComplexity int, id *string) int
 		CreateGuildByAdmin        func(childComplexity int, input AdminGuildInput) int
+		CreateGuildByGuest        func(childComplexity int, input CreateGuildByGuestInput) int
 		CreateNoticeByAdmin       func(childComplexity int, input NoticeInput) int
-		CreateOwnerByGuest        func(childComplexity int, input CreateOwnerByGuestInput) int
 		CreateParticipantByGuest  func(childComplexity int, input CreateParticipantByGuestInput) int
 		CreateTaskByOwner         func(childComplexity int, input OwnerTaskInput) int
 		CreateTaskByParticipant   func(childComplexity int, input ParticipantTaskInput) int
@@ -150,7 +150,7 @@ type MutationResolver interface {
 	CreateGuildByAdmin(ctx context.Context, input AdminGuildInput) (*Guild, error)
 	CreateNoticeByAdmin(ctx context.Context, input NoticeInput) (*Notice, error)
 	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error)
-	CreateOwnerByGuest(ctx context.Context, input CreateOwnerByGuestInput) (*custommodel.Void, error)
+	CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) (*custommodel.Void, error)
 	CreateParticipantByGuest(ctx context.Context, input CreateParticipantByGuestInput) (*custommodel.Void, error)
 	CreateTaskByOwner(ctx context.Context, input OwnerTaskInput) (*OwnerTask, error)
 	UpdateTaskByOwner(ctx context.Context, input OwnerTaskInput) (*OwnerTask, error)
@@ -223,35 +223,35 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.GuestToken.Token(childComplexity), true
 
-	case "GuildUsecase.id":
+	case "Guild.id":
 		if e.complexity.Guild.ID == nil {
 			break
 		}
 
 		return e.complexity.Guild.ID(childComplexity), true
 
-	case "GuildUsecase.name":
+	case "Guild.name":
 		if e.complexity.Guild.Name == nil {
 			break
 		}
 
 		return e.complexity.Guild.Name(childComplexity), true
 
-	case "GuildUsecase.owner":
+	case "Guild.owner":
 		if e.complexity.Guild.Owner == nil {
 			break
 		}
 
 		return e.complexity.Guild.Owner(childComplexity), true
 
-	case "GuildUsecase.participants":
+	case "Guild.participants":
 		if e.complexity.Guild.Participants == nil {
 			break
 		}
 
 		return e.complexity.Guild.Participants(childComplexity), true
 
-	case "GuildUsecase.tasks":
+	case "Guild.tasks":
 		if e.complexity.Guild.Tasks == nil {
 			break
 		}
@@ -294,6 +294,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateGuildByAdmin(childComplexity, args["input"].(AdminGuildInput)), true
 
+	case "Mutation.createGuildByGuest":
+		if e.complexity.Mutation.CreateGuildByGuest == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createGuildByGuest_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateGuildByGuest(childComplexity, args["input"].(CreateGuildByGuestInput)), true
+
 	case "Mutation.createNoticeByAdmin":
 		if e.complexity.Mutation.CreateNoticeByAdmin == nil {
 			break
@@ -305,18 +317,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateNoticeByAdmin(childComplexity, args["input"].(NoticeInput)), true
-
-	case "Mutation.createOwnerByGuest":
-		if e.complexity.Mutation.CreateOwnerByGuest == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_createOwnerByGuest_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreateOwnerByGuest(childComplexity, args["input"].(CreateOwnerByGuestInput)), true
 
 	case "Mutation.createParticipantByGuest":
 		if e.complexity.Mutation.CreateParticipantByGuest == nil {
@@ -739,7 +739,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputAdminGuildFilter,
 		ec.unmarshalInputAdminGuildInput,
-		ec.unmarshalInputCreateOwnerByGuestInput,
+		ec.unmarshalInputCreateGuildByGuestInput,
 		ec.unmarshalInputCreateParticipantByGuestInput,
 		ec.unmarshalInputNoopInput,
 		ec.unmarshalInputNoticeInput,
@@ -826,7 +826,7 @@ type GuestToken implements Node {
     accepted_number: String!
 }`, BuiltIn: false},
 	{Name: "../../../../schema/graphql/guild.graphqls", Input: `"ギルド"
-type GuildUsecase implements Node {
+type Guild implements Node {
     "ID"
     id: ID!
 
@@ -845,7 +845,7 @@ type GuildUsecase implements Node {
 `, BuiltIn: false},
 	{Name: "../../../../schema/graphql/mutation/admin.guild.graphqls", Input: `extend type Mutation {
     "ギルドを登録"
-    createGuildByAdmin(input: AdminGuildInput!): GuildUsecase
+    createGuildByAdmin(input: AdminGuildInput!): Guild
 }
 
 "ギルドインプット"
@@ -877,8 +877,8 @@ input NoticeInput {
 	{Name: "../../../../schema/graphql/mutation/guest.guild.graphqls", Input: `extend type Mutation {
     "ギルド登録を依頼する"
     requestCreateGuildByGuest(input: RequestCreateGuildInput!): GuestToken!
-    "ギルドオーナーを登録する"
-    createOwnerByGuest(input: CreateOwnerByGuestInput!): Void
+    "ギルドを本登録する"
+    createGuildByGuest(input: CreateGuildByGuestInput!): Void
     "ギルド参加者を登録する"
     createParticipantByGuest(input: CreateParticipantByGuestInput!): Void
 }
@@ -888,7 +888,9 @@ input RequestCreateGuildInput {
     ownerMail: String!
 }
 
-input CreateOwnerByGuestInput {
+input CreateGuildByGuestInput {
+    token: String!
+    ownerName: String!
     loginID: String!
     password: String!
 }
@@ -952,11 +954,11 @@ type Notice {
 `, BuiltIn: false},
 	{Name: "../../../../schema/graphql/query/admin.guild.graphqls", Input: `extend type Query {
     "ギルドの一覧を参照する"
-    listGuildByAdmin: [GuildUsecase!]!
+    listGuildByAdmin: [Guild!]!
     "条件に合致するギルドの一覧を参照する"
-    findGuildByAdmin(filter: AdminGuildFilter): [GuildUsecase!]!
+    findGuildByAdmin(filter: AdminGuildFilter): [Guild!]!
     "１ギルドの詳細を参照する"
-    getGuildByAdmin(id: ID!): GuildUsecase
+    getGuildByAdmin(id: ID!): Guild
 }
 
 "ギルドフィルター条件"
@@ -1104,7 +1106,7 @@ type Owner {
     mail: String!
 
     "所属ギルド"
-    guild: GuildUsecase!
+    guild: Guild!
 
     "自分が登録したタスクリスト"
     myTasks: [OwnerTask!]!
@@ -1118,7 +1120,7 @@ type Participant {
     mail: String
 
     "所属ギルド"
-    guild: GuildUsecase!
+    guild: Guild!
 
     "自分が登録したタスクリスト"
     myTasks: [ParticipantTask!]!
@@ -1176,13 +1178,13 @@ func (ec *executionContext) field_Mutation_createGuildByAdmin_args(ctx context.C
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createNoticeByAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createGuildByGuest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 NoticeInput
+	var arg0 CreateGuildByGuestInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNoticeInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNoticeInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateGuildByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐCreateGuildByGuestInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1191,13 +1193,13 @@ func (ec *executionContext) field_Mutation_createNoticeByAdmin_args(ctx context.
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createOwnerByGuest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createNoticeByAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 CreateOwnerByGuestInput
+	var arg0 NoticeInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateOwnerByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐCreateOwnerByGuestInput(ctx, tmp)
+		arg0, err = ec.unmarshalNNoticeInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNoticeInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1734,7 +1736,7 @@ func (ec *executionContext) _Guild_id(ctx context.Context, field graphql.Collect
 
 func (ec *executionContext) fieldContext_Guild_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "GuildUsecase",
+		Object:     "Guild",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1778,7 +1780,7 @@ func (ec *executionContext) _Guild_name(ctx context.Context, field graphql.Colle
 
 func (ec *executionContext) fieldContext_Guild_name(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "GuildUsecase",
+		Object:     "Guild",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1822,7 +1824,7 @@ func (ec *executionContext) _Guild_owner(ctx context.Context, field graphql.Coll
 
 func (ec *executionContext) fieldContext_Guild_owner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "GuildUsecase",
+		Object:     "Guild",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1878,7 +1880,7 @@ func (ec *executionContext) _Guild_participants(ctx context.Context, field graph
 
 func (ec *executionContext) fieldContext_Guild_participants(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "GuildUsecase",
+		Object:     "Guild",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -1934,7 +1936,7 @@ func (ec *executionContext) _Guild_tasks(ctx context.Context, field graphql.Coll
 
 func (ec *executionContext) fieldContext_Guild_tasks(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "GuildUsecase",
+		Object:     "Guild",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -2048,7 +2050,7 @@ func (ec *executionContext) fieldContext_Mutation_createGuildByAdmin(ctx context
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
 		},
 	}
 	defer func() {
@@ -2198,8 +2200,8 @@ func (ec *executionContext) fieldContext_Mutation_requestCreateGuildByGuest(ctx 
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_createOwnerByGuest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createOwnerByGuest(ctx, field)
+func (ec *executionContext) _Mutation_createGuildByGuest(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createGuildByGuest(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2212,7 +2214,7 @@ func (ec *executionContext) _Mutation_createOwnerByGuest(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateOwnerByGuest(rctx, fc.Args["input"].(CreateOwnerByGuestInput))
+		return ec.resolvers.Mutation().CreateGuildByGuest(rctx, fc.Args["input"].(CreateGuildByGuestInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2226,7 +2228,7 @@ func (ec *executionContext) _Mutation_createOwnerByGuest(ctx context.Context, fi
 	return ec.marshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋcustommodelᚐVoid(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createOwnerByGuest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_createGuildByGuest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -2243,7 +2245,7 @@ func (ec *executionContext) fieldContext_Mutation_createOwnerByGuest(ctx context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createOwnerByGuest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_createGuildByGuest_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -3230,7 +3232,7 @@ func (ec *executionContext) fieldContext_Owner_guild(ctx context.Context, field 
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
 		},
 	}
 	return fc, nil
@@ -3688,7 +3690,7 @@ func (ec *executionContext) fieldContext_Participant_guild(ctx context.Context, 
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
 		},
 	}
 	return fc, nil
@@ -4069,7 +4071,7 @@ func (ec *executionContext) fieldContext_Query_listGuildByAdmin(ctx context.Cont
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
 		},
 	}
 	return fc, nil
@@ -4125,7 +4127,7 @@ func (ec *executionContext) fieldContext_Query_findGuildByAdmin(ctx context.Cont
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
 		},
 	}
 	defer func() {
@@ -4189,7 +4191,7 @@ func (ec *executionContext) fieldContext_Query_getGuildByAdmin(ctx context.Conte
 			case "tasks":
 				return ec.fieldContext_Guild_tasks(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type GuildUsecase", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
 		},
 	}
 	defer func() {
@@ -6634,20 +6636,36 @@ func (ec *executionContext) unmarshalInputAdminGuildInput(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCreateOwnerByGuestInput(ctx context.Context, obj interface{}) (CreateOwnerByGuestInput, error) {
-	var it CreateOwnerByGuestInput
+func (ec *executionContext) unmarshalInputCreateGuildByGuestInput(ctx context.Context, obj interface{}) (CreateGuildByGuestInput, error) {
+	var it CreateGuildByGuestInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"loginID", "password"}
+	fieldsInOrder := [...]string{"token", "ownerName", "loginID", "password"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
+		case "token":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+			it.Token, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "ownerName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ownerName"))
+			it.OwnerName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "loginID":
 			var err error
 
@@ -7079,7 +7097,7 @@ func (ec *executionContext) _GuestToken(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var guildImplementors = []string{"GuildUsecase", "Node"}
+var guildImplementors = []string{"Guild", "Node"}
 
 func (ec *executionContext) _Guild(ctx context.Context, sel ast.SelectionSet, obj *Guild) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, guildImplementors)
@@ -7088,7 +7106,7 @@ func (ec *executionContext) _Guild(ctx context.Context, sel ast.SelectionSet, ob
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("GuildUsecase")
+			out.Values[i] = graphql.MarshalString("Guild")
 		case "id":
 
 			out.Values[i] = ec._Guild_id(ctx, field, obj)
@@ -7181,10 +7199,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "createOwnerByGuest":
+		case "createGuildByGuest":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createOwnerByGuest(ctx, field)
+				return ec._Mutation_createGuildByGuest(ctx, field)
 			})
 
 		case "createParticipantByGuest":
@@ -8195,8 +8213,8 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCreateOwnerByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐCreateOwnerByGuestInput(ctx context.Context, v interface{}) (CreateOwnerByGuestInput, error) {
-	res, err := ec.unmarshalInputCreateOwnerByGuestInput(ctx, v)
+func (ec *executionContext) unmarshalNCreateGuildByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐCreateGuildByGuestInput(ctx context.Context, v interface{}) (CreateGuildByGuestInput, error) {
+	res, err := ec.unmarshalInputCreateGuildByGuestInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

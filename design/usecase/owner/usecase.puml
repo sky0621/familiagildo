@@ -5,9 +5,9 @@ left to right direction
 actor Owner as o
 
 package "owner site" {
-    usecase "ログインする" as loginByOwner
-    usecase "ログアウトする" as logoutByOwner
-    usecase "ギルド参加者登録を依頼する" as requestCreateParticipant
+    usecase "003_オーナーとしてログインする" as loginByOwner
+    usecase "004_オーナーとしてログアウトする" as logoutByOwner
+    usecase "005_ギルド参加者登録を依頼（仮登録）する" as requestCreateParticipant
     usecase "タスクを登録する" as createTaskByOwner
     usecase "タスクを更新する" as updateTaskByOwner
     usecase "タスクを削除する" as deleteTaskByOwner

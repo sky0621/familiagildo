@@ -6,8 +6,9 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/cockroachdb/errors"
+
 	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/app/log"
@@ -16,8 +17,6 @@ import (
 
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
-	// FIXME: middleware で ctx に積んだ user_id, role 等から、認証チェック・認可チェックを行う！（このHandlerを実行してよいか否かのチェックはHandlerの責務）
-
 	acceptedNumber, err := r.GuildUsecase.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
 		var cErr app.CustomError
@@ -34,9 +33,9 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 	}, err
 }
 
-// CreateOwnerByGuest is the resolver for the createOwnerByGuest field.
-func (r *mutationResolver) CreateOwnerByGuest(ctx context.Context, input CreateOwnerByGuestInput) (*custommodel.Void, error) {
-	panic(fmt.Errorf("not implemented: CreateOwnerByGuest - createOwnerByGuest"))
+// CreateGuildByGuest is the resolver for the createGuildByGuest field.
+func (r *mutationResolver) CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) (*custommodel.Void, error) {
+	panic(fmt.Errorf("not implemented: CreateGuildByGuest - createGuildByGuest"))
 }
 
 // CreateParticipantByGuest is the resolver for the createParticipantByGuest field.

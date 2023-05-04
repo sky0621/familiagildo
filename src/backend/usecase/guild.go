@@ -98,3 +98,8 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 
 	return acceptedNumber.ToVal(), nil
 }
+
+func (g *guildInteractor) CreateGuildByGuest(ctx context.Context, name vo.OwnerName) error {
+	// FIXME:
+	return nil
+}

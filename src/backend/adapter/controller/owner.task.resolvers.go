@@ -11,6 +11,8 @@ import (
 
 // CreateTaskByOwner is the resolver for the createTaskByOwner field.
 func (r *mutationResolver) CreateTaskByOwner(ctx context.Context, input OwnerTaskInput) (*OwnerTask, error) {
+	// FIXME: middleware で ctx に積んだ user_id, role 等から、認証チェック・認可チェックを行う！（このHandlerを実行してよいか否かのチェックはHandlerの責務）
+
 	panic(fmt.Errorf("not implemented: CreateTaskByOwner - createTaskByOwner"))
 }
 

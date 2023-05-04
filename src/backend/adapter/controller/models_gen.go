@@ -31,9 +31,11 @@ type AdminGuildInput struct {
 	OwnerMail string `json:"ownerMail"`
 }
 
-type CreateOwnerByGuestInput struct {
-	LoginID  string `json:"loginID"`
-	Password string `json:"password"`
+type CreateGuildByGuestInput struct {
+	Token     string `json:"token"`
+	OwnerName string `json:"ownerName"`
+	LoginID   string `json:"loginID"`
+	Password  string `json:"password"`
 }
 
 type CreateParticipantByGuestInput struct {
