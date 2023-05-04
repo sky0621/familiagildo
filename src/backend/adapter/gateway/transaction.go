@@ -27,8 +27,10 @@ func (r *transactionRepository) ExecInTransaction(ctx context.Context, fn func(c
 
 	c := context.WithValue(ctx, app.TxCtxKey, tx)
 
+	done := false
+
 	defer func() {
-		if tx != nil {
+		if tx != nil && !done {
 			if err := tx.Rollback(); err != nil {
 				fmt.Println(err)
 			}
@@ -42,6 +44,7 @@ func (r *transactionRepository) ExecInTransaction(ctx context.Context, fn func(c
 	if err := tx.Commit(); err != nil {
 		return errors.WithStack(err)
 	}
+	done = true
 
 	return nil
 }
