@@ -42,7 +42,7 @@ func (e *guildEvent) CreateRequested(ctx context.Context, input event.CreateRequ
 
 	m.Subject(requestCreateGuildByGuestMailTitle)
 
-	t := template.Must(template.New("requestCreateGuildByGuest.tmpl").Parse(requestCreateGuildByGuestTmpl))
+	t := template.Must(template.New(requestCreateGuildByGuestTmplName).Parse(requestCreateGuildByGuestTmpl))
 	if err := m.SetBodyTextTemplate(t, input); err != nil {
 		return app.WrapError(err, fmt.Sprintf("failed to set Body at CreateRequested [input: %s]", input))
 	}
