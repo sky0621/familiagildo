@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type CustomErrors []CustomError
+type CustomErrors []*CustomError
 
 func (e CustomErrors) Error() string {
 	var sb strings.Builder
@@ -18,40 +18,34 @@ func (e CustomErrors) Error() string {
 	return sb.String()
 }
 
-func NewCustomError(ctx context.Context, err error, errorCode CustomErrorCode, detail *CustomErrorDetail) CustomError {
-	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
-	if ok {
-		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: errorCode, detail: detail}
-	}
-	return CustomError{err: errors.WithStack(err), errorCode: errorCode, detail: detail}
+func NewCustomError(ctx context.Context, err error, errorCode CustomErrorCode, detail *CustomErrorDetail) *CustomError {
+	ce := &CustomError{err: errors.WithStack(err), errorCode: errorCode, detail: detail}
+	ce.setTraceID(ctx)
+	return ce
 }
 
-func NewValidationError(ctx context.Context, err error, field string, val any) CustomError {
-	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
-	if ok {
-		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: ValidationError, detail: NewCustomErrorDetail(field, val)}
-	}
-	return CustomError{err: errors.WithStack(err), errorCode: ValidationError, detail: NewCustomErrorDetail(field, val)}
+func NewValidationError(ctx context.Context, err error, field string, val any) *CustomError {
+	ce := &CustomError{err: errors.WithStack(err), errorCode: ValidationError, detail: NewCustomErrorDetail(field, val)}
+	ce.setTraceID(ctx)
+	return ce
 }
 
-func NewAlreadyExistsError(ctx context.Context, field string, val any) CustomError {
-	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
-	if ok {
-		return CustomError{traceID: traceID, errorCode: AlreadyExistsError, detail: NewCustomErrorDetail(field, val)}
-	}
-	return CustomError{errorCode: AlreadyExistsError, detail: NewCustomErrorDetail(field, val)}
+func NewAlreadyExistsError(ctx context.Context, field string, val any) *CustomError {
+	ce := &CustomError{errorCode: AlreadyExistsError, detail: NewCustomErrorDetail(field, val)}
+	ce.setTraceID(ctx)
+	return ce
 }
 
-func NewUnexpectedError(ctx context.Context, err error) CustomError {
-	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
-	if ok {
-		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: UnexpectedError}
-	}
-	return CustomError{err: errors.WithStack(err), errorCode: UnexpectedError}
+func NewUnexpectedError(ctx context.Context, err error) *CustomError {
+	ce := &CustomError{err: errors.WithStack(err), errorCode: UnexpectedError}
+	ce.setTraceID(ctx)
+	return ce
 }
 
-func NewUnexpectedErrorWithDetail(ctx context.Context, err error, field string, val any) CustomError {
-	return CustomError{err: errors.WithStack(err), errorCode: UnexpectedError, detail: NewCustomErrorDetail(field, val)}
+func NewUnexpectedErrorWithDetail(ctx context.Context, err error, field string, val any) *CustomError {
+	ce := &CustomError{err: errors.WithStack(err), errorCode: UnexpectedError, detail: NewCustomErrorDetail(field, val)}
+	ce.setTraceID(ctx)
+	return ce
 }
 
 type CustomError struct {
@@ -61,7 +55,14 @@ type CustomError struct {
 	detail    *CustomErrorDetail
 }
 
-func (e CustomError) Error() string {
+func (e *CustomError) setTraceID(ctx context.Context) {
+	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
+	if ok {
+		e.traceID = traceID
+	}
+}
+
+func (e *CustomError) Error() string {
 	var sb strings.Builder
 	if e.err != nil {
 		sb.WriteString(fmt.Sprintf("[err:%s]", e.err.Error()))
@@ -76,15 +77,15 @@ func (e CustomError) Error() string {
 	return sb.String()
 }
 
-func (e CustomError) GetCause() error {
+func (e *CustomError) GetCause() error {
 	return errors.UnwrapAll(e.err)
 }
 
-func (e CustomError) GetErrorCode() CustomErrorCode {
+func (e *CustomError) GetErrorCode() CustomErrorCode {
 	return e.errorCode
 }
 
-func (e CustomError) GetErrorDetail() *CustomErrorDetail {
+func (e *CustomError) GetErrorDetail() *CustomErrorDetail {
 	return e.detail
 }
 

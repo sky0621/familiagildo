@@ -19,7 +19,7 @@ import (
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
 	acceptedNumber, err := r.GuildUsecase.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
 	if err != nil {
-		var cErr app.CustomError
+		var cErr *app.CustomError
 		if errors.As(err, &cErr) && cErr.GetErrorCode() == app.AlreadyExistsError {
 			log.Warn(cErr.Error())
 		} else {

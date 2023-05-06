@@ -7,7 +7,7 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-func toMapFromCustomError(e app.CustomError) map[string]any {
+func toMapFromCustomError(e *app.CustomError) map[string]any {
 	detail := map[string]any{
 		"code": e.GetErrorCode(),
 	}
@@ -37,7 +37,7 @@ func CreateGQLError(ctx context.Context, err error) gqlerror.List {
 		return gErrList
 	}
 
-	var cErr app.CustomError
+	var cErr *app.CustomError
 	if errors.As(err, &cErr) {
 		return gqlerror.List{&gqlerror.Error{
 			Extensions: map[string]any{"details": []map[string]any{toMapFromCustomError(cErr)}},
