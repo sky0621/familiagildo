@@ -38,7 +38,7 @@ func router(es graphql.ExecutableSchema, env app.Env) (*chi.Mux, error) {
 		r.HandleFunc("/pg", playground.Handler("GraphQL playground", "/query"))
 	}
 
-	r.Handle("/query", graphQlServer(es))
+	r.Handle("/query", graphQlServer(es, env.IsLocal()))
 
 	return r, nil
 }

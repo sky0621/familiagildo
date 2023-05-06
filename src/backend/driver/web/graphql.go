@@ -11,7 +11,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func graphQlServer(es graphql.ExecutableSchema) *handler.Server {
+func graphQlServer(es graphql.ExecutableSchema, usePlayground bool) *handler.Server {
 	srv := handler.New(es)
 	srv.AddTransport(transport.Options{})
 	srv.AddTransport(transport.GET{})
@@ -19,7 +19,10 @@ func graphQlServer(es graphql.ExecutableSchema) *handler.Server {
 
 	srv.SetQueryCache(lru.New(1000))
 
-	srv.Use(extension.Introspection{})
+	if usePlayground {
+		srv.Use(extension.Introspection{})
+	}
+
 	srv.Use(extension.AutomaticPersistedQuery{
 		Cache: lru.New(100),
 	})

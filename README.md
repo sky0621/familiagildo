@@ -124,6 +124,22 @@ cd src/backend
 cobra-cli add server
 ```
 
+### Go Cloud Development Kit
+
+https://gocloud.dev/
+
+```
+go get gocloud.dev
+```
+
+### chi
+
+https://go-chi.io/#/
+
+```
+go get -u github.com/go-chi/chi/v5
+```
+
 ### sqlc
 
 https://docs.sqlc.dev/en/latest/overview/install.html

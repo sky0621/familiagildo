@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/cockroachdb/errors"
+	"github.com/go-chi/chi/v5/middleware"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ func (e CustomErrors) Error() string {
 }
 
 func NewCustomError(ctx context.Context, err error, errorCode CustomErrorCode, detail *CustomErrorDetail) CustomError {
-	traceID, ok := ctx.Value(TraceIDCtxKey).(string)
+	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
 	if ok {
 		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: errorCode, detail: detail}
 	}
@@ -26,7 +27,7 @@ func NewCustomError(ctx context.Context, err error, errorCode CustomErrorCode, d
 }
 
 func NewValidationError(ctx context.Context, err error, field string, val any) CustomError {
-	traceID, ok := ctx.Value(TraceIDCtxKey).(string)
+	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
 	if ok {
 		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: ValidationError, detail: NewCustomErrorDetail(field, val)}
 	}
@@ -34,7 +35,7 @@ func NewValidationError(ctx context.Context, err error, field string, val any) C
 }
 
 func NewAlreadyExistsError(ctx context.Context, field string, val any) CustomError {
-	traceID, ok := ctx.Value(TraceIDCtxKey).(string)
+	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
 	if ok {
 		return CustomError{traceID: traceID, errorCode: AlreadyExistsError, detail: NewCustomErrorDetail(field, val)}
 	}
@@ -42,7 +43,7 @@ func NewAlreadyExistsError(ctx context.Context, field string, val any) CustomErr
 }
 
 func NewUnexpectedError(ctx context.Context, err error) CustomError {
-	traceID, ok := ctx.Value(TraceIDCtxKey).(string)
+	traceID, ok := ctx.Value(middleware.RequestIDKey).(string)
 	if ok {
 		return CustomError{err: errors.WithStack(err), traceID: traceID, errorCode: UnexpectedError}
 	}
@@ -66,6 +67,9 @@ func (e CustomError) Error() string {
 		sb.WriteString(fmt.Sprintf("[err:%s]", e.err.Error()))
 	}
 	sb.WriteString(fmt.Sprintf("[error_code:%v]", e.errorCode))
+	if e.traceID != "" {
+		sb.WriteString(fmt.Sprintf("[trace_id:%s]", e.traceID))
+	}
 	if e.detail != nil {
 		sb.WriteString(fmt.Sprintf("[field:%s][value:%v]", e.detail.Field, e.detail.Value))
 	}
