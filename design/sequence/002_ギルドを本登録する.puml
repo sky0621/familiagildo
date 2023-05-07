@@ -3,7 +3,8 @@
 actor ゲスト as guest
 participant メール内リンク as mail
 control ギルド登録依頼トークンチェックハンドラー as handler
-boundary ギルドオーナー登録FORM as form
+boundary ギルド登録依頼FORM as form3
+boundary ギルド登録FORM as form
 control ギルド本登録ハンドラー as handler2
 boundary ログインFORM as form2
 database guest_token
@@ -13,18 +14,25 @@ database guild_owner_relation as rel
 
 guest -> mail:クリック
 mail -> handler:トークン
-handler -> guest_token:トークン
-guest_token -> handler:有効期限
-handler -> handler:トークン存在チェック、有効期限切れチェック
-handler -> form:リダイレクト
-form -> handler2:メールアドレス、表示名、ログインID、パスワード
-handler2 -> guest_token:メールアドレス、トークン存在チェック
+handler -> guest_token:既存トークン取得(トークン、有効期限内)
+guest_token -> handler:トークン
+alt do not have valid token
+handler -> form3:
+end
+handler -> guild:仮登録済みギルド取得(ID)
+guild -> handler:ギルド名
+handler -> form:ギルドID、ギルド名、メールアドレス
+
+form -> handler2:ギルド本登録(ギルド名、メールアドレス、ログインID、パスワード、オーナー名、トークン)
+handler2 -> guest_token:メールアドレス、トークン存在チェック（有効期限はチェックしない）
 guest_token -> handler2:ギルドID
-handler2 -> guest_token:レコード削除
-handler2 -> guild:ステータス＝登録済み
+handler2 -> handler2:トランザクション開始
+handler2 -> guild:ギルド更新(ギルド名、ステータス＝登録済み)
 handler2 -> handler2:パスワードハッシュ化
-handler2 -> owner:メールアドレス、表示名、ログインID、ハッシュ化パスワード
-handler2 -> rel:ギルドID、オーナーID
+handler2 -> owner:オーナー登録(メールアドレス、オーナー名、ログインID、ハッシュ化パスワード)
+handler2 -> rel:ギルド・オーナー紐付け(ギルドID、オーナーID)
+handler2 -> guest_token:トークンレコード削除
+handler2 -> handler2:トランザクション終了
 handler2 -> form2:リダイレクト
 
 @enduml
