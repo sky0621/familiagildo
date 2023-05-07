@@ -1,12 +1,14 @@
 package vo
 
-import "time"
+import (
+	"time"
+)
 
 type ExpirationDate time.Time
 
-func (v ExpirationDate) Validate() bool {
+func (v ExpirationDate) Validate() error {
 	// FIXME:
-	return true
+	return nil
 }
 
 func (v ExpirationDate) FieldName() string {

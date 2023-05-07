@@ -2,12 +2,9 @@ package vo
 
 type Token string
 
-func (v Token) Validate() bool {
-	if v == "" {
-		return false
-	}
+func (v Token) Validate() error {
 	// FIXME:
-	return true
+	return nil
 }
 
 func (v Token) FieldName() string {

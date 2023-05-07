@@ -99,7 +99,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 	return acceptedNumber.ToVal(), nil
 }
 
-func (g *guildInteractor) CreateGuildByGuest(ctx context.Context, name vo.OwnerName) error {
+func (g *guildInteractor) CreateGuildByGuest(ctx context.Context, token vo.Token, name vo.OwnerName, loginID vo.LoginID) error {
 	// FIXME:
 	return nil
 }

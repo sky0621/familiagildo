@@ -1,5 +1,7 @@
 package vo
 
+import "errors"
+
 type GuildStatus int16
 
 const (
@@ -8,14 +10,13 @@ const (
 	GuildStatusRegistered
 )
 
-func (v GuildStatus) Validate() bool {
-	if v == 0 {
-		return false
-	}
+var UnMatchGuildStatusError = errors.New("UnMatchGuildStatusError")
+
+func (v GuildStatus) Validate() error {
 	if v != GuildStatusRegistering && v != GuildStatusRegistered {
-		return false
+		return UnMatchGuildStatusError
 	}
-	return true
+	return nil
 }
 
 func (v GuildStatus) FieldName() string {

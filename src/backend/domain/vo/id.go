@@ -2,11 +2,9 @@ package vo
 
 type ID int64
 
-func (v ID) Validate() bool {
-	if v <= 0 {
-		return false
-	}
-	return true
+func (v ID) Validate() error {
+	// FIXME:
+	return nil
 }
 
 func (v ID) FieldName() string {

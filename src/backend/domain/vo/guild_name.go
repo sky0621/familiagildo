@@ -10,6 +10,7 @@ func (v GuildName) Validate() error {
 	if err := validation.Validate(v.ToVal(),
 		validation.Required,
 		validation.RuneLength(2, 100),
+		// FIXME:
 	); err != nil {
 		return err
 	}

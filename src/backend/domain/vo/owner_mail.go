@@ -11,6 +11,7 @@ func (v OwnerMail) Validate() error {
 	if err := validation.Validate(v.ToVal(),
 		validation.Required,
 		is.Email,
+		// FIXME:
 	); err != nil {
 		return err
 	}

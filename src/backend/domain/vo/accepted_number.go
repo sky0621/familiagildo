@@ -1,13 +1,17 @@
 package vo
 
+import validation "github.com/go-ozzo/ozzo-validation"
+
 type AcceptedNumber string
 
-func (v AcceptedNumber) Validate() bool {
-	if v == "" {
-		return false
+func (v AcceptedNumber) Validate() error {
+	if err := validation.Validate(v.ToVal(),
+		validation.Required,
+		// FIXME:
+	); err != nil {
+		return err
 	}
-	// FIXME:
-	return true
+	return nil
 }
 
 func (v AcceptedNumber) FieldName() string {
