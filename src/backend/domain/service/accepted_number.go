@@ -9,5 +9,5 @@ import (
 
 func CreateAcceptedNumber() vo.AcceptedNumber {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return vo.ParseAcceptedNumber(fmt.Sprintf("%010d", r.Int31()))
+	return vo.ToAcceptedNumber(fmt.Sprintf("%010d", r.Int31()))
 }

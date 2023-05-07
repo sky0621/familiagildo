@@ -22,6 +22,14 @@ func (v AcceptedNumber) ToVal() string {
 	return string(v)
 }
 
-func ParseAcceptedNumber(v string) AcceptedNumber {
+func ToAcceptedNumber(v string) AcceptedNumber {
 	return AcceptedNumber(v)
+}
+
+func ParseAcceptedNumber(v string) (AcceptedNumber, error) {
+	an := ToAcceptedNumber(v)
+	if err := an.Validate(); err != nil {
+		return "", err
+	}
+	return an, nil
 }

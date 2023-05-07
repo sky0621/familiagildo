@@ -15,8 +15,8 @@ func GuestTokenAggregateFromDBToDomain(src generated.GuestToken) *aggregate.Gues
 
 func GuestTokenFromDBToDomain(src generated.GuestToken) *entity.GuestToken {
 	return &entity.GuestToken{
-		ID:             vo.ParseID(src.ID),
-		Token:          vo.ParseToken(src.Token),
-		ExpirationDate: vo.ParseExpirationDate(src.ExpirationDate),
+		ID:             vo.ToID(src.ID),
+		Token:          vo.ToToken(src.Token),
+		ExpirationDate: vo.ToExpirationDate(src.ExpirationDate),
 	}
 }

@@ -13,5 +13,5 @@ func CreateToken() vo.Token {
 	if err != nil {
 		panic(err)
 	}
-	return vo.ParseToken(hex.EncodeToString(b))
+	return vo.ToToken(hex.EncodeToString(b))
 }

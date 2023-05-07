@@ -13,7 +13,12 @@ import (
 
 type GuildInputPort interface {
 	// RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
-	RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error)
+	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (string, error)
+}
+
+type RequestCreateGuildInput struct {
+	Name vo.GuildName
+	Mail vo.OwnerMail
 }
 
 func NewGuild(
@@ -34,10 +39,10 @@ type guildInteractor struct {
 }
 
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
-func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo.GuildName, mail vo.OwnerMail) (string, error) {
+func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (string, error) {
 	{
 		var customErrors app.CustomErrors
-		for _, v := range []vo.ValueObject[string]{name, mail} {
+		for _, v := range []vo.ValueObject[string]{input.Name, input.Mail} {
 			if err := v.Validate(); err != nil {
 				customErrors = append(customErrors, app.NewValidationError(ctx, err, v.FieldName(), v.ToVal()))
 			}
@@ -48,7 +53,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 	}
 
 	{
-		validToken, err := g.guestTokenRepository.GetByOwnerMailWithinValidPeriod(ctx, mail)
+		validToken, err := g.guestTokenRepository.GetByOwnerMailWithinValidPeriod(ctx, input.Mail)
 		if err != nil {
 			return "", app.NewUnexpectedError(ctx, err)
 		}
@@ -65,7 +70,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 	acceptedNumber := service.CreateAcceptedNumber()
 
 	if err := g.transactionRepository.ExecInTransaction(ctx, func(ctx context.Context) error {
-		guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, name)
+		guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, input.Name)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -74,7 +79,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 
 		expirationDate := service.CreateGuestTokenExpirationDate()
 
-		_, err = g.guestTokenRepository.Create(ctx, guildAggregate.Root.ID, mail,
+		_, err = g.guestTokenRepository.Create(ctx, guildAggregate.Root.ID, input.Mail,
 			&entity.GuestToken{Token: token, ExpirationDate: expirationDate},
 			acceptedNumber)
 		if err != nil {
@@ -82,10 +87,10 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, name vo
 		}
 
 		if err := g.guildEvent.CreateRequested(ctx, event.CreateRequestedInput{
-			GuildName:      name,
+			GuildName:      input.Name,
 			Token:          token,
 			ExpirationDate: expirationDate,
-			OwnerMail:      mail,
+			OwnerMail:      input.Mail,
 			AcceptedNumber: acceptedNumber,
 		}); err != nil {
 			return errors.WithStack(err)

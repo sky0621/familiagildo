@@ -15,6 +15,14 @@ func (v Token) ToVal() string {
 	return string(v)
 }
 
-func ParseToken(v string) Token {
+func ToToken(v string) Token {
 	return Token(v)
+}
+
+func ParseToken(v string) (Token, error) {
+	tk := ToToken(v)
+	if err := tk.Validate(); err != nil {
+		return "", err
+	}
+	return tk, nil
 }

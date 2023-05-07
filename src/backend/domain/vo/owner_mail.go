@@ -29,3 +29,11 @@ func (v OwnerMail) ToVal() string {
 func ToOwnerMail(v string) OwnerMail {
 	return OwnerMail(v)
 }
+
+func ParseOwnerMail(v string) (OwnerMail, error) {
+	om := ToOwnerMail(v)
+	if err := om.Validate(); err != nil {
+		return "", err
+	}
+	return om, nil
+}

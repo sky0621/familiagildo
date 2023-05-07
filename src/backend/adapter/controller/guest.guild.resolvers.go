@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/sky0621/familiagildo/usecase"
 
 	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
 	"github.com/sky0621/familiagildo/app"
@@ -17,7 +18,12 @@ import (
 
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
-	acceptedNumber, err := r.GuildUsecase.RequestCreateGuildByGuest(ctx, vo.ToGuildName(input.GuildName), vo.ToOwnerMail(input.OwnerMail))
+	usecaseInput := usecase.RequestCreateGuildInput{
+		Name: vo.ToGuildName(input.GuildName),
+		Mail: vo.ToOwnerMail(input.OwnerMail),
+	}
+
+	acceptedNumber, err := r.GuildUsecase.RequestCreateGuildByGuest(ctx, usecaseInput)
 	if err != nil {
 		var cErr *app.CustomError
 		if errors.As(err, &cErr) && cErr.GetErrorCode() == app.AlreadyExistsError {

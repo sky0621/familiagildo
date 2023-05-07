@@ -27,7 +27,7 @@ func (v GuildStatus) ToVal() int16 {
 	return int16(v)
 }
 
-func ParseGuildStatus(v int16) GuildStatus {
+func ToGuildStatus(v int16) GuildStatus {
 	switch v {
 	case GuildStatusRegistering.ToVal():
 		fallthrough
@@ -36,4 +36,12 @@ func ParseGuildStatus(v int16) GuildStatus {
 	default:
 		return GuildStatusUndefined
 	}
+}
+
+func ParseGuildStatus(v int16) (GuildStatus, error) {
+	gs := ToGuildStatus(v)
+	if err := gs.Validate(); err != nil {
+		return -1, err
+	}
+	return gs, nil
 }

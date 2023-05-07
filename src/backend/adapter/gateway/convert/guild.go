@@ -20,8 +20,8 @@ func GuildAggregateFromDBToDomain(src generated.Guild) *aggregate.Guild {
 
 func GuildFromDBToDomain(src generated.Guild) *entity.Guild {
 	return &entity.Guild{
-		ID:     vo.ParseID(src.ID),
+		ID:     vo.ToID(src.ID),
 		Name:   vo.ToGuildName(src.Name),
-		Status: vo.ParseGuildStatus(src.Status),
+		Status: vo.ToGuildStatus(src.Status),
 	}
 }

@@ -19,6 +19,14 @@ func (v ExpirationDate) ToVal() time.Time {
 	return time.Time(v)
 }
 
-func ParseExpirationDate(v time.Time) ExpirationDate {
+func ToExpirationDate(v time.Time) ExpirationDate {
 	return ExpirationDate(v)
+}
+
+func ParseExpirationDate(v time.Time) (ExpirationDate, error) {
+	ed := ToExpirationDate(v)
+	if err := ed.Validate(); err != nil {
+		return ed, err
+	}
+	return ed, nil
 }

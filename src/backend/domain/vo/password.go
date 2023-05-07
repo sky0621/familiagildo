@@ -2,9 +2,9 @@ package vo
 
 import validation "github.com/go-ozzo/ozzo-validation"
 
-type LoginID string
+type Password string
 
-func (v LoginID) Validate() error {
+func (v Password) Validate() error {
 	if err := validation.Validate(v.ToVal(),
 		validation.Required,
 		// FIXME:
@@ -14,20 +14,20 @@ func (v LoginID) Validate() error {
 	return nil
 }
 
-func (v LoginID) FieldName() string {
-	return "id"
+func (v Password) FieldName() string {
+	return "password"
 }
 
-func (v LoginID) ToVal() string {
+func (v Password) ToVal() string {
 	return string(v)
 }
 
-func ToLoginID(v string) LoginID {
-	return LoginID(v)
+func ToPassword(v string) Password {
+	return Password(v)
 }
 
-func ParseLoginID(v string) (LoginID, error) {
-	li := ToLoginID(v)
+func ParsePassword(v string) (Password, error) {
+	li := ToPassword(v)
 	if err := li.Validate(); err != nil {
 		return "", err
 	}

@@ -28,3 +28,11 @@ func (v GuildName) ToVal() string {
 func ToGuildName(v string) GuildName {
 	return GuildName(v)
 }
+
+func ParseGuildName(v string) (GuildName, error) {
+	gn := ToGuildName(v)
+	if err := gn.Validate(); err != nil {
+		return "", err
+	}
+	return gn, nil
+}

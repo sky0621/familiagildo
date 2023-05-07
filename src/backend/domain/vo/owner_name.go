@@ -28,3 +28,11 @@ func (v OwnerName) ToVal() string {
 func ToOwnerName(v string) OwnerName {
 	return OwnerName(v)
 }
+
+func ParseOwnerName(v string) (OwnerName, error) {
+	on := ToOwnerName(v)
+	if err := on.Validate(); err != nil {
+		return "", err
+	}
+	return on, nil
+}
