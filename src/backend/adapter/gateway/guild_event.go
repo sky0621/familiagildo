@@ -48,7 +48,7 @@ func (e *guildEvent) CreateRequested(ctx context.Context, input event.CreateRequ
 	}
 
 	if err := e.c.SendMail(ctx, m); err != nil {
-		return app.WrapError(err, fmt.Sprintf("failed to send Mail at CreateRequested [input: %s]", input))
+		return app.WrapError(err, fmt.Sprintf("failed to send OwnerMail at CreateRequested [input: %s]", input))
 	}
 
 	return nil

@@ -19,8 +19,8 @@ import (
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
 	usecaseInput := usecase.RequestCreateGuildInput{
-		Name: vo.ToGuildName(input.GuildName),
-		Mail: vo.ToOwnerMail(input.OwnerMail),
+		GuildName: vo.ToGuildName(input.GuildName),
+		OwnerMail: vo.ToOwnerMail(input.OwnerMail),
 	}
 
 	acceptedNumber, err := r.GuildUsecase.RequestCreateGuildByGuest(ctx, usecaseInput)
@@ -35,13 +35,25 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 	}
 
 	return &GuestToken{
-		AcceptedNumber: acceptedNumber,
+		AcceptedNumber: acceptedNumber.ToVal(),
 	}, err
 }
 
 // CreateGuildByGuest is the resolver for the createGuildByGuest field.
 func (r *mutationResolver) CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) (*custommodel.Void, error) {
-	panic(fmt.Errorf("not implemented: CreateGuildByGuest - createGuildByGuest"))
+	usecaseInput := usecase.CreateGuildByGuestInput{
+		Token:     vo.ToToken(input.Token),
+		OwnerName: vo.ToOwnerName(input.OwnerName),
+		LoginID:   vo.ToLoginID(input.LoginID),
+		Password:  vo.ToPassword(input.Password),
+	}
+
+	if err := r.GuildUsecase.CreateGuildByGuest(ctx, usecaseInput); err != nil {
+		log.ErrorSend(err)
+		return nil, CreateGQLError(ctx, err)
+	}
+
+	return &custommodel.Void{}, nil
 }
 
 // CreateParticipantByGuest is the resolver for the createParticipantByGuest field.

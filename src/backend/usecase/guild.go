@@ -13,12 +13,21 @@ import (
 
 type GuildInputPort interface {
 	// RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
-	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (string, error)
+	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (vo.AcceptedNumber, error)
+	// CreateGuildByGuest is ギルド及びオーナー情報を登録する
+	CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) error
 }
 
 type RequestCreateGuildInput struct {
-	Name vo.GuildName
-	Mail vo.OwnerMail
+	GuildName vo.GuildName
+	OwnerMail vo.OwnerMail
+}
+
+type CreateGuildByGuestInput struct {
+	Token     vo.Token
+	OwnerName vo.OwnerName
+	LoginID   vo.LoginID
+	Password  vo.Password
 }
 
 func NewGuild(
@@ -39,10 +48,10 @@ type guildInteractor struct {
 }
 
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
-func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (string, error) {
+func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (vo.AcceptedNumber, error) {
 	{
 		var customErrors app.CustomErrors
-		for _, v := range []vo.ValueObject[string]{input.Name, input.Mail} {
+		for _, v := range []vo.ValueObject[string]{input.GuildName, input.OwnerMail} {
 			if err := v.Validate(); err != nil {
 				customErrors = append(customErrors, app.NewValidationError(ctx, err, v.FieldName(), v.ToVal()))
 			}
@@ -53,7 +62,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 	}
 
 	{
-		validToken, err := g.guestTokenRepository.GetByOwnerMailWithinValidPeriod(ctx, input.Mail)
+		validToken, err := g.guestTokenRepository.GetByOwnerMailWithinValidPeriod(ctx, input.OwnerMail)
 		if err != nil {
 			return "", app.NewUnexpectedError(ctx, err)
 		}
@@ -70,7 +79,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 	acceptedNumber := service.CreateAcceptedNumber()
 
 	if err := g.transactionRepository.ExecInTransaction(ctx, func(ctx context.Context) error {
-		guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, input.Name)
+		guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, input.GuildName)
 		if err != nil {
 			return errors.WithStack(err)
 		}
@@ -79,7 +88,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 
 		expirationDate := service.CreateGuestTokenExpirationDate()
 
-		_, err = g.guestTokenRepository.Create(ctx, guildAggregate.Root.ID, input.Mail,
+		_, err = g.guestTokenRepository.Create(ctx, guildAggregate.Root.ID, input.OwnerMail,
 			&entity.GuestToken{Token: token, ExpirationDate: expirationDate},
 			acceptedNumber)
 		if err != nil {
@@ -87,10 +96,10 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 		}
 
 		if err := g.guildEvent.CreateRequested(ctx, event.CreateRequestedInput{
-			GuildName:      input.Name,
+			GuildName:      input.GuildName,
 			Token:          token,
 			ExpirationDate: expirationDate,
-			OwnerMail:      input.Mail,
+			OwnerMail:      input.OwnerMail,
 			AcceptedNumber: acceptedNumber,
 		}); err != nil {
 			return errors.WithStack(err)
@@ -101,10 +110,22 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 		return "", app.NewUnexpectedError(ctx, err)
 	}
 
-	return acceptedNumber.ToVal(), nil
+	return acceptedNumber, nil
 }
 
-func (g *guildInteractor) CreateGuildByGuest(ctx context.Context, token vo.Token, name vo.OwnerName, loginID vo.LoginID) error {
+func (g *guildInteractor) CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) error {
+	{
+		var customErrors app.CustomErrors
+		for _, v := range []vo.ValueObject[string]{input.Token, input.OwnerName, input.LoginID, input.Password} {
+			if err := v.Validate(); err != nil {
+				customErrors = append(customErrors, app.NewValidationError(ctx, err, v.FieldName(), v.ToVal()))
+			}
+		}
+		if len(customErrors) > 0 {
+			return customErrors
+		}
+	}
+
 	// FIXME:
 	return nil
 }
