@@ -1,16 +1,16 @@
 @startuml
 
 actor ゲスト as guest
-boundary ギルド登録FORM as form
-control ギルド本登録API as handler
-boundary ログインFORM as form2
+boundary ギルド登録FORM as page1
+boundary ログインFORM as page2
+control ギルド本登録API as api
 database guest_token
 database guild
 database owner
 database guild_owner_relation as rel
 
-guest -> form:ギルド本登録
-form -> handler:ギルド本登録
+guest -> page1:ギルド本登録
+page1 -> api:ギルド本登録
 note left
 ギルド名
 メールアドレス
@@ -19,25 +19,26 @@ note left
 オーナー名
 トークン
 end note
-handler -> guest_token:既存トークン取得(メールアドレス）
+api -> guest_token:既存トークン取得(メールアドレス）
 note left: 有効期限チェックなし
-guest_token -> handler:トークン(ギルドID)
+guest_token -> api:トークン(ギルドID)
 alt do not have valid token
-handler -> form:エラー
+api -> page1:エラー
 end
-handler -> handler:トランザクション開始
-handler -> guild:ギルド更新(ギルド名、ステータス＝登録済み)
-handler -> handler:パスワードハッシュ化
-handler -> owner:オーナー登録
+api -> api:トランザクション開始
+api -> guild:ギルド更新(ギルド名、ステータス＝登録済み)
+api -> api:パスワードハッシュ化
+api -> owner:オーナー登録
 note left
 メールアドレス
 オーナー名
 ログインID
 ハッシュ化パスワード
 end note
-handler -> rel:ギルド・オーナー紐付け(ギルドID、オーナーID)
-handler -> guest_token:トークンレコード削除
-handler -> handler:トランザクション終了
-handler -> form2:リダイレクト
+api -> rel:ギルド・オーナー紐付け(ギルドID、オーナーID)
+api -> guest_token:トークンレコード削除
+api -> api:トランザクション終了
+api -> page1
+page1 -> page2:リダイレクト
 
 @enduml

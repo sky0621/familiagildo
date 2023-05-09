@@ -1,29 +1,36 @@
 @startuml
 
 actor ゲスト as guest
-boundary ギルド登録依頼画面 as form
-control ギルド仮登録API as handler
-control ギルド登録依頼トークンチェックAPI as handler2
+boundary ギルド登録依頼画面 as page1
+boundary ギルド登録FORM as page2
+control "ギルドAPI/仮登録" as api1
 database guest_token
 database guild
 participant メール送信サービス as mail
 
-guest -> form:ギルド登録を依頼
-form -> handler:ギルド仮登録(ギルド名、メールアドレス)
-handler -> guest_token:既存トークン取得(メールアドレス、有効期限内)
-guest_token -> handler:トークン
+guest -> page1:ギルド登録を依頼
+page1 -> api1:ギルド仮登録(ギルド名、メールアドレス)
+api1 -> guest_token:既存トークン取得(メールアドレス)
+note left: 有効期限内
+guest_token -> api1:トークン
 alt has valid token
-handler -> form:トークン
-form -> handler2:リダイレクト(トークン)
+api1 -> page1:トークン
+page1 -> page2:リダイレクト(トークン)
 end
-handler -> handler:トランザクション開始
-handler -> guild:ギルド登録(ギルド名、ステータス＝仮登録)
-guild -> handler:ギルドID
-handler -> handler:トークン生成、有効期限決定
-handler -> guest_token:トークン登録(トークン、有効期限、メールアドレス、ギルドID)
-handler -> handler:トランザクション終了
-handler -> mail:メールアドレス、トークン、有効期限
-handler -> form:受付番号
-form -> guest:受付番号
+api1 -> api1:トランザクション開始
+api1 -> guild:ギルド登録(ギルド名、ステータス＝仮登録)
+guild -> api1:ギルドID
+api1 -> api1:トークン生成、有効期限決定
+api1 -> guest_token:トークン登録
+note left
+トークン
+有効期限
+メールアドレス
+ギルドID
+end note
+api1 -> api1:トランザクション終了
+api1 -> mail:メールアドレス、トークン、有効期限
+api1 -> page1:受付番号
+page1 -> guest:受付番号
 
 @enduml
