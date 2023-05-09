@@ -4,7 +4,7 @@ actor ゲスト as guest
 participant メール内リンク as mail
 boundary ギルド登録画面 as page1
 boundary ギルド登録依頼画面 as page2
-control "トークンAPI/チェック" as api1
+control "ギルドAPI/取得byトークン" as api1
 database guest_token
 database guild
 

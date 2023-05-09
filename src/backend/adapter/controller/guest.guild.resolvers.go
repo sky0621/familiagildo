@@ -41,8 +41,29 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 
 // GetGuildByToken is the resolver for the getGuildByToken field.
 func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*Guild, error) {
-	// FIXME:
-	panic(fmt.Errorf("not implemented: GetGuildByToken - getGuildByToken"))
+	usecaseToken := vo.ToToken(token)
+
+	guild, err := r.GuildUsecase.GetGuildByToken(ctx, usecaseToken)
+	if err != nil {
+		log.ErrorSend(err)
+		return nil, CreateGQLError(ctx, err)
+	}
+	if guild.Root == nil {
+		// FIXME:
+		return nil, nil
+	}
+	if guild.Owner == nil {
+		// FIXME:
+		return nil, nil
+	}
+
+	result := &Guild{
+		// FIXME:
+		Owner: &Owner{
+			Mail: guild.Owner.Mail.ToVal(),
+		},
+	}
+	return result, nil
 }
 
 // CreateGuildByGuest is the resolver for the createGuildByGuest field.

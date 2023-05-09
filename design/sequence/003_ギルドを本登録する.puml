@@ -3,7 +3,7 @@
 actor ゲスト as guest
 boundary ギルド登録FORM as page1
 boundary ログインFORM as page2
-control ギルド本登録API as api
+control "ギルドAPI/本登録" as api
 database guest_token
 database guild
 database owner

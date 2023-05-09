@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/cockroachdb/errors"
 	"github.com/sky0621/familiagildo/app"
+	"github.com/sky0621/familiagildo/domain/aggregate"
 	"github.com/sky0621/familiagildo/domain/entity"
 	"github.com/sky0621/familiagildo/domain/event"
 	"github.com/sky0621/familiagildo/domain/repository"
@@ -16,6 +17,8 @@ type GuildInputPort interface {
 	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (vo.AcceptedNumber, error)
 	// CreateGuildByGuest is ギルド及びオーナー情報を登録する
 	CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) error
+	// GetGuildByToken is
+	GetGuildByToken(ctx context.Context, token vo.Token) (*aggregate.Guild, error)
 }
 
 type RequestCreateGuildInput struct {
@@ -111,6 +114,12 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 	}
 
 	return acceptedNumber, nil
+}
+
+func (g *guildInteractor) GetGuildByToken(ctx context.Context, token vo.Token) (*aggregate.Guild, error) {
+
+	// FIXME:
+	return nil, nil
 }
 
 func (g *guildInteractor) CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) error {
