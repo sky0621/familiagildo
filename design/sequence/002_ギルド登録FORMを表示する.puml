@@ -1,0 +1,22 @@
+@startuml
+
+actor ゲスト as guest
+participant メール内リンク as mail
+control ギルド登録依頼トークンチェックAPI as handler
+boundary ギルド登録依頼FORM as form3
+boundary ギルド登録FORM as form
+database guest_token
+database guild
+
+guest -> mail:クリック
+mail -> handler:トークン
+handler -> guest_token:既存トークン取得(トークン、有効期限内)
+guest_token -> handler:トークン
+alt do not have valid token
+handler -> form3:
+end
+handler -> guild:仮登録済みギルド取得(ID)
+guild -> handler:ギルド名
+handler -> form:ギルドID、ギルド名、メールアドレス
+
+@enduml
