@@ -131,6 +131,7 @@ type ComplexityRoot struct {
 		FindTaskByOwner       func(childComplexity int, filter *OwnerTaskFilter) int
 		FindTaskByParticipant func(childComplexity int, filter *ParticipantTaskFilter) int
 		GetGuildByAdmin       func(childComplexity int, id string) int
+		GetGuildByToken       func(childComplexity int, token string) int
 		GetTaskByOwner        func(childComplexity int, id string) int
 		GetTaskByParticipant  func(childComplexity int, id string) int
 		ListGuildByAdmin      func(childComplexity int) int
@@ -165,6 +166,7 @@ type QueryResolver interface {
 	ListGuildByAdmin(ctx context.Context) ([]*Guild, error)
 	FindGuildByAdmin(ctx context.Context, filter *AdminGuildFilter) ([]*Guild, error)
 	GetGuildByAdmin(ctx context.Context, id string) (*Guild, error)
+	GetGuildByToken(ctx context.Context, token string) (*Guild, error)
 	ListTaskByOwner(ctx context.Context) ([]*OwnerTask, error)
 	FindTaskByOwner(ctx context.Context, filter *OwnerTaskFilter) ([]*OwnerTask, error)
 	GetTaskByOwner(ctx context.Context, id string) (*OwnerTask, error)
@@ -658,6 +660,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.GetGuildByAdmin(childComplexity, args["id"].(string)), true
 
+	case "Query.getGuildByToken":
+		if e.complexity.Query.GetGuildByToken == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getGuildByToken_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetGuildByToken(childComplexity, args["token"].(string)), true
+
 	case "Query.getTaskByOwner":
 		if e.complexity.Query.GetTaskByOwner == nil {
 			break
@@ -964,6 +978,11 @@ type Notice {
 "ギルドフィルター条件"
 input AdminGuildFilter {
     nameLike: String
+}
+`, BuiltIn: false},
+	{Name: "../../../../schema/graphql/query/guest.guild.graphqls", Input: `extend type Query {
+    "トークンに紐づく１ギルドの詳細を参照する"
+    getGuildByToken(token: String!): Guild
 }
 `, BuiltIn: false},
 	{Name: "../../../../schema/graphql/query/owner.task.graphqls", Input: `extend type Query {
@@ -1400,6 +1419,21 @@ func (ec *executionContext) field_Query_getGuildByAdmin_args(ctx context.Context
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getGuildByToken_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["token"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["token"] = arg0
 	return args, nil
 }
 
@@ -4202,6 +4236,70 @@ func (ec *executionContext) fieldContext_Query_getGuildByAdmin(ctx context.Conte
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_getGuildByAdmin_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getGuildByToken(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getGuildByToken(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetGuildByToken(rctx, fc.Args["token"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Guild)
+	fc.Result = res
+	return ec.marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getGuildByToken(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Guild_id(ctx, field)
+			case "name":
+				return ec.fieldContext_Guild_name(ctx, field)
+			case "owner":
+				return ec.fieldContext_Guild_owner(ctx, field)
+			case "participants":
+				return ec.fieldContext_Guild_participants(ctx, field)
+			case "tasks":
+				return ec.fieldContext_Guild_tasks(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Guild", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getGuildByToken_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -7675,6 +7773,26 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getGuildByAdmin(ctx, field)
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "getGuildByToken":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getGuildByToken(ctx, field)
 				return res
 			}
 

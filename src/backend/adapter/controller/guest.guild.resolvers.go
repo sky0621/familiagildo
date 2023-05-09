@@ -8,12 +8,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/sky0621/familiagildo/usecase"
 
 	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/app/log"
 	"github.com/sky0621/familiagildo/domain/vo"
+	"github.com/sky0621/familiagildo/usecase"
 )
 
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
@@ -37,6 +37,12 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 	return &GuestToken{
 		AcceptedNumber: acceptedNumber.ToVal(),
 	}, err
+}
+
+// GetGuildByToken is the resolver for the getGuildByToken field.
+func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*Guild, error) {
+	// FIXME:
+	panic(fmt.Errorf("not implemented: GetGuildByToken - getGuildByToken"))
 }
 
 // CreateGuildByGuest is the resolver for the createGuildByGuest field.

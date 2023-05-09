@@ -1,0 +1,4 @@
+extend type Query {
+    "トークンに紐づく１ギルドの詳細を参照する"
+    getGuildByToken(token: String!): Guild
+}
