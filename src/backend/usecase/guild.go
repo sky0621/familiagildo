@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/aggregate"
 	"github.com/sky0621/familiagildo/domain/entity"
@@ -51,16 +52,9 @@ type guildInteractor struct {
 
 // RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
 func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (vo.AcceptedNumber, error) {
-	{
-		var customErrors app.CustomErrors
-		for _, v := range []vo.ValueObject[string]{input.GuildName, input.OwnerMail} {
-			if err := v.Validate(); err != nil {
-				customErrors = append(customErrors, app.NewValidationError(ctx, err, v.FieldName(), v.ToVal()))
-			}
-		}
-		if len(customErrors) > 0 {
-			return "", customErrors
-		}
+	customErrors := service.Validate(ctx, []vo.ValueObject[string]{input.GuildName, input.OwnerMail})
+	if len(customErrors) > 0 {
+		return "", customErrors
 	}
 
 	{
@@ -115,23 +109,21 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 	return acceptedNumber, nil
 }
 
+// GetGuildByToken is トークンに紐づくギルド情報を返す
 func (g *guildInteractor) GetGuildByToken(ctx context.Context, token vo.Token) (*aggregate.Guild, error) {
+	customErrors := service.Validate(ctx, []vo.ValueObject[string]{token})
+	if len(customErrors) > 0 {
+		return nil, customErrors
+	}
 
 	// FIXME:
 	return nil, nil
 }
 
 func (g *guildInteractor) CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) error {
-	{
-		var customErrors app.CustomErrors
-		for _, v := range []vo.ValueObject[string]{input.Token, input.OwnerName, input.LoginID, input.Password} {
-			if err := v.Validate(); err != nil {
-				customErrors = append(customErrors, app.NewValidationError(ctx, err, v.FieldName(), v.ToVal()))
-			}
-		}
-		if len(customErrors) > 0 {
-			return customErrors
-		}
+	customErrors := service.Validate(ctx, []vo.ValueObject[string]{input.Token, input.OwnerName, input.LoginID, input.Password})
+	if len(customErrors) > 0 {
+		return customErrors
 	}
 
 	// FIXME:
