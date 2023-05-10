@@ -56,11 +56,13 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/sky0621/familiagildo/adapter/controller/custommodel.ID
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/sky0621/familiagildo/adapter/controller/custommodel.Date
   Void:
     model:
       - github.com/sky0621/familiagildo/adapter/controller/custommodel.Void

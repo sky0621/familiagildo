@@ -27,6 +27,7 @@ type NoopPayload {
   clientMutationId: String
 }
 
+# Date ... format: "2006-01-02"
 scalar Date
 
 scalar Time
@@ -38,3 +39,6 @@ scalar Upload
 scalar Any
 
 scalar Void
+
+# FGID ... format: urlEncoded("tableName:dbUniqueID")
+scalar FGID

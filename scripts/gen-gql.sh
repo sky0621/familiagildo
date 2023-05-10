@@ -4,6 +4,8 @@ SCRIPT_DIR=$(dirname "$0")
 echo "${SCRIPT_DIR}"
 cd "${SCRIPT_DIR}" && cd ../
 
+go run ./tool/gqlgen/global-object-id-gen/main.go
+
 cd ./src/backend
 rm -f ./adapter/controller/generated.go
 rm -f ./adapter/controller/models_gen.go

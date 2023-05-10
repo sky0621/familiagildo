@@ -1,7 +1,7 @@
 package custommodel
 
 import (
-	"fmt"
+	"github.com/sky0621/familiagildo/app/log"
 	"io"
 )
 
@@ -11,11 +11,11 @@ type Void struct {
 func (v *Void) MarshalGQL(w io.Writer) {
 	_, err := io.WriteString(w, "{}")
 	if err != nil {
-		fmt.Println(err)
+		log.ErrorSend(err)
 	}
 }
 
 func (v *Void) UnmarshalGQL(a any) error {
-	fmt.Println("UnmarshalGQL")
+	log.Infof("UnmarshalGQL: %#v", a)
 	return nil
 }

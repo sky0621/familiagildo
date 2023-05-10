@@ -122,10 +122,22 @@ type CustomErrorDetail struct {
  * ユーティリティ
  */
 
+func NewError(msg string) error {
+	return errors.New(msg)
+}
+
 func WrapError(err error, msg string) error {
 	return errors.Wrap(err, msg)
 }
 
 func WrapErrorf(err error, format string, args ...any) error {
 	return errors.Wrapf(err, format, args...)
+}
+
+func WithStackError(err error) error {
+	return errors.WithStack(err)
+}
+
+func AsError(err error, target interface{}) bool {
+	return errors.As(err, target)
 }

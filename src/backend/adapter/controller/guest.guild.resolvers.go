@@ -58,6 +58,7 @@ func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*Gui
 	}
 
 	result := &Guild{
+		Name: guild.Root.Name.ToVal(),
 		// FIXME:
 		Owner: &Owner{
 			Mail: guild.Owner.Mail.ToVal(),

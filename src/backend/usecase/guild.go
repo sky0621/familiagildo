@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"github.com/cockroachdb/errors"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/aggregate"
 	"github.com/sky0621/familiagildo/domain/entity"
@@ -73,7 +72,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 		if validToken != nil {
 			r := validToken.Root
 			if r == nil {
-				return "", app.NewUnexpectedError(ctx, errors.New("validToken.Root is nil"))
+				return "", app.NewUnexpectedError(ctx, app.NewError("validToken.Root is nil"))
 			}
 			return "", app.NewAlreadyExistsError(ctx, r.Token.FieldName(), r.Token.ToVal())
 		}
@@ -84,7 +83,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 	if err := g.transactionRepository.ExecInTransaction(ctx, func(ctx context.Context) error {
 		guildAggregate, err := g.guildRepository.CreateWithRegistering(ctx, input.GuildName)
 		if err != nil {
-			return errors.WithStack(err)
+			return app.WithStackError(err)
 		}
 
 		token := service.CreateToken()
@@ -95,7 +94,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 			&entity.GuestToken{Token: token, ExpirationDate: expirationDate},
 			acceptedNumber)
 		if err != nil {
-			return errors.WithStack(err)
+			return app.WithStackError(err)
 		}
 
 		if err := g.guildEvent.CreateRequested(ctx, event.CreateRequestedInput{
@@ -105,7 +104,7 @@ func (g *guildInteractor) RequestCreateGuildByGuest(ctx context.Context, input R
 			OwnerMail:      input.OwnerMail,
 			AcceptedNumber: acceptedNumber,
 		}); err != nil {
-			return errors.WithStack(err)
+			return app.WithStackError(err)
 		}
 
 		return nil

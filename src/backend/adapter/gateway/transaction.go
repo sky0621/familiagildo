@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/cockroachdb/errors"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/repository"
 	"github.com/sky0621/familiagildo/driver/db"
@@ -22,7 +21,7 @@ type transactionRepository struct {
 func (r *transactionRepository) ExecInTransaction(ctx context.Context, fn func(ctx context.Context) error) error {
 	tx, err := r.db.BeginTx(ctx, r.opts)
 	if err != nil {
-		return errors.WithStack(err)
+		return app.WithStackError(err)
 	}
 
 	c := context.WithValue(ctx, app.TxCtxKey, tx)
@@ -38,11 +37,11 @@ func (r *transactionRepository) ExecInTransaction(ctx context.Context, fn func(c
 	}()
 
 	if err := fn(c); err != nil {
-		return errors.WithStack(err)
+		return app.WithStackError(err)
 	}
 
 	if err := tx.Commit(); err != nil {
-		return errors.WithStack(err)
+		return app.WithStackError(err)
 	}
 	done = true
 
