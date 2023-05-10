@@ -3,9 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/cockroachdb/errors"
 	"github.com/go-chi/chi/v5/middleware"
-	"strings"
 )
 
 type CustomErrors []*CustomError
@@ -20,6 +21,18 @@ func (e CustomErrors) Error() string {
 
 func NewCustomError(ctx context.Context, err error, errorCode CustomErrorCode, detail *CustomErrorDetail) *CustomError {
 	ce := &CustomError{err: errors.WithStack(err), errorCode: errorCode, detail: detail}
+	ce.setTraceID(ctx)
+	return ce
+}
+
+func NewAuthenticationError(ctx context.Context, field string, val any) *CustomError {
+	ce := &CustomError{errorCode: AuthenticationError, detail: NewCustomErrorDetail(field, val)}
+	ce.setTraceID(ctx)
+	return ce
+}
+
+func NewAuthorizationError(ctx context.Context, field string, val any) *CustomError {
+	ce := &CustomError{errorCode: AuthorizationError, detail: NewCustomErrorDetail(field, val)}
 	ce.setTraceID(ctx)
 	return ce
 }

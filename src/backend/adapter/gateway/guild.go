@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+
 	"github.com/sky0621/familiagildo/adapter/gateway/convert"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/aggregate"
@@ -45,6 +46,21 @@ func (r *guildRepository) UpdateWithRegistered(ctx context.Context, id vo.ID) (*
 	}
 
 	record, err := q.UpdateGuildWithRegistered(ctx, id.ToVal())
+	if err != nil {
+		return nil, app.WrapError(err, fmt.Sprintf("failed to UpdateGuildWithRegistered [id:%d]", id.ToVal()))
+	}
+	return convert.GuildAggregateFromDBToDomain(record), nil
+}
+
+func (r *guildRepository) GetByID(ctx context.Context, id vo.ID) (*aggregate.Guild, error) {
+	q := r.db
+
+	tx, ok := ctx.Value(app.TxCtxKey).(*sql.Tx)
+	if ok {
+		q = r.db.WithTx(tx)
+	}
+
+	record, err := q.GetGuildByID(ctx, id.ToVal())
 	if err != nil {
 		return nil, app.WrapError(err, fmt.Sprintf("failed to UpdateGuildWithRegistered [id:%d]", id.ToVal()))
 	}

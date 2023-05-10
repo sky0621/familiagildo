@@ -70,12 +70,12 @@ func (q *Queries) GetGuestTokenByMailWithinExpirationDate(ctx context.Context, m
 	return i, err
 }
 
-const getGuestTokenByToken = `-- name: GetGuestTokenByToken :one
-SELECT id, guild_id, mail, token, expiration_date, accepted_number FROM guest_token WHERE token = $1
+const getGuestTokenByTokenWithinExpirationDate = `-- name: GetGuestTokenByTokenWithinExpirationDate :one
+SELECT id, guild_id, mail, token, expiration_date, accepted_number FROM guest_token WHERE token = $1 AND expiration_date > now()
 `
 
-func (q *Queries) GetGuestTokenByToken(ctx context.Context, token string) (GuestToken, error) {
-	row := q.db.QueryRowContext(ctx, getGuestTokenByToken, token)
+func (q *Queries) GetGuestTokenByTokenWithinExpirationDate(ctx context.Context, token string) (GuestToken, error) {
+	row := q.db.QueryRowContext(ctx, getGuestTokenByTokenWithinExpirationDate, token)
 	var i GuestToken
 	err := row.Scan(
 		&i.ID,

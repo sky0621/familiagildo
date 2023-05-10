@@ -6,4 +6,5 @@ type GuestToken struct {
 	ID             vo.ID
 	Token          vo.Token
 	ExpirationDate vo.ExpirationDate
+	Mail           vo.OwnerMail
 }

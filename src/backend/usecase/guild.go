@@ -116,8 +116,27 @@ func (g *guildInteractor) GetGuildByToken(ctx context.Context, token vo.Token) (
 		return nil, customErrors
 	}
 
-	// FIXME:
-	return nil, nil
+	validToken, err := g.guestTokenRepository.GetByTokenWithinValidPeriod(ctx, token)
+	if err != nil {
+		return nil, app.NewUnexpectedError(ctx, err)
+	}
+
+	if validToken == nil || validToken.Root == nil || validToken.Guild == nil {
+		return nil, app.NewAuthorizationError(ctx, token.FieldName(), token.ToVal())
+	}
+
+	guild, err := g.guildRepository.GetByID(ctx, validToken.Guild.ID)
+	if err != nil {
+		return nil, app.NewUnexpectedError(ctx, err)
+	}
+
+	if guild == nil {
+		return nil, app.NewUnexpectedError(ctx, app.NewError("guild is nil"))
+	}
+
+	guild.Owner = &entity.Owner{Mail: validToken.Root.Mail}
+
+	return guild, nil
 }
 
 func (g *guildInteractor) CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) error {

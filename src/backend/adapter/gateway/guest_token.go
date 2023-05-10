@@ -3,7 +3,7 @@ package gateway
 import (
 	"context"
 	"database/sql"
-	"fmt"
+
 	"github.com/sky0621/familiagildo/adapter/gateway/convert"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/domain/aggregate"
@@ -28,7 +28,18 @@ func (r *guestTokenRepository) GetByOwnerMailWithinValidPeriod(ctx context.Conte
 		if IsNoRecords(err) {
 			return nil, nil
 		}
-		return nil, app.WrapError(err, fmt.Sprintf("failed to GetByOwnerMailWithinValidPeriod [mail:%s]", mail.ToVal()))
+		return nil, app.WrapErrorf(err, "failed to GetGuestTokenByMailWithinExpirationDate [mail:%s]", mail.ToVal())
+	}
+	return convert.GuestTokenAggregateFromDBToDomain(record), nil
+}
+
+func (r *guestTokenRepository) GetByTokenWithinValidPeriod(ctx context.Context, token vo.Token) (*aggregate.GuestToken, error) {
+	record, err := r.db.GetGuestTokenByTokenWithinExpirationDate(ctx, token.ToVal())
+	if err != nil {
+		if IsNoRecords(err) {
+			return nil, nil
+		}
+		return nil, app.WrapErrorf(err, "failed to GetGuestTokenByTokenWithinExpirationDate [token:%s]", token.ToVal())
 	}
 	return convert.GuestTokenAggregateFromDBToDomain(record), nil
 }
@@ -49,8 +60,8 @@ func (r *guestTokenRepository) Create(ctx context.Context, guildID vo.ID, mail v
 		AcceptedNumber: acceptedNumber.ToVal(),
 	})
 	if err != nil {
-		return nil, app.WrapError(err, fmt.Sprintf("failed to CreateGuestToken [guildID:%d][mail:%s][token:%s][expirationDate:%v][acceptedNumber:%s]",
-			guildID.ToVal(), mail.ToVal(), guestToken.Token.ToVal(), guestToken.ExpirationDate.ToVal(), acceptedNumber.ToVal()))
+		return nil, app.WrapErrorf(err, "failed to CreateGuestToken [guildID:%d][mail:%s][token:%s][expirationDate:%v][acceptedNumber:%s]",
+			guildID.ToVal(), mail.ToVal(), guestToken.Token.ToVal(), guestToken.ExpirationDate.ToVal(), acceptedNumber.ToVal())
 	}
 	return convert.GuestTokenAggregateFromDBToDomain(record), nil
 }

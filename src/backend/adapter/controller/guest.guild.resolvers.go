@@ -16,7 +16,6 @@ import (
 	"github.com/sky0621/familiagildo/usecase"
 )
 
-// RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
 func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input model.RequestCreateGuildInput) (*model.GuestToken, error) {
 	usecaseInput := usecase.RequestCreateGuildInput{
 		GuildName: vo.ToGuildName(input.GuildName),
@@ -39,7 +38,6 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 	}, err
 }
 
-// CreateGuildByGuest is the resolver for the createGuildByGuest field.
 func (r *mutationResolver) CreateGuildByGuest(ctx context.Context, input model.CreateGuildByGuestInput) (*model.Void, error) {
 	usecaseInput := usecase.CreateGuildByGuestInput{
 		Token:     vo.ToToken(input.Token),
@@ -56,12 +54,6 @@ func (r *mutationResolver) CreateGuildByGuest(ctx context.Context, input model.C
 	return &model.Void{}, nil
 }
 
-// CreateParticipantByGuest is the resolver for the createParticipantByGuest field.
-func (r *mutationResolver) CreateParticipantByGuest(ctx context.Context, input model.CreateParticipantByGuestInput) (*model.Void, error) {
-	panic(fmt.Errorf("not implemented: CreateParticipantByGuest - createParticipantByGuest"))
-}
-
-// GetGuildByToken is the resolver for the getGuildByToken field.
 func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*model.Guild, error) {
 	usecaseToken := vo.ToToken(token)
 
@@ -70,25 +62,21 @@ func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*mod
 		log.ErrorSend(err)
 		return nil, CreateGQLError(ctx, err)
 	}
-	if guild == nil {
-		// FIXME:
-		return nil, nil
-	}
-	if guild.Root == nil {
-		// FIXME:
-		return nil, nil
-	}
-	if guild.Owner == nil {
-		// FIXME:
-		return nil, nil
+	if guild == nil || guild.Root == nil || guild.Owner == nil {
+		log.ErrorSend(err)
+		return nil, CreateGQLError(ctx, err)
 	}
 
 	result := &model.Guild{
+		ID:   model.GuildID(guild.Root.ID.ToVal()),
 		Name: guild.Root.Name.ToVal(),
-		// FIXME:
 		Owner: &model.Owner{
 			Mail: guild.Owner.Mail.ToVal(),
 		},
 	}
 	return result, nil
+}
+
+func (r *mutationResolver) CreateParticipantByGuest(ctx context.Context, input model.CreateParticipantByGuestInput) (*model.Void, error) {
+	panic(fmt.Errorf("not implemented: CreateParticipantByGuest - createParticipantByGuest"))
 }
