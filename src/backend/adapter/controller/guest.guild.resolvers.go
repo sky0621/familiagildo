@@ -70,6 +70,10 @@ func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*mod
 		log.ErrorSend(err)
 		return nil, CreateGQLError(ctx, err)
 	}
+	if guild == nil {
+		// FIXME:
+		return nil, nil
+	}
 	if guild.Root == nil {
 		// FIXME:
 		return nil, nil
