@@ -1,8 +1,9 @@
-package custommodel
+package model
 
 import (
-	"github.com/sky0621/familiagildo/app/log"
 	"io"
+
+	"github.com/sky0621/familiagildo/app/log"
 )
 
 type Void struct {

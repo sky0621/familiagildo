@@ -7,15 +7,17 @@ package controller
 import (
 	"context"
 	"fmt"
+
+	"github.com/sky0621/familiagildo/adapter/controller/model"
 )
 
 // Noop is the resolver for the noop field.
-func (r *mutationResolver) Noop(ctx context.Context, input *NoopInput) (*NoopPayload, error) {
+func (r *mutationResolver) Noop(ctx context.Context, input *model.NoopInput) (*model.NoopPayload, error) {
 	panic(fmt.Errorf("not implemented: Noop - noop"))
 }
 
 // Node is the resolver for the node field.
-func (r *queryResolver) Node(ctx context.Context, id string) (Node, error) {
+func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error) {
 	panic(fmt.Errorf("not implemented: Node - node"))
 }
 

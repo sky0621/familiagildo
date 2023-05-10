@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"html/template"
 	"log"
@@ -11,22 +12,24 @@ import (
 )
 
 const (
-	idPackage    = "github.com/sky0621/familiagildo/adapter/controller/custommodel."
-	templateFile = "./tools/gqlgen/global-object-id-gen/scalar_id_go.tmpl"
-	outputFile   = "./src/backend/adapter/controller/custommodel/%s.go"
+	idPackage  = "github.com/sky0621/familiagildo/adapter/controller/model."
+	outputFile = "../../../src/backend/adapter/controller/model/scalar_%s.go"
 )
+
+//go:embed template/scalarIDGo.tmpl
+var scalarIDGo string
 
 func init() {
 	viper.SetConfigType("yaml")
 	viper.SetConfigName("gqlgen")
-	viper.AddConfigPath("./src")
+	viper.AddConfigPath("../../../src/backend")
 	if err := viper.ReadInConfig(); err != nil {
 		panic(err)
 	}
 }
 
 func main() {
-	t := template.Must(template.ParseFiles(templateFile))
+	t := template.Must(template.New("").Parse(scalarIDGo))
 
 	for _, id := range targetIDPackages() {
 		if err := exec(id, t); err != nil {

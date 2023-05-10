@@ -7,9 +7,11 @@ package controller
 import (
 	"context"
 	"fmt"
+
+	"github.com/sky0621/familiagildo/adapter/controller/model"
 )
 
 // CreateNoticeByAdmin is the resolver for the createNoticeByAdmin field.
-func (r *mutationResolver) CreateNoticeByAdmin(ctx context.Context, input NoticeInput) (*Notice, error) {
+func (r *mutationResolver) CreateNoticeByAdmin(ctx context.Context, input model.NoticeInput) (*model.Notice, error) {
 	panic(fmt.Errorf("not implemented: CreateNoticeByAdmin - createNoticeByAdmin"))
 }

@@ -1,7 +1,7 @@
 "ギルド"
 type Guild implements Node {
     "ID"
-    id: FGID!
+    id: ID!
 
     "ギルドの名称"
     name: String!

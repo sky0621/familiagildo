@@ -7,15 +7,17 @@ package controller
 import (
 	"context"
 	"fmt"
+
+	"github.com/sky0621/familiagildo/adapter/controller/model"
 )
 
 // CreateTaskByParticipant is the resolver for the createTaskByParticipant field.
-func (r *mutationResolver) CreateTaskByParticipant(ctx context.Context, input ParticipantTaskInput) (*ParticipantTask, error) {
+func (r *mutationResolver) CreateTaskByParticipant(ctx context.Context, input model.ParticipantTaskInput) (*model.ParticipantTask, error) {
 	panic(fmt.Errorf("not implemented: CreateTaskByParticipant - createTaskByParticipant"))
 }
 
 // UpdateTaskByParticipant is the resolver for the updateTaskByParticipant field.
-func (r *mutationResolver) UpdateTaskByParticipant(ctx context.Context, input ParticipantTaskInput) (*ParticipantTask, error) {
+func (r *mutationResolver) UpdateTaskByParticipant(ctx context.Context, input model.ParticipantTaskInput) (*model.ParticipantTask, error) {
 	panic(fmt.Errorf("not implemented: UpdateTaskByParticipant - updateTaskByParticipant"))
 }
 
@@ -25,16 +27,16 @@ func (r *mutationResolver) AcceptTaskByParticipant(ctx context.Context, id *stri
 }
 
 // ListTaskByParticipant is the resolver for the listTaskByParticipant field.
-func (r *queryResolver) ListTaskByParticipant(ctx context.Context) ([]*ParticipantTask, error) {
+func (r *queryResolver) ListTaskByParticipant(ctx context.Context) ([]*model.ParticipantTask, error) {
 	panic(fmt.Errorf("not implemented: ListTaskByParticipant - listTaskByParticipant"))
 }
 
 // FindTaskByParticipant is the resolver for the findTaskByParticipant field.
-func (r *queryResolver) FindTaskByParticipant(ctx context.Context, filter *ParticipantTaskFilter) ([]*ParticipantTask, error) {
+func (r *queryResolver) FindTaskByParticipant(ctx context.Context, filter *model.ParticipantTaskFilter) ([]*model.ParticipantTask, error) {
 	panic(fmt.Errorf("not implemented: FindTaskByParticipant - findTaskByParticipant"))
 }
 
 // GetTaskByParticipant is the resolver for the getTaskByParticipant field.
-func (r *queryResolver) GetTaskByParticipant(ctx context.Context, id string) (*ParticipantTask, error) {
+func (r *queryResolver) GetTaskByParticipant(ctx context.Context, id string) (*model.ParticipantTask, error) {
 	panic(fmt.Errorf("not implemented: GetTaskByParticipant - getTaskByParticipant"))
 }

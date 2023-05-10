@@ -7,24 +7,26 @@ package controller
 import (
 	"context"
 	"fmt"
+
+	"github.com/sky0621/familiagildo/adapter/controller/model"
 )
 
 // CreateGuildByAdmin is the resolver for the createGuildByAdmin field.
-func (r *mutationResolver) CreateGuildByAdmin(ctx context.Context, input AdminGuildInput) (*Guild, error) {
+func (r *mutationResolver) CreateGuildByAdmin(ctx context.Context, input model.AdminGuildInput) (*model.Guild, error) {
 	panic(fmt.Errorf("not implemented: CreateGuildByAdmin - createGuildByAdmin"))
 }
 
 // ListGuildByAdmin is the resolver for the listGuildByAdmin field.
-func (r *queryResolver) ListGuildByAdmin(ctx context.Context) ([]*Guild, error) {
+func (r *queryResolver) ListGuildByAdmin(ctx context.Context) ([]*model.Guild, error) {
 	panic(fmt.Errorf("not implemented: ListGuildByAdmin - listGuildByAdmin"))
 }
 
 // FindGuildByAdmin is the resolver for the findGuildByAdmin field.
-func (r *queryResolver) FindGuildByAdmin(ctx context.Context, filter *AdminGuildFilter) ([]*Guild, error) {
+func (r *queryResolver) FindGuildByAdmin(ctx context.Context, filter *model.AdminGuildFilter) ([]*model.Guild, error) {
 	panic(fmt.Errorf("not implemented: FindGuildByAdmin - findGuildByAdmin"))
 }
 
 // GetGuildByAdmin is the resolver for the getGuildByAdmin field.
-func (r *queryResolver) GetGuildByAdmin(ctx context.Context, id string) (*Guild, error) {
+func (r *queryResolver) GetGuildByAdmin(ctx context.Context, id string) (*model.Guild, error) {
 	panic(fmt.Errorf("not implemented: GetGuildByAdmin - getGuildByAdmin"))
 }

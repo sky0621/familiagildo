@@ -14,7 +14,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
-	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
+	"github.com/sky0621/familiagildo/adapter/controller/model"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
 )
@@ -64,17 +64,17 @@ type ComplexityRoot struct {
 	Mutation struct {
 		AcceptTaskByOwner         func(childComplexity int, id *string) int
 		AcceptTaskByParticipant   func(childComplexity int, id *string) int
-		CreateGuildByAdmin        func(childComplexity int, input AdminGuildInput) int
-		CreateGuildByGuest        func(childComplexity int, input CreateGuildByGuestInput) int
-		CreateNoticeByAdmin       func(childComplexity int, input NoticeInput) int
-		CreateParticipantByGuest  func(childComplexity int, input CreateParticipantByGuestInput) int
-		CreateTaskByOwner         func(childComplexity int, input OwnerTaskInput) int
-		CreateTaskByParticipant   func(childComplexity int, input ParticipantTaskInput) int
-		DeleteTaskByOwner         func(childComplexity int, input OwnerTaskInput) int
-		Noop                      func(childComplexity int, input *NoopInput) int
-		RequestCreateGuildByGuest func(childComplexity int, input RequestCreateGuildInput) int
-		UpdateTaskByOwner         func(childComplexity int, input OwnerTaskInput) int
-		UpdateTaskByParticipant   func(childComplexity int, input ParticipantTaskInput) int
+		CreateGuildByAdmin        func(childComplexity int, input model.AdminGuildInput) int
+		CreateGuildByGuest        func(childComplexity int, input model.CreateGuildByGuestInput) int
+		CreateNoticeByAdmin       func(childComplexity int, input model.NoticeInput) int
+		CreateParticipantByGuest  func(childComplexity int, input model.CreateParticipantByGuestInput) int
+		CreateTaskByOwner         func(childComplexity int, input model.OwnerTaskInput) int
+		CreateTaskByParticipant   func(childComplexity int, input model.ParticipantTaskInput) int
+		DeleteTaskByOwner         func(childComplexity int, input model.OwnerTaskInput) int
+		Noop                      func(childComplexity int, input *model.NoopInput) int
+		RequestCreateGuildByGuest func(childComplexity int, input model.RequestCreateGuildInput) int
+		UpdateTaskByOwner         func(childComplexity int, input model.OwnerTaskInput) int
+		UpdateTaskByParticipant   func(childComplexity int, input model.ParticipantTaskInput) int
 	}
 
 	MutationResponse struct {
@@ -127,9 +127,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		FindGuildByAdmin      func(childComplexity int, filter *AdminGuildFilter) int
-		FindTaskByOwner       func(childComplexity int, filter *OwnerTaskFilter) int
-		FindTaskByParticipant func(childComplexity int, filter *ParticipantTaskFilter) int
+		FindGuildByAdmin      func(childComplexity int, filter *model.AdminGuildFilter) int
+		FindTaskByOwner       func(childComplexity int, filter *model.OwnerTaskFilter) int
+		FindTaskByParticipant func(childComplexity int, filter *model.ParticipantTaskFilter) int
 		GetGuildByAdmin       func(childComplexity int, id string) int
 		GetGuildByToken       func(childComplexity int, token string) int
 		GetTaskByOwner        func(childComplexity int, id string) int
@@ -147,32 +147,32 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	Noop(ctx context.Context, input *NoopInput) (*NoopPayload, error)
-	CreateGuildByAdmin(ctx context.Context, input AdminGuildInput) (*Guild, error)
-	CreateNoticeByAdmin(ctx context.Context, input NoticeInput) (*Notice, error)
-	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error)
-	CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) (*custommodel.Void, error)
-	CreateParticipantByGuest(ctx context.Context, input CreateParticipantByGuestInput) (*custommodel.Void, error)
-	CreateTaskByOwner(ctx context.Context, input OwnerTaskInput) (*OwnerTask, error)
-	UpdateTaskByOwner(ctx context.Context, input OwnerTaskInput) (*OwnerTask, error)
-	DeleteTaskByOwner(ctx context.Context, input OwnerTaskInput) (*string, error)
+	Noop(ctx context.Context, input *model.NoopInput) (*model.NoopPayload, error)
+	CreateGuildByAdmin(ctx context.Context, input model.AdminGuildInput) (*model.Guild, error)
+	CreateNoticeByAdmin(ctx context.Context, input model.NoticeInput) (*model.Notice, error)
+	RequestCreateGuildByGuest(ctx context.Context, input model.RequestCreateGuildInput) (*model.GuestToken, error)
+	CreateGuildByGuest(ctx context.Context, input model.CreateGuildByGuestInput) (*model.Void, error)
+	CreateParticipantByGuest(ctx context.Context, input model.CreateParticipantByGuestInput) (*model.Void, error)
+	CreateTaskByOwner(ctx context.Context, input model.OwnerTaskInput) (*model.OwnerTask, error)
+	UpdateTaskByOwner(ctx context.Context, input model.OwnerTaskInput) (*model.OwnerTask, error)
+	DeleteTaskByOwner(ctx context.Context, input model.OwnerTaskInput) (*string, error)
 	AcceptTaskByOwner(ctx context.Context, id *string) (*bool, error)
-	CreateTaskByParticipant(ctx context.Context, input ParticipantTaskInput) (*ParticipantTask, error)
-	UpdateTaskByParticipant(ctx context.Context, input ParticipantTaskInput) (*ParticipantTask, error)
+	CreateTaskByParticipant(ctx context.Context, input model.ParticipantTaskInput) (*model.ParticipantTask, error)
+	UpdateTaskByParticipant(ctx context.Context, input model.ParticipantTaskInput) (*model.ParticipantTask, error)
 	AcceptTaskByParticipant(ctx context.Context, id *string) (*bool, error)
 }
 type QueryResolver interface {
-	Node(ctx context.Context, id string) (Node, error)
-	ListGuildByAdmin(ctx context.Context) ([]*Guild, error)
-	FindGuildByAdmin(ctx context.Context, filter *AdminGuildFilter) ([]*Guild, error)
-	GetGuildByAdmin(ctx context.Context, id string) (*Guild, error)
-	GetGuildByToken(ctx context.Context, token string) (*Guild, error)
-	ListTaskByOwner(ctx context.Context) ([]*OwnerTask, error)
-	FindTaskByOwner(ctx context.Context, filter *OwnerTaskFilter) ([]*OwnerTask, error)
-	GetTaskByOwner(ctx context.Context, id string) (*OwnerTask, error)
-	ListTaskByParticipant(ctx context.Context) ([]*ParticipantTask, error)
-	FindTaskByParticipant(ctx context.Context, filter *ParticipantTaskFilter) ([]*ParticipantTask, error)
-	GetTaskByParticipant(ctx context.Context, id string) (*ParticipantTask, error)
+	Node(ctx context.Context, id string) (model.Node, error)
+	ListGuildByAdmin(ctx context.Context) ([]*model.Guild, error)
+	FindGuildByAdmin(ctx context.Context, filter *model.AdminGuildFilter) ([]*model.Guild, error)
+	GetGuildByAdmin(ctx context.Context, id string) (*model.Guild, error)
+	GetGuildByToken(ctx context.Context, token string) (*model.Guild, error)
+	ListTaskByOwner(ctx context.Context) ([]*model.OwnerTask, error)
+	FindTaskByOwner(ctx context.Context, filter *model.OwnerTaskFilter) ([]*model.OwnerTask, error)
+	GetTaskByOwner(ctx context.Context, id string) (*model.OwnerTask, error)
+	ListTaskByParticipant(ctx context.Context) ([]*model.ParticipantTask, error)
+	FindTaskByParticipant(ctx context.Context, filter *model.ParticipantTaskFilter) ([]*model.ParticipantTask, error)
+	GetTaskByParticipant(ctx context.Context, id string) (*model.ParticipantTask, error)
 }
 
 type executableSchema struct {
@@ -294,7 +294,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateGuildByAdmin(childComplexity, args["input"].(AdminGuildInput)), true
+		return e.complexity.Mutation.CreateGuildByAdmin(childComplexity, args["input"].(model.AdminGuildInput)), true
 
 	case "Mutation.createGuildByGuest":
 		if e.complexity.Mutation.CreateGuildByGuest == nil {
@@ -306,7 +306,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateGuildByGuest(childComplexity, args["input"].(CreateGuildByGuestInput)), true
+		return e.complexity.Mutation.CreateGuildByGuest(childComplexity, args["input"].(model.CreateGuildByGuestInput)), true
 
 	case "Mutation.createNoticeByAdmin":
 		if e.complexity.Mutation.CreateNoticeByAdmin == nil {
@@ -318,7 +318,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateNoticeByAdmin(childComplexity, args["input"].(NoticeInput)), true
+		return e.complexity.Mutation.CreateNoticeByAdmin(childComplexity, args["input"].(model.NoticeInput)), true
 
 	case "Mutation.createParticipantByGuest":
 		if e.complexity.Mutation.CreateParticipantByGuest == nil {
@@ -330,7 +330,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateParticipantByGuest(childComplexity, args["input"].(CreateParticipantByGuestInput)), true
+		return e.complexity.Mutation.CreateParticipantByGuest(childComplexity, args["input"].(model.CreateParticipantByGuestInput)), true
 
 	case "Mutation.createTaskByOwner":
 		if e.complexity.Mutation.CreateTaskByOwner == nil {
@@ -342,7 +342,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTaskByOwner(childComplexity, args["input"].(OwnerTaskInput)), true
+		return e.complexity.Mutation.CreateTaskByOwner(childComplexity, args["input"].(model.OwnerTaskInput)), true
 
 	case "Mutation.createTaskByParticipant":
 		if e.complexity.Mutation.CreateTaskByParticipant == nil {
@@ -354,7 +354,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTaskByParticipant(childComplexity, args["input"].(ParticipantTaskInput)), true
+		return e.complexity.Mutation.CreateTaskByParticipant(childComplexity, args["input"].(model.ParticipantTaskInput)), true
 
 	case "Mutation.deleteTaskByOwner":
 		if e.complexity.Mutation.DeleteTaskByOwner == nil {
@@ -366,7 +366,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteTaskByOwner(childComplexity, args["input"].(OwnerTaskInput)), true
+		return e.complexity.Mutation.DeleteTaskByOwner(childComplexity, args["input"].(model.OwnerTaskInput)), true
 
 	case "Mutation.noop":
 		if e.complexity.Mutation.Noop == nil {
@@ -378,7 +378,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.Noop(childComplexity, args["input"].(*NoopInput)), true
+		return e.complexity.Mutation.Noop(childComplexity, args["input"].(*model.NoopInput)), true
 
 	case "Mutation.requestCreateGuildByGuest":
 		if e.complexity.Mutation.RequestCreateGuildByGuest == nil {
@@ -390,7 +390,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.RequestCreateGuildByGuest(childComplexity, args["input"].(RequestCreateGuildInput)), true
+		return e.complexity.Mutation.RequestCreateGuildByGuest(childComplexity, args["input"].(model.RequestCreateGuildInput)), true
 
 	case "Mutation.updateTaskByOwner":
 		if e.complexity.Mutation.UpdateTaskByOwner == nil {
@@ -402,7 +402,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateTaskByOwner(childComplexity, args["input"].(OwnerTaskInput)), true
+		return e.complexity.Mutation.UpdateTaskByOwner(childComplexity, args["input"].(model.OwnerTaskInput)), true
 
 	case "Mutation.updateTaskByParticipant":
 		if e.complexity.Mutation.UpdateTaskByParticipant == nil {
@@ -414,7 +414,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateTaskByParticipant(childComplexity, args["input"].(ParticipantTaskInput)), true
+		return e.complexity.Mutation.UpdateTaskByParticipant(childComplexity, args["input"].(model.ParticipantTaskInput)), true
 
 	case "MutationResponse.id":
 		if e.complexity.MutationResponse.ID == nil {
@@ -622,7 +622,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.FindGuildByAdmin(childComplexity, args["filter"].(*AdminGuildFilter)), true
+		return e.complexity.Query.FindGuildByAdmin(childComplexity, args["filter"].(*model.AdminGuildFilter)), true
 
 	case "Query.findTaskByOwner":
 		if e.complexity.Query.FindTaskByOwner == nil {
@@ -634,7 +634,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.FindTaskByOwner(childComplexity, args["filter"].(*OwnerTaskFilter)), true
+		return e.complexity.Query.FindTaskByOwner(childComplexity, args["filter"].(*model.OwnerTaskFilter)), true
 
 	case "Query.findTaskByParticipant":
 		if e.complexity.Query.FindTaskByParticipant == nil {
@@ -646,7 +646,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.FindTaskByParticipant(childComplexity, args["filter"].(*ParticipantTaskFilter)), true
+		return e.complexity.Query.FindTaskByParticipant(childComplexity, args["filter"].(*model.ParticipantTaskFilter)), true
 
 	case "Query.getGuildByAdmin":
 		if e.complexity.Query.GetGuildByAdmin == nil {
@@ -1042,6 +1042,7 @@ type NoopPayload {
   clientMutationId: String
 }
 
+# Date ... format: "2006-01-02"
 scalar Date
 
 scalar Time
@@ -1053,6 +1054,9 @@ scalar Upload
 scalar Any
 
 scalar Void
+
+# GuildID ... format: urlEncoded("guild:dbUniqueID")
+scalar GuildID
 `, BuiltIn: false},
 	{Name: "../../../../schema/graphql/task.graphqls", Input: `"オーナータスク"
 type OwnerTask implements Node {
@@ -1185,10 +1189,10 @@ func (ec *executionContext) field_Mutation_acceptTaskByParticipant_args(ctx cont
 func (ec *executionContext) field_Mutation_createGuildByAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 AdminGuildInput
+	var arg0 model.AdminGuildInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNAdminGuildInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐAdminGuildInput(ctx, tmp)
+		arg0, err = ec.unmarshalNAdminGuildInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐAdminGuildInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1200,10 +1204,10 @@ func (ec *executionContext) field_Mutation_createGuildByAdmin_args(ctx context.C
 func (ec *executionContext) field_Mutation_createGuildByGuest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 CreateGuildByGuestInput
+	var arg0 model.CreateGuildByGuestInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateGuildByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐCreateGuildByGuestInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateGuildByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐCreateGuildByGuestInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1215,10 +1219,10 @@ func (ec *executionContext) field_Mutation_createGuildByGuest_args(ctx context.C
 func (ec *executionContext) field_Mutation_createNoticeByAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 NoticeInput
+	var arg0 model.NoticeInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNoticeInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNoticeInput(ctx, tmp)
+		arg0, err = ec.unmarshalNNoticeInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNoticeInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1230,10 +1234,10 @@ func (ec *executionContext) field_Mutation_createNoticeByAdmin_args(ctx context.
 func (ec *executionContext) field_Mutation_createParticipantByGuest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 CreateParticipantByGuestInput
+	var arg0 model.CreateParticipantByGuestInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNCreateParticipantByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐCreateParticipantByGuestInput(ctx, tmp)
+		arg0, err = ec.unmarshalNCreateParticipantByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐCreateParticipantByGuestInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1245,10 +1249,10 @@ func (ec *executionContext) field_Mutation_createParticipantByGuest_args(ctx con
 func (ec *executionContext) field_Mutation_createTaskByOwner_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 OwnerTaskInput
+	var arg0 model.OwnerTaskInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNOwnerTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskInput(ctx, tmp)
+		arg0, err = ec.unmarshalNOwnerTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1260,10 +1264,10 @@ func (ec *executionContext) field_Mutation_createTaskByOwner_args(ctx context.Co
 func (ec *executionContext) field_Mutation_createTaskByParticipant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 ParticipantTaskInput
+	var arg0 model.ParticipantTaskInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNParticipantTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskInput(ctx, tmp)
+		arg0, err = ec.unmarshalNParticipantTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1275,10 +1279,10 @@ func (ec *executionContext) field_Mutation_createTaskByParticipant_args(ctx cont
 func (ec *executionContext) field_Mutation_deleteTaskByOwner_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 OwnerTaskInput
+	var arg0 model.OwnerTaskInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNOwnerTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskInput(ctx, tmp)
+		arg0, err = ec.unmarshalNOwnerTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1290,10 +1294,10 @@ func (ec *executionContext) field_Mutation_deleteTaskByOwner_args(ctx context.Co
 func (ec *executionContext) field_Mutation_noop_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *NoopInput
+	var arg0 *model.NoopInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalONoopInput2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNoopInput(ctx, tmp)
+		arg0, err = ec.unmarshalONoopInput2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNoopInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1305,10 +1309,10 @@ func (ec *executionContext) field_Mutation_noop_args(ctx context.Context, rawArg
 func (ec *executionContext) field_Mutation_requestCreateGuildByGuest_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 RequestCreateGuildInput
+	var arg0 model.RequestCreateGuildInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNRequestCreateGuildInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐRequestCreateGuildInput(ctx, tmp)
+		arg0, err = ec.unmarshalNRequestCreateGuildInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐRequestCreateGuildInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1320,10 +1324,10 @@ func (ec *executionContext) field_Mutation_requestCreateGuildByGuest_args(ctx co
 func (ec *executionContext) field_Mutation_updateTaskByOwner_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 OwnerTaskInput
+	var arg0 model.OwnerTaskInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNOwnerTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskInput(ctx, tmp)
+		arg0, err = ec.unmarshalNOwnerTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1335,10 +1339,10 @@ func (ec *executionContext) field_Mutation_updateTaskByOwner_args(ctx context.Co
 func (ec *executionContext) field_Mutation_updateTaskByParticipant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 ParticipantTaskInput
+	var arg0 model.ParticipantTaskInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNParticipantTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskInput(ctx, tmp)
+		arg0, err = ec.unmarshalNParticipantTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1365,10 +1369,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_findGuildByAdmin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *AdminGuildFilter
+	var arg0 *model.AdminGuildFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOAdminGuildFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐAdminGuildFilter(ctx, tmp)
+		arg0, err = ec.unmarshalOAdminGuildFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐAdminGuildFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1380,10 +1384,10 @@ func (ec *executionContext) field_Query_findGuildByAdmin_args(ctx context.Contex
 func (ec *executionContext) field_Query_findTaskByOwner_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *OwnerTaskFilter
+	var arg0 *model.OwnerTaskFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOOwnerTaskFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskFilter(ctx, tmp)
+		arg0, err = ec.unmarshalOOwnerTaskFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1395,10 +1399,10 @@ func (ec *executionContext) field_Query_findTaskByOwner_args(ctx context.Context
 func (ec *executionContext) field_Query_findTaskByParticipant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *ParticipantTaskFilter
+	var arg0 *model.ParticipantTaskFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOParticipantTaskFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskFilter(ctx, tmp)
+		arg0, err = ec.unmarshalOParticipantTaskFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1520,7 +1524,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _GuestToken_id(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+func (ec *executionContext) _GuestToken_id(ctx context.Context, field graphql.CollectedField, obj *model.GuestToken) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GuestToken_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1564,7 +1568,7 @@ func (ec *executionContext) fieldContext_GuestToken_id(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _GuestToken_mail(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+func (ec *executionContext) _GuestToken_mail(ctx context.Context, field graphql.CollectedField, obj *model.GuestToken) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GuestToken_mail(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1608,7 +1612,7 @@ func (ec *executionContext) fieldContext_GuestToken_mail(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _GuestToken_token(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+func (ec *executionContext) _GuestToken_token(ctx context.Context, field graphql.CollectedField, obj *model.GuestToken) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GuestToken_token(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1652,7 +1656,7 @@ func (ec *executionContext) fieldContext_GuestToken_token(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _GuestToken_expiration_date(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+func (ec *executionContext) _GuestToken_expiration_date(ctx context.Context, field graphql.CollectedField, obj *model.GuestToken) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GuestToken_expiration_date(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1693,7 +1697,7 @@ func (ec *executionContext) fieldContext_GuestToken_expiration_date(ctx context.
 	return fc, nil
 }
 
-func (ec *executionContext) _GuestToken_accepted_number(ctx context.Context, field graphql.CollectedField, obj *GuestToken) (ret graphql.Marshaler) {
+func (ec *executionContext) _GuestToken_accepted_number(ctx context.Context, field graphql.CollectedField, obj *model.GuestToken) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_GuestToken_accepted_number(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1737,7 +1741,7 @@ func (ec *executionContext) fieldContext_GuestToken_accepted_number(ctx context.
 	return fc, nil
 }
 
-func (ec *executionContext) _Guild_id(ctx context.Context, field graphql.CollectedField, obj *Guild) (ret graphql.Marshaler) {
+func (ec *executionContext) _Guild_id(ctx context.Context, field graphql.CollectedField, obj *model.Guild) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Guild_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1763,9 +1767,9 @@ func (ec *executionContext) _Guild_id(ctx context.Context, field graphql.Collect
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(model.GuildID)
 	fc.Result = res
-	return ec.marshalNID2string(ctx, field.Selections, res)
+	return ec.marshalNID2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuildID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Guild_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1781,7 +1785,7 @@ func (ec *executionContext) fieldContext_Guild_id(ctx context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _Guild_name(ctx context.Context, field graphql.CollectedField, obj *Guild) (ret graphql.Marshaler) {
+func (ec *executionContext) _Guild_name(ctx context.Context, field graphql.CollectedField, obj *model.Guild) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Guild_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1825,7 +1829,7 @@ func (ec *executionContext) fieldContext_Guild_name(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Guild_owner(ctx context.Context, field graphql.CollectedField, obj *Guild) (ret graphql.Marshaler) {
+func (ec *executionContext) _Guild_owner(ctx context.Context, field graphql.CollectedField, obj *model.Guild) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Guild_owner(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1851,9 +1855,9 @@ func (ec *executionContext) _Guild_owner(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*Owner)
+	res := resTmp.(*model.Owner)
 	fc.Result = res
-	return ec.marshalNOwner2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwner(ctx, field.Selections, res)
+	return ec.marshalNOwner2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwner(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Guild_owner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1881,7 +1885,7 @@ func (ec *executionContext) fieldContext_Guild_owner(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Guild_participants(ctx context.Context, field graphql.CollectedField, obj *Guild) (ret graphql.Marshaler) {
+func (ec *executionContext) _Guild_participants(ctx context.Context, field graphql.CollectedField, obj *model.Guild) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Guild_participants(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1907,9 +1911,9 @@ func (ec *executionContext) _Guild_participants(ctx context.Context, field graph
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Participant)
+	res := resTmp.([]*model.Participant)
 	fc.Result = res
-	return ec.marshalNParticipant2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantᚄ(ctx, field.Selections, res)
+	return ec.marshalNParticipant2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Guild_participants(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1937,7 +1941,7 @@ func (ec *executionContext) fieldContext_Guild_participants(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Guild_tasks(ctx context.Context, field graphql.CollectedField, obj *Guild) (ret graphql.Marshaler) {
+func (ec *executionContext) _Guild_tasks(ctx context.Context, field graphql.CollectedField, obj *model.Guild) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Guild_tasks(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -1963,9 +1967,9 @@ func (ec *executionContext) _Guild_tasks(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]Task)
+	res := resTmp.([]model.Task)
 	fc.Result = res
-	return ec.marshalNTask2ᚕgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskᚄ(ctx, field.Selections, res)
+	return ec.marshalNTask2ᚕgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Guild_tasks(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1995,7 +1999,7 @@ func (ec *executionContext) _Mutation_noop(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().Noop(rctx, fc.Args["input"].(*NoopInput))
+		return ec.resolvers.Mutation().Noop(rctx, fc.Args["input"].(*model.NoopInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2004,9 +2008,9 @@ func (ec *executionContext) _Mutation_noop(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*NoopPayload)
+	res := resTmp.(*model.NoopPayload)
 	fc.Result = res
-	return ec.marshalONoopPayload2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNoopPayload(ctx, field.Selections, res)
+	return ec.marshalONoopPayload2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNoopPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_noop(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2051,7 +2055,7 @@ func (ec *executionContext) _Mutation_createGuildByAdmin(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateGuildByAdmin(rctx, fc.Args["input"].(AdminGuildInput))
+		return ec.resolvers.Mutation().CreateGuildByAdmin(rctx, fc.Args["input"].(model.AdminGuildInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2060,9 +2064,9 @@ func (ec *executionContext) _Mutation_createGuildByAdmin(ctx context.Context, fi
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*Guild)
+	res := resTmp.(*model.Guild)
 	fc.Result = res
-	return ec.marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx, field.Selections, res)
+	return ec.marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuild(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createGuildByAdmin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2115,7 +2119,7 @@ func (ec *executionContext) _Mutation_createNoticeByAdmin(ctx context.Context, f
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateNoticeByAdmin(rctx, fc.Args["input"].(NoticeInput))
+		return ec.resolvers.Mutation().CreateNoticeByAdmin(rctx, fc.Args["input"].(model.NoticeInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2124,9 +2128,9 @@ func (ec *executionContext) _Mutation_createNoticeByAdmin(ctx context.Context, f
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*Notice)
+	res := resTmp.(*model.Notice)
 	fc.Result = res
-	return ec.marshalONotice2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNotice(ctx, field.Selections, res)
+	return ec.marshalONotice2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNotice(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createNoticeByAdmin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2181,7 +2185,7 @@ func (ec *executionContext) _Mutation_requestCreateGuildByGuest(ctx context.Cont
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().RequestCreateGuildByGuest(rctx, fc.Args["input"].(RequestCreateGuildInput))
+		return ec.resolvers.Mutation().RequestCreateGuildByGuest(rctx, fc.Args["input"].(model.RequestCreateGuildInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2193,9 +2197,9 @@ func (ec *executionContext) _Mutation_requestCreateGuildByGuest(ctx context.Cont
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*GuestToken)
+	res := resTmp.(*model.GuestToken)
 	fc.Result = res
-	return ec.marshalNGuestToken2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuestToken(ctx, field.Selections, res)
+	return ec.marshalNGuestToken2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuestToken(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_requestCreateGuildByGuest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2248,7 +2252,7 @@ func (ec *executionContext) _Mutation_createGuildByGuest(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateGuildByGuest(rctx, fc.Args["input"].(CreateGuildByGuestInput))
+		return ec.resolvers.Mutation().CreateGuildByGuest(rctx, fc.Args["input"].(model.CreateGuildByGuestInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2257,9 +2261,9 @@ func (ec *executionContext) _Mutation_createGuildByGuest(ctx context.Context, fi
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*custommodel.Void)
+	res := resTmp.(*model.Void)
 	fc.Result = res
-	return ec.marshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋcustommodelᚐVoid(ctx, field.Selections, res)
+	return ec.marshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐVoid(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createGuildByGuest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2300,7 +2304,7 @@ func (ec *executionContext) _Mutation_createParticipantByGuest(ctx context.Conte
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateParticipantByGuest(rctx, fc.Args["input"].(CreateParticipantByGuestInput))
+		return ec.resolvers.Mutation().CreateParticipantByGuest(rctx, fc.Args["input"].(model.CreateParticipantByGuestInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2309,9 +2313,9 @@ func (ec *executionContext) _Mutation_createParticipantByGuest(ctx context.Conte
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*custommodel.Void)
+	res := resTmp.(*model.Void)
 	fc.Result = res
-	return ec.marshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋcustommodelᚐVoid(ctx, field.Selections, res)
+	return ec.marshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐVoid(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createParticipantByGuest(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2352,7 +2356,7 @@ func (ec *executionContext) _Mutation_createTaskByOwner(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTaskByOwner(rctx, fc.Args["input"].(OwnerTaskInput))
+		return ec.resolvers.Mutation().CreateTaskByOwner(rctx, fc.Args["input"].(model.OwnerTaskInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2361,9 +2365,9 @@ func (ec *executionContext) _Mutation_createTaskByOwner(ctx context.Context, fie
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*OwnerTask)
+	res := resTmp.(*model.OwnerTask)
 	fc.Result = res
-	return ec.marshalOOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTask(ctx, field.Selections, res)
+	return ec.marshalOOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createTaskByOwner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2416,7 +2420,7 @@ func (ec *executionContext) _Mutation_updateTaskByOwner(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateTaskByOwner(rctx, fc.Args["input"].(OwnerTaskInput))
+		return ec.resolvers.Mutation().UpdateTaskByOwner(rctx, fc.Args["input"].(model.OwnerTaskInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2425,9 +2429,9 @@ func (ec *executionContext) _Mutation_updateTaskByOwner(ctx context.Context, fie
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*OwnerTask)
+	res := resTmp.(*model.OwnerTask)
 	fc.Result = res
-	return ec.marshalOOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTask(ctx, field.Selections, res)
+	return ec.marshalOOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateTaskByOwner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2480,7 +2484,7 @@ func (ec *executionContext) _Mutation_deleteTaskByOwner(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteTaskByOwner(rctx, fc.Args["input"].(OwnerTaskInput))
+		return ec.resolvers.Mutation().DeleteTaskByOwner(rctx, fc.Args["input"].(model.OwnerTaskInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2584,7 +2588,7 @@ func (ec *executionContext) _Mutation_createTaskByParticipant(ctx context.Contex
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateTaskByParticipant(rctx, fc.Args["input"].(ParticipantTaskInput))
+		return ec.resolvers.Mutation().CreateTaskByParticipant(rctx, fc.Args["input"].(model.ParticipantTaskInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2593,9 +2597,9 @@ func (ec *executionContext) _Mutation_createTaskByParticipant(ctx context.Contex
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*ParticipantTask)
+	res := resTmp.(*model.ParticipantTask)
 	fc.Result = res
-	return ec.marshalOParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTask(ctx, field.Selections, res)
+	return ec.marshalOParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createTaskByParticipant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2648,7 +2652,7 @@ func (ec *executionContext) _Mutation_updateTaskByParticipant(ctx context.Contex
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateTaskByParticipant(rctx, fc.Args["input"].(ParticipantTaskInput))
+		return ec.resolvers.Mutation().UpdateTaskByParticipant(rctx, fc.Args["input"].(model.ParticipantTaskInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2657,9 +2661,9 @@ func (ec *executionContext) _Mutation_updateTaskByParticipant(ctx context.Contex
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*ParticipantTask)
+	res := resTmp.(*model.ParticipantTask)
 	fc.Result = res
-	return ec.marshalOParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTask(ctx, field.Selections, res)
+	return ec.marshalOParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_updateTaskByParticipant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2750,7 +2754,7 @@ func (ec *executionContext) fieldContext_Mutation_acceptTaskByParticipant(ctx co
 	return fc, nil
 }
 
-func (ec *executionContext) _MutationResponse_id(ctx context.Context, field graphql.CollectedField, obj *MutationResponse) (ret graphql.Marshaler) {
+func (ec *executionContext) _MutationResponse_id(ctx context.Context, field graphql.CollectedField, obj *model.MutationResponse) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_MutationResponse_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2791,7 +2795,7 @@ func (ec *executionContext) fieldContext_MutationResponse_id(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _NoopPayload_clientMutationId(ctx context.Context, field graphql.CollectedField, obj *NoopPayload) (ret graphql.Marshaler) {
+func (ec *executionContext) _NoopPayload_clientMutationId(ctx context.Context, field graphql.CollectedField, obj *model.NoopPayload) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_NoopPayload_clientMutationId(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2832,7 +2836,7 @@ func (ec *executionContext) fieldContext_NoopPayload_clientMutationId(ctx contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Notice_id(ctx context.Context, field graphql.CollectedField, obj *Notice) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notice_id(ctx context.Context, field graphql.CollectedField, obj *model.Notice) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Notice_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2876,7 +2880,7 @@ func (ec *executionContext) fieldContext_Notice_id(ctx context.Context, field gr
 	return fc, nil
 }
 
-func (ec *executionContext) _Notice_title(ctx context.Context, field graphql.CollectedField, obj *Notice) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notice_title(ctx context.Context, field graphql.CollectedField, obj *model.Notice) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Notice_title(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2920,7 +2924,7 @@ func (ec *executionContext) fieldContext_Notice_title(ctx context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Notice_subTitle(ctx context.Context, field graphql.CollectedField, obj *Notice) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notice_subTitle(ctx context.Context, field graphql.CollectedField, obj *model.Notice) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Notice_subTitle(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -2961,7 +2965,7 @@ func (ec *executionContext) fieldContext_Notice_subTitle(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Notice_content(ctx context.Context, field graphql.CollectedField, obj *Notice) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notice_content(ctx context.Context, field graphql.CollectedField, obj *model.Notice) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Notice_content(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3002,7 +3006,7 @@ func (ec *executionContext) fieldContext_Notice_content(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Notice_startDateTime(ctx context.Context, field graphql.CollectedField, obj *Notice) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notice_startDateTime(ctx context.Context, field graphql.CollectedField, obj *model.Notice) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Notice_startDateTime(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3043,7 +3047,7 @@ func (ec *executionContext) fieldContext_Notice_startDateTime(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Notice_endDateTime(ctx context.Context, field graphql.CollectedField, obj *Notice) (ret graphql.Marshaler) {
+func (ec *executionContext) _Notice_endDateTime(ctx context.Context, field graphql.CollectedField, obj *model.Notice) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Notice_endDateTime(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3084,7 +3088,7 @@ func (ec *executionContext) fieldContext_Notice_endDateTime(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Owner_id(ctx context.Context, field graphql.CollectedField, obj *Owner) (ret graphql.Marshaler) {
+func (ec *executionContext) _Owner_id(ctx context.Context, field graphql.CollectedField, obj *model.Owner) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Owner_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3128,7 +3132,7 @@ func (ec *executionContext) fieldContext_Owner_id(ctx context.Context, field gra
 	return fc, nil
 }
 
-func (ec *executionContext) _Owner_name(ctx context.Context, field graphql.CollectedField, obj *Owner) (ret graphql.Marshaler) {
+func (ec *executionContext) _Owner_name(ctx context.Context, field graphql.CollectedField, obj *model.Owner) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Owner_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3172,7 +3176,7 @@ func (ec *executionContext) fieldContext_Owner_name(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Owner_mail(ctx context.Context, field graphql.CollectedField, obj *Owner) (ret graphql.Marshaler) {
+func (ec *executionContext) _Owner_mail(ctx context.Context, field graphql.CollectedField, obj *model.Owner) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Owner_mail(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3216,7 +3220,7 @@ func (ec *executionContext) fieldContext_Owner_mail(ctx context.Context, field g
 	return fc, nil
 }
 
-func (ec *executionContext) _Owner_guild(ctx context.Context, field graphql.CollectedField, obj *Owner) (ret graphql.Marshaler) {
+func (ec *executionContext) _Owner_guild(ctx context.Context, field graphql.CollectedField, obj *model.Owner) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Owner_guild(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3242,9 +3246,9 @@ func (ec *executionContext) _Owner_guild(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*Guild)
+	res := resTmp.(*model.Guild)
 	fc.Result = res
-	return ec.marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx, field.Selections, res)
+	return ec.marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuild(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Owner_guild(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3272,7 +3276,7 @@ func (ec *executionContext) fieldContext_Owner_guild(ctx context.Context, field 
 	return fc, nil
 }
 
-func (ec *executionContext) _Owner_myTasks(ctx context.Context, field graphql.CollectedField, obj *Owner) (ret graphql.Marshaler) {
+func (ec *executionContext) _Owner_myTasks(ctx context.Context, field graphql.CollectedField, obj *model.Owner) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Owner_myTasks(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3298,9 +3302,9 @@ func (ec *executionContext) _Owner_myTasks(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*OwnerTask)
+	res := resTmp.([]*model.OwnerTask)
 	fc.Result = res
-	return ec.marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskᚄ(ctx, field.Selections, res)
+	return ec.marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Owner_myTasks(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3328,7 +3332,7 @@ func (ec *executionContext) fieldContext_Owner_myTasks(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _OwnerTask_id(ctx context.Context, field graphql.CollectedField, obj *OwnerTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _OwnerTask_id(ctx context.Context, field graphql.CollectedField, obj *model.OwnerTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_OwnerTask_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3372,7 +3376,7 @@ func (ec *executionContext) fieldContext_OwnerTask_id(ctx context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _OwnerTask_content(ctx context.Context, field graphql.CollectedField, obj *OwnerTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _OwnerTask_content(ctx context.Context, field graphql.CollectedField, obj *model.OwnerTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_OwnerTask_content(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3416,7 +3420,7 @@ func (ec *executionContext) fieldContext_OwnerTask_content(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _OwnerTask_status(ctx context.Context, field graphql.CollectedField, obj *OwnerTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _OwnerTask_status(ctx context.Context, field graphql.CollectedField, obj *model.OwnerTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_OwnerTask_status(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3442,9 +3446,9 @@ func (ec *executionContext) _OwnerTask_status(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(TaskStatus)
+	res := resTmp.(model.TaskStatus)
 	fc.Result = res
-	return ec.marshalNTaskStatus2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskStatus(ctx, field.Selections, res)
+	return ec.marshalNTaskStatus2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_OwnerTask_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3460,7 +3464,7 @@ func (ec *executionContext) fieldContext_OwnerTask_status(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _OwnerTask_continuity(ctx context.Context, field graphql.CollectedField, obj *OwnerTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _OwnerTask_continuity(ctx context.Context, field graphql.CollectedField, obj *model.OwnerTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_OwnerTask_continuity(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3486,9 +3490,9 @@ func (ec *executionContext) _OwnerTask_continuity(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(TaskContinuity)
+	res := resTmp.(model.TaskContinuity)
 	fc.Result = res
-	return ec.marshalNTaskContinuity2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskContinuity(ctx, field.Selections, res)
+	return ec.marshalNTaskContinuity2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskContinuity(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_OwnerTask_continuity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3504,7 +3508,7 @@ func (ec *executionContext) fieldContext_OwnerTask_continuity(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _OwnerTask_dueDateTime(ctx context.Context, field graphql.CollectedField, obj *OwnerTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _OwnerTask_dueDateTime(ctx context.Context, field graphql.CollectedField, obj *model.OwnerTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_OwnerTask_dueDateTime(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3545,7 +3549,7 @@ func (ec *executionContext) fieldContext_OwnerTask_dueDateTime(ctx context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _Participant_id(ctx context.Context, field graphql.CollectedField, obj *Participant) (ret graphql.Marshaler) {
+func (ec *executionContext) _Participant_id(ctx context.Context, field graphql.CollectedField, obj *model.Participant) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Participant_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3589,7 +3593,7 @@ func (ec *executionContext) fieldContext_Participant_id(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Participant_name(ctx context.Context, field graphql.CollectedField, obj *Participant) (ret graphql.Marshaler) {
+func (ec *executionContext) _Participant_name(ctx context.Context, field graphql.CollectedField, obj *model.Participant) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Participant_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3633,7 +3637,7 @@ func (ec *executionContext) fieldContext_Participant_name(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Participant_mail(ctx context.Context, field graphql.CollectedField, obj *Participant) (ret graphql.Marshaler) {
+func (ec *executionContext) _Participant_mail(ctx context.Context, field graphql.CollectedField, obj *model.Participant) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Participant_mail(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3674,7 +3678,7 @@ func (ec *executionContext) fieldContext_Participant_mail(ctx context.Context, f
 	return fc, nil
 }
 
-func (ec *executionContext) _Participant_guild(ctx context.Context, field graphql.CollectedField, obj *Participant) (ret graphql.Marshaler) {
+func (ec *executionContext) _Participant_guild(ctx context.Context, field graphql.CollectedField, obj *model.Participant) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Participant_guild(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3700,9 +3704,9 @@ func (ec *executionContext) _Participant_guild(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*Guild)
+	res := resTmp.(*model.Guild)
 	fc.Result = res
-	return ec.marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx, field.Selections, res)
+	return ec.marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuild(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Participant_guild(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3730,7 +3734,7 @@ func (ec *executionContext) fieldContext_Participant_guild(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Participant_myTasks(ctx context.Context, field graphql.CollectedField, obj *Participant) (ret graphql.Marshaler) {
+func (ec *executionContext) _Participant_myTasks(ctx context.Context, field graphql.CollectedField, obj *model.Participant) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Participant_myTasks(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3756,9 +3760,9 @@ func (ec *executionContext) _Participant_myTasks(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ParticipantTask)
+	res := resTmp.([]*model.ParticipantTask)
 	fc.Result = res
-	return ec.marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskᚄ(ctx, field.Selections, res)
+	return ec.marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Participant_myTasks(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3786,7 +3790,7 @@ func (ec *executionContext) fieldContext_Participant_myTasks(ctx context.Context
 	return fc, nil
 }
 
-func (ec *executionContext) _ParticipantTask_id(ctx context.Context, field graphql.CollectedField, obj *ParticipantTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _ParticipantTask_id(ctx context.Context, field graphql.CollectedField, obj *model.ParticipantTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ParticipantTask_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3830,7 +3834,7 @@ func (ec *executionContext) fieldContext_ParticipantTask_id(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _ParticipantTask_content(ctx context.Context, field graphql.CollectedField, obj *ParticipantTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _ParticipantTask_content(ctx context.Context, field graphql.CollectedField, obj *model.ParticipantTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ParticipantTask_content(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3874,7 +3878,7 @@ func (ec *executionContext) fieldContext_ParticipantTask_content(ctx context.Con
 	return fc, nil
 }
 
-func (ec *executionContext) _ParticipantTask_status(ctx context.Context, field graphql.CollectedField, obj *ParticipantTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _ParticipantTask_status(ctx context.Context, field graphql.CollectedField, obj *model.ParticipantTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ParticipantTask_status(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3900,9 +3904,9 @@ func (ec *executionContext) _ParticipantTask_status(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(TaskStatus)
+	res := resTmp.(model.TaskStatus)
 	fc.Result = res
-	return ec.marshalNTaskStatus2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskStatus(ctx, field.Selections, res)
+	return ec.marshalNTaskStatus2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ParticipantTask_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3918,7 +3922,7 @@ func (ec *executionContext) fieldContext_ParticipantTask_status(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _ParticipantTask_continuity(ctx context.Context, field graphql.CollectedField, obj *ParticipantTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _ParticipantTask_continuity(ctx context.Context, field graphql.CollectedField, obj *model.ParticipantTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ParticipantTask_continuity(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -3944,9 +3948,9 @@ func (ec *executionContext) _ParticipantTask_continuity(ctx context.Context, fie
 		}
 		return graphql.Null
 	}
-	res := resTmp.(TaskContinuity)
+	res := resTmp.(model.TaskContinuity)
 	fc.Result = res
-	return ec.marshalNTaskContinuity2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskContinuity(ctx, field.Selections, res)
+	return ec.marshalNTaskContinuity2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskContinuity(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_ParticipantTask_continuity(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -3962,7 +3966,7 @@ func (ec *executionContext) fieldContext_ParticipantTask_continuity(ctx context.
 	return fc, nil
 }
 
-func (ec *executionContext) _ParticipantTask_dueDateTime(ctx context.Context, field graphql.CollectedField, obj *ParticipantTask) (ret graphql.Marshaler) {
+func (ec *executionContext) _ParticipantTask_dueDateTime(ctx context.Context, field graphql.CollectedField, obj *model.ParticipantTask) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ParticipantTask_dueDateTime(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4026,9 +4030,9 @@ func (ec *executionContext) _Query_node(ctx context.Context, field graphql.Colle
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(Node)
+	res := resTmp.(model.Node)
 	fc.Result = res
-	return ec.marshalONode2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNode(ctx, field.Selections, res)
+	return ec.marshalONode2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNode(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_node(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4081,9 +4085,9 @@ func (ec *executionContext) _Query_listGuildByAdmin(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Guild)
+	res := resTmp.([]*model.Guild)
 	fc.Result = res
-	return ec.marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuildᚄ(ctx, field.Selections, res)
+	return ec.marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuildᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_listGuildByAdmin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4125,7 +4129,7 @@ func (ec *executionContext) _Query_findGuildByAdmin(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FindGuildByAdmin(rctx, fc.Args["filter"].(*AdminGuildFilter))
+		return ec.resolvers.Query().FindGuildByAdmin(rctx, fc.Args["filter"].(*model.AdminGuildFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4137,9 +4141,9 @@ func (ec *executionContext) _Query_findGuildByAdmin(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*Guild)
+	res := resTmp.([]*model.Guild)
 	fc.Result = res
-	return ec.marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuildᚄ(ctx, field.Selections, res)
+	return ec.marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuildᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_findGuildByAdmin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4201,9 +4205,9 @@ func (ec *executionContext) _Query_getGuildByAdmin(ctx context.Context, field gr
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*Guild)
+	res := resTmp.(*model.Guild)
 	fc.Result = res
-	return ec.marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx, field.Selections, res)
+	return ec.marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuild(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getGuildByAdmin(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4265,9 +4269,9 @@ func (ec *executionContext) _Query_getGuildByToken(ctx context.Context, field gr
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*Guild)
+	res := resTmp.(*model.Guild)
 	fc.Result = res
-	return ec.marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx, field.Selections, res)
+	return ec.marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuild(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getGuildByToken(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4332,9 +4336,9 @@ func (ec *executionContext) _Query_listTaskByOwner(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*OwnerTask)
+	res := resTmp.([]*model.OwnerTask)
 	fc.Result = res
-	return ec.marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskᚄ(ctx, field.Selections, res)
+	return ec.marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_listTaskByOwner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4376,7 +4380,7 @@ func (ec *executionContext) _Query_findTaskByOwner(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FindTaskByOwner(rctx, fc.Args["filter"].(*OwnerTaskFilter))
+		return ec.resolvers.Query().FindTaskByOwner(rctx, fc.Args["filter"].(*model.OwnerTaskFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4388,9 +4392,9 @@ func (ec *executionContext) _Query_findTaskByOwner(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*OwnerTask)
+	res := resTmp.([]*model.OwnerTask)
 	fc.Result = res
-	return ec.marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskᚄ(ctx, field.Selections, res)
+	return ec.marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_findTaskByOwner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4452,9 +4456,9 @@ func (ec *executionContext) _Query_getTaskByOwner(ctx context.Context, field gra
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*OwnerTask)
+	res := resTmp.(*model.OwnerTask)
 	fc.Result = res
-	return ec.marshalOOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTask(ctx, field.Selections, res)
+	return ec.marshalOOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getTaskByOwner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4519,9 +4523,9 @@ func (ec *executionContext) _Query_listTaskByParticipant(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ParticipantTask)
+	res := resTmp.([]*model.ParticipantTask)
 	fc.Result = res
-	return ec.marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskᚄ(ctx, field.Selections, res)
+	return ec.marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_listTaskByParticipant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4563,7 +4567,7 @@ func (ec *executionContext) _Query_findTaskByParticipant(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().FindTaskByParticipant(rctx, fc.Args["filter"].(*ParticipantTaskFilter))
+		return ec.resolvers.Query().FindTaskByParticipant(rctx, fc.Args["filter"].(*model.ParticipantTaskFilter))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4575,9 +4579,9 @@ func (ec *executionContext) _Query_findTaskByParticipant(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ParticipantTask)
+	res := resTmp.([]*model.ParticipantTask)
 	fc.Result = res
-	return ec.marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskᚄ(ctx, field.Selections, res)
+	return ec.marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_findTaskByParticipant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4639,9 +4643,9 @@ func (ec *executionContext) _Query_getTaskByParticipant(ctx context.Context, fie
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*ParticipantTask)
+	res := resTmp.(*model.ParticipantTask)
 	fc.Result = res
-	return ec.marshalOParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTask(ctx, field.Selections, res)
+	return ec.marshalOParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getTaskByParticipant(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4809,7 +4813,7 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_id(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -4853,7 +4857,7 @@ func (ec *executionContext) fieldContext_User_id(ctx context.Context, field grap
 	return fc, nil
 }
 
-func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *User) (ret graphql.Marshaler) {
+func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_name(ctx, field)
 	if err != nil {
 		return graphql.Null
@@ -6670,8 +6674,8 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputAdminGuildFilter(ctx context.Context, obj interface{}) (AdminGuildFilter, error) {
-	var it AdminGuildFilter
+func (ec *executionContext) unmarshalInputAdminGuildFilter(ctx context.Context, obj interface{}) (model.AdminGuildFilter, error) {
+	var it model.AdminGuildFilter
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6698,8 +6702,8 @@ func (ec *executionContext) unmarshalInputAdminGuildFilter(ctx context.Context, 
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputAdminGuildInput(ctx context.Context, obj interface{}) (AdminGuildInput, error) {
-	var it AdminGuildInput
+func (ec *executionContext) unmarshalInputAdminGuildInput(ctx context.Context, obj interface{}) (model.AdminGuildInput, error) {
+	var it model.AdminGuildInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6734,8 +6738,8 @@ func (ec *executionContext) unmarshalInputAdminGuildInput(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCreateGuildByGuestInput(ctx context.Context, obj interface{}) (CreateGuildByGuestInput, error) {
-	var it CreateGuildByGuestInput
+func (ec *executionContext) unmarshalInputCreateGuildByGuestInput(ctx context.Context, obj interface{}) (model.CreateGuildByGuestInput, error) {
+	var it model.CreateGuildByGuestInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6786,8 +6790,8 @@ func (ec *executionContext) unmarshalInputCreateGuildByGuestInput(ctx context.Co
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputCreateParticipantByGuestInput(ctx context.Context, obj interface{}) (CreateParticipantByGuestInput, error) {
-	var it CreateParticipantByGuestInput
+func (ec *executionContext) unmarshalInputCreateParticipantByGuestInput(ctx context.Context, obj interface{}) (model.CreateParticipantByGuestInput, error) {
+	var it model.CreateParticipantByGuestInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6822,8 +6826,8 @@ func (ec *executionContext) unmarshalInputCreateParticipantByGuestInput(ctx cont
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputNoopInput(ctx context.Context, obj interface{}) (NoopInput, error) {
-	var it NoopInput
+func (ec *executionContext) unmarshalInputNoopInput(ctx context.Context, obj interface{}) (model.NoopInput, error) {
+	var it model.NoopInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6850,8 +6854,8 @@ func (ec *executionContext) unmarshalInputNoopInput(ctx context.Context, obj int
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputNoticeInput(ctx context.Context, obj interface{}) (NoticeInput, error) {
-	var it NoticeInput
+func (ec *executionContext) unmarshalInputNoticeInput(ctx context.Context, obj interface{}) (model.NoticeInput, error) {
+	var it model.NoticeInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6910,8 +6914,8 @@ func (ec *executionContext) unmarshalInputNoticeInput(ctx context.Context, obj i
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputOwnerTaskFilter(ctx context.Context, obj interface{}) (OwnerTaskFilter, error) {
-	var it OwnerTaskFilter
+func (ec *executionContext) unmarshalInputOwnerTaskFilter(ctx context.Context, obj interface{}) (model.OwnerTaskFilter, error) {
+	var it model.OwnerTaskFilter
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6938,8 +6942,8 @@ func (ec *executionContext) unmarshalInputOwnerTaskFilter(ctx context.Context, o
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputOwnerTaskInput(ctx context.Context, obj interface{}) (OwnerTaskInput, error) {
-	var it OwnerTaskInput
+func (ec *executionContext) unmarshalInputOwnerTaskInput(ctx context.Context, obj interface{}) (model.OwnerTaskInput, error) {
+	var it model.OwnerTaskInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -6974,8 +6978,8 @@ func (ec *executionContext) unmarshalInputOwnerTaskInput(ctx context.Context, ob
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputParticipantTaskFilter(ctx context.Context, obj interface{}) (ParticipantTaskFilter, error) {
-	var it ParticipantTaskFilter
+func (ec *executionContext) unmarshalInputParticipantTaskFilter(ctx context.Context, obj interface{}) (model.ParticipantTaskFilter, error) {
+	var it model.ParticipantTaskFilter
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -7002,8 +7006,8 @@ func (ec *executionContext) unmarshalInputParticipantTaskFilter(ctx context.Cont
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputParticipantTaskInput(ctx context.Context, obj interface{}) (ParticipantTaskInput, error) {
-	var it ParticipantTaskInput
+func (ec *executionContext) unmarshalInputParticipantTaskInput(ctx context.Context, obj interface{}) (model.ParticipantTaskInput, error) {
+	var it model.ParticipantTaskInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -7038,8 +7042,8 @@ func (ec *executionContext) unmarshalInputParticipantTaskInput(ctx context.Conte
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputRequestCreateGuildInput(ctx context.Context, obj interface{}) (RequestCreateGuildInput, error) {
-	var it RequestCreateGuildInput
+func (ec *executionContext) unmarshalInputRequestCreateGuildInput(ctx context.Context, obj interface{}) (model.RequestCreateGuildInput, error) {
+	var it model.RequestCreateGuildInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -7078,34 +7082,34 @@ func (ec *executionContext) unmarshalInputRequestCreateGuildInput(ctx context.Co
 
 // region    ************************** interface.gotpl ***************************
 
-func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj Node) graphql.Marshaler {
+func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj model.Node) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
-	case GuestToken:
+	case model.GuestToken:
 		return ec._GuestToken(ctx, sel, &obj)
-	case *GuestToken:
+	case *model.GuestToken:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._GuestToken(ctx, sel, obj)
-	case Guild:
+	case model.Guild:
 		return ec._Guild(ctx, sel, &obj)
-	case *Guild:
+	case *model.Guild:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._Guild(ctx, sel, obj)
-	case OwnerTask:
+	case model.OwnerTask:
 		return ec._OwnerTask(ctx, sel, &obj)
-	case *OwnerTask:
+	case *model.OwnerTask:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._OwnerTask(ctx, sel, obj)
-	case ParticipantTask:
+	case model.ParticipantTask:
 		return ec._ParticipantTask(ctx, sel, &obj)
-	case *ParticipantTask:
+	case *model.ParticipantTask:
 		if obj == nil {
 			return graphql.Null
 		}
@@ -7115,20 +7119,20 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 	}
 }
 
-func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj Task) graphql.Marshaler {
+func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj model.Task) graphql.Marshaler {
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
-	case OwnerTask:
+	case model.OwnerTask:
 		return ec._OwnerTask(ctx, sel, &obj)
-	case *OwnerTask:
+	case *model.OwnerTask:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._OwnerTask(ctx, sel, obj)
-	case ParticipantTask:
+	case model.ParticipantTask:
 		return ec._ParticipantTask(ctx, sel, &obj)
-	case *ParticipantTask:
+	case *model.ParticipantTask:
 		if obj == nil {
 			return graphql.Null
 		}
@@ -7144,7 +7148,7 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 
 var guestTokenImplementors = []string{"GuestToken", "Node"}
 
-func (ec *executionContext) _GuestToken(ctx context.Context, sel ast.SelectionSet, obj *GuestToken) graphql.Marshaler {
+func (ec *executionContext) _GuestToken(ctx context.Context, sel ast.SelectionSet, obj *model.GuestToken) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, guestTokenImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7197,7 +7201,7 @@ func (ec *executionContext) _GuestToken(ctx context.Context, sel ast.SelectionSe
 
 var guildImplementors = []string{"Guild", "Node"}
 
-func (ec *executionContext) _Guild(ctx context.Context, sel ast.SelectionSet, obj *Guild) graphql.Marshaler {
+func (ec *executionContext) _Guild(ctx context.Context, sel ast.SelectionSet, obj *model.Guild) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, guildImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7364,7 +7368,7 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 var mutationResponseImplementors = []string{"MutationResponse"}
 
-func (ec *executionContext) _MutationResponse(ctx context.Context, sel ast.SelectionSet, obj *MutationResponse) graphql.Marshaler {
+func (ec *executionContext) _MutationResponse(ctx context.Context, sel ast.SelectionSet, obj *model.MutationResponse) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, mutationResponseImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7389,7 +7393,7 @@ func (ec *executionContext) _MutationResponse(ctx context.Context, sel ast.Selec
 
 var noopPayloadImplementors = []string{"NoopPayload"}
 
-func (ec *executionContext) _NoopPayload(ctx context.Context, sel ast.SelectionSet, obj *NoopPayload) graphql.Marshaler {
+func (ec *executionContext) _NoopPayload(ctx context.Context, sel ast.SelectionSet, obj *model.NoopPayload) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, noopPayloadImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7414,7 +7418,7 @@ func (ec *executionContext) _NoopPayload(ctx context.Context, sel ast.SelectionS
 
 var noticeImplementors = []string{"Notice"}
 
-func (ec *executionContext) _Notice(ctx context.Context, sel ast.SelectionSet, obj *Notice) graphql.Marshaler {
+func (ec *executionContext) _Notice(ctx context.Context, sel ast.SelectionSet, obj *model.Notice) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, noticeImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7465,7 +7469,7 @@ func (ec *executionContext) _Notice(ctx context.Context, sel ast.SelectionSet, o
 
 var ownerImplementors = []string{"Owner"}
 
-func (ec *executionContext) _Owner(ctx context.Context, sel ast.SelectionSet, obj *Owner) graphql.Marshaler {
+func (ec *executionContext) _Owner(ctx context.Context, sel ast.SelectionSet, obj *model.Owner) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, ownerImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7521,7 +7525,7 @@ func (ec *executionContext) _Owner(ctx context.Context, sel ast.SelectionSet, ob
 
 var ownerTaskImplementors = []string{"OwnerTask", "Node", "Task"}
 
-func (ec *executionContext) _OwnerTask(ctx context.Context, sel ast.SelectionSet, obj *OwnerTask) graphql.Marshaler {
+func (ec *executionContext) _OwnerTask(ctx context.Context, sel ast.SelectionSet, obj *model.OwnerTask) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, ownerTaskImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7574,7 +7578,7 @@ func (ec *executionContext) _OwnerTask(ctx context.Context, sel ast.SelectionSet
 
 var participantImplementors = []string{"Participant"}
 
-func (ec *executionContext) _Participant(ctx context.Context, sel ast.SelectionSet, obj *Participant) graphql.Marshaler {
+func (ec *executionContext) _Participant(ctx context.Context, sel ast.SelectionSet, obj *model.Participant) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, participantImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7627,7 +7631,7 @@ func (ec *executionContext) _Participant(ctx context.Context, sel ast.SelectionS
 
 var participantTaskImplementors = []string{"ParticipantTask", "Node", "Task"}
 
-func (ec *executionContext) _ParticipantTask(ctx context.Context, sel ast.SelectionSet, obj *ParticipantTask) graphql.Marshaler {
+func (ec *executionContext) _ParticipantTask(ctx context.Context, sel ast.SelectionSet, obj *model.ParticipantTask) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, participantTaskImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -7960,7 +7964,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var userImplementors = []string{"User"}
 
-func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *User) graphql.Marshaler {
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *model.User) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, userImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
@@ -8311,7 +8315,7 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNAdminGuildInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐAdminGuildInput(ctx context.Context, v interface{}) (AdminGuildInput, error) {
+func (ec *executionContext) unmarshalNAdminGuildInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐAdminGuildInput(ctx context.Context, v interface{}) (model.AdminGuildInput, error) {
 	res, err := ec.unmarshalInputAdminGuildInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8331,21 +8335,21 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) unmarshalNCreateGuildByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐCreateGuildByGuestInput(ctx context.Context, v interface{}) (CreateGuildByGuestInput, error) {
+func (ec *executionContext) unmarshalNCreateGuildByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐCreateGuildByGuestInput(ctx context.Context, v interface{}) (model.CreateGuildByGuestInput, error) {
 	res, err := ec.unmarshalInputCreateGuildByGuestInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNCreateParticipantByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐCreateParticipantByGuestInput(ctx context.Context, v interface{}) (CreateParticipantByGuestInput, error) {
+func (ec *executionContext) unmarshalNCreateParticipantByGuestInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐCreateParticipantByGuestInput(ctx context.Context, v interface{}) (model.CreateParticipantByGuestInput, error) {
 	res, err := ec.unmarshalInputCreateParticipantByGuestInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNGuestToken2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuestToken(ctx context.Context, sel ast.SelectionSet, v GuestToken) graphql.Marshaler {
+func (ec *executionContext) marshalNGuestToken2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuestToken(ctx context.Context, sel ast.SelectionSet, v model.GuestToken) graphql.Marshaler {
 	return ec._GuestToken(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNGuestToken2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuestToken(ctx context.Context, sel ast.SelectionSet, v *GuestToken) graphql.Marshaler {
+func (ec *executionContext) marshalNGuestToken2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuestToken(ctx context.Context, sel ast.SelectionSet, v *model.GuestToken) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8355,7 +8359,7 @@ func (ec *executionContext) marshalNGuestToken2ᚖgithubᚗcomᚋsky0621ᚋfamil
 	return ec._GuestToken(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuildᚄ(ctx context.Context, sel ast.SelectionSet, v []*Guild) graphql.Marshaler {
+func (ec *executionContext) marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuildᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Guild) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -8379,7 +8383,7 @@ func (ec *executionContext) marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamilia
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx, sel, v[i])
+			ret[i] = ec.marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuild(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -8399,7 +8403,7 @@ func (ec *executionContext) marshalNGuild2ᚕᚖgithubᚗcomᚋsky0621ᚋfamilia
 	return ret
 }
 
-func (ec *executionContext) marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx context.Context, sel ast.SelectionSet, v *Guild) graphql.Marshaler {
+func (ec *executionContext) marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuild(ctx context.Context, sel ast.SelectionSet, v *model.Guild) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8407,6 +8411,16 @@ func (ec *executionContext) marshalNGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagil
 		return graphql.Null
 	}
 	return ec._Guild(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNID2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuildID(ctx context.Context, v interface{}) (model.GuildID, error) {
+	var res model.GuildID
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNID2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuildID(ctx context.Context, sel ast.SelectionSet, v model.GuildID) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
@@ -8424,12 +8438,12 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 	return res
 }
 
-func (ec *executionContext) unmarshalNNoticeInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNoticeInput(ctx context.Context, v interface{}) (NoticeInput, error) {
+func (ec *executionContext) unmarshalNNoticeInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNoticeInput(ctx context.Context, v interface{}) (model.NoticeInput, error) {
 	res, err := ec.unmarshalInputNoticeInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNOwner2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwner(ctx context.Context, sel ast.SelectionSet, v *Owner) graphql.Marshaler {
+func (ec *executionContext) marshalNOwner2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwner(ctx context.Context, sel ast.SelectionSet, v *model.Owner) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8439,7 +8453,7 @@ func (ec *executionContext) marshalNOwner2ᚖgithubᚗcomᚋsky0621ᚋfamiliagil
 	return ec._Owner(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*OwnerTask) graphql.Marshaler {
+func (ec *executionContext) marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.OwnerTask) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -8463,7 +8477,7 @@ func (ec *executionContext) marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfam
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTask(ctx, sel, v[i])
+			ret[i] = ec.marshalNOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTask(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -8483,7 +8497,7 @@ func (ec *executionContext) marshalNOwnerTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfam
 	return ret
 }
 
-func (ec *executionContext) marshalNOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTask(ctx context.Context, sel ast.SelectionSet, v *OwnerTask) graphql.Marshaler {
+func (ec *executionContext) marshalNOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTask(ctx context.Context, sel ast.SelectionSet, v *model.OwnerTask) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8493,12 +8507,12 @@ func (ec *executionContext) marshalNOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamili
 	return ec._OwnerTask(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNOwnerTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskInput(ctx context.Context, v interface{}) (OwnerTaskInput, error) {
+func (ec *executionContext) unmarshalNOwnerTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskInput(ctx context.Context, v interface{}) (model.OwnerTaskInput, error) {
 	res, err := ec.unmarshalInputOwnerTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNParticipant2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantᚄ(ctx context.Context, sel ast.SelectionSet, v []*Participant) graphql.Marshaler {
+func (ec *executionContext) marshalNParticipant2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Participant) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -8522,7 +8536,7 @@ func (ec *executionContext) marshalNParticipant2ᚕᚖgithubᚗcomᚋsky0621ᚋf
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNParticipant2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipant(ctx, sel, v[i])
+			ret[i] = ec.marshalNParticipant2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipant(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -8542,7 +8556,7 @@ func (ec *executionContext) marshalNParticipant2ᚕᚖgithubᚗcomᚋsky0621ᚋf
 	return ret
 }
 
-func (ec *executionContext) marshalNParticipant2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipant(ctx context.Context, sel ast.SelectionSet, v *Participant) graphql.Marshaler {
+func (ec *executionContext) marshalNParticipant2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipant(ctx context.Context, sel ast.SelectionSet, v *model.Participant) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8552,7 +8566,7 @@ func (ec *executionContext) marshalNParticipant2ᚖgithubᚗcomᚋsky0621ᚋfami
 	return ec._Participant(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*ParticipantTask) graphql.Marshaler {
+func (ec *executionContext) marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ParticipantTask) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -8576,7 +8590,7 @@ func (ec *executionContext) marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTask(ctx, sel, v[i])
+			ret[i] = ec.marshalNParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTask(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -8596,7 +8610,7 @@ func (ec *executionContext) marshalNParticipantTask2ᚕᚖgithubᚗcomᚋsky0621
 	return ret
 }
 
-func (ec *executionContext) marshalNParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTask(ctx context.Context, sel ast.SelectionSet, v *ParticipantTask) graphql.Marshaler {
+func (ec *executionContext) marshalNParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTask(ctx context.Context, sel ast.SelectionSet, v *model.ParticipantTask) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8606,12 +8620,12 @@ func (ec *executionContext) marshalNParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋ
 	return ec._ParticipantTask(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNParticipantTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskInput(ctx context.Context, v interface{}) (ParticipantTaskInput, error) {
+func (ec *executionContext) unmarshalNParticipantTaskInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskInput(ctx context.Context, v interface{}) (model.ParticipantTaskInput, error) {
 	res, err := ec.unmarshalInputParticipantTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNRequestCreateGuildInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐRequestCreateGuildInput(ctx context.Context, v interface{}) (RequestCreateGuildInput, error) {
+func (ec *executionContext) unmarshalNRequestCreateGuildInput2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐRequestCreateGuildInput(ctx context.Context, v interface{}) (model.RequestCreateGuildInput, error) {
 	res, err := ec.unmarshalInputRequestCreateGuildInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
@@ -8631,7 +8645,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNTask2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTask(ctx context.Context, sel ast.SelectionSet, v Task) graphql.Marshaler {
+func (ec *executionContext) marshalNTask2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTask(ctx context.Context, sel ast.SelectionSet, v model.Task) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
@@ -8641,7 +8655,7 @@ func (ec *executionContext) marshalNTask2githubᚗcomᚋsky0621ᚋfamiliagildo�
 	return ec._Task(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNTask2ᚕgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []Task) graphql.Marshaler {
+func (ec *executionContext) marshalNTask2ᚕgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []model.Task) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -8665,7 +8679,7 @@ func (ec *executionContext) marshalNTask2ᚕgithubᚗcomᚋsky0621ᚋfamiliagild
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTask2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTask(ctx, sel, v[i])
+			ret[i] = ec.marshalNTask2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTask(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -8685,23 +8699,23 @@ func (ec *executionContext) marshalNTask2ᚕgithubᚗcomᚋsky0621ᚋfamiliagild
 	return ret
 }
 
-func (ec *executionContext) unmarshalNTaskContinuity2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskContinuity(ctx context.Context, v interface{}) (TaskContinuity, error) {
-	var res TaskContinuity
+func (ec *executionContext) unmarshalNTaskContinuity2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskContinuity(ctx context.Context, v interface{}) (model.TaskContinuity, error) {
+	var res model.TaskContinuity
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNTaskContinuity2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskContinuity(ctx context.Context, sel ast.SelectionSet, v TaskContinuity) graphql.Marshaler {
+func (ec *executionContext) marshalNTaskContinuity2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskContinuity(ctx context.Context, sel ast.SelectionSet, v model.TaskContinuity) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalNTaskStatus2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskStatus(ctx context.Context, v interface{}) (TaskStatus, error) {
-	var res TaskStatus
+func (ec *executionContext) unmarshalNTaskStatus2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskStatus(ctx context.Context, v interface{}) (model.TaskStatus, error) {
+	var res model.TaskStatus
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNTaskStatus2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐTaskStatus(ctx context.Context, sel ast.SelectionSet, v TaskStatus) graphql.Marshaler {
+func (ec *executionContext) marshalNTaskStatus2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐTaskStatus(ctx context.Context, sel ast.SelectionSet, v model.TaskStatus) graphql.Marshaler {
 	return v
 }
 
@@ -8958,7 +8972,7 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 	return res
 }
 
-func (ec *executionContext) unmarshalOAdminGuildFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐAdminGuildFilter(ctx context.Context, v interface{}) (*AdminGuildFilter, error) {
+func (ec *executionContext) unmarshalOAdminGuildFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐAdminGuildFilter(ctx context.Context, v interface{}) (*model.AdminGuildFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -8992,7 +9006,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return res
 }
 
-func (ec *executionContext) marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐGuild(ctx context.Context, sel ast.SelectionSet, v *Guild) graphql.Marshaler {
+func (ec *executionContext) marshalOGuild2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐGuild(ctx context.Context, sel ast.SelectionSet, v *model.Guild) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -9015,14 +9029,14 @@ func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalONode2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNode(ctx context.Context, sel ast.SelectionSet, v Node) graphql.Marshaler {
+func (ec *executionContext) marshalONode2githubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNode(ctx context.Context, sel ast.SelectionSet, v model.Node) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Node(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalONoopInput2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNoopInput(ctx context.Context, v interface{}) (*NoopInput, error) {
+func (ec *executionContext) unmarshalONoopInput2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNoopInput(ctx context.Context, v interface{}) (*model.NoopInput, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -9030,28 +9044,28 @@ func (ec *executionContext) unmarshalONoopInput2ᚖgithubᚗcomᚋsky0621ᚋfami
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalONoopPayload2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNoopPayload(ctx context.Context, sel ast.SelectionSet, v *NoopPayload) graphql.Marshaler {
+func (ec *executionContext) marshalONoopPayload2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNoopPayload(ctx context.Context, sel ast.SelectionSet, v *model.NoopPayload) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._NoopPayload(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalONotice2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐNotice(ctx context.Context, sel ast.SelectionSet, v *Notice) graphql.Marshaler {
+func (ec *executionContext) marshalONotice2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐNotice(ctx context.Context, sel ast.SelectionSet, v *model.Notice) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Notice(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTask(ctx context.Context, sel ast.SelectionSet, v *OwnerTask) graphql.Marshaler {
+func (ec *executionContext) marshalOOwnerTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTask(ctx context.Context, sel ast.SelectionSet, v *model.OwnerTask) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._OwnerTask(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOOwnerTaskFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐOwnerTaskFilter(ctx context.Context, v interface{}) (*OwnerTaskFilter, error) {
+func (ec *executionContext) unmarshalOOwnerTaskFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐOwnerTaskFilter(ctx context.Context, v interface{}) (*model.OwnerTaskFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -9059,14 +9073,14 @@ func (ec *executionContext) unmarshalOOwnerTaskFilter2ᚖgithubᚗcomᚋsky0621�
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTask(ctx context.Context, sel ast.SelectionSet, v *ParticipantTask) graphql.Marshaler {
+func (ec *executionContext) marshalOParticipantTask2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTask(ctx context.Context, sel ast.SelectionSet, v *model.ParticipantTask) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._ParticipantTask(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOParticipantTaskFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚐParticipantTaskFilter(ctx context.Context, v interface{}) (*ParticipantTaskFilter, error) {
+func (ec *executionContext) unmarshalOParticipantTaskFilter2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐParticipantTaskFilter(ctx context.Context, v interface{}) (*model.ParticipantTaskFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -9106,16 +9120,16 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 	return res
 }
 
-func (ec *executionContext) unmarshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋcustommodelᚐVoid(ctx context.Context, v interface{}) (*custommodel.Void, error) {
+func (ec *executionContext) unmarshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐVoid(ctx context.Context, v interface{}) (*model.Void, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(custommodel.Void)
+	var res = new(model.Void)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋcustommodelᚐVoid(ctx context.Context, sel ast.SelectionSet, v *custommodel.Void) graphql.Marshaler {
+func (ec *executionContext) marshalOVoid2ᚖgithubᚗcomᚋsky0621ᚋfamiliagildoᚋadapterᚋcontrollerᚋmodelᚐVoid(ctx context.Context, sel ast.SelectionSet, v *model.Void) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

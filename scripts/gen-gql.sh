@@ -2,11 +2,11 @@
 set -euox pipefail
 SCRIPT_DIR=$(dirname "$0")
 echo "${SCRIPT_DIR}"
-cd "${SCRIPT_DIR}" && cd ../
+cd "${SCRIPT_DIR}" && cd ../tool/gqlgen/global-object-id-gen
 
-go run ./tool/gqlgen/global-object-id-gen/main.go
+go run main.go
 
-cd ./src/backend
+cd ../../../src/backend
 rm -f ./adapter/controller/generated.go
 rm -f ./adapter/controller/models_gen.go
 

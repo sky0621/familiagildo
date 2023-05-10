@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sky0621/familiagildo/adapter/controller/custommodel"
+	"github.com/sky0621/familiagildo/adapter/controller/model"
 	"github.com/sky0621/familiagildo/app"
 	"github.com/sky0621/familiagildo/app/log"
 	"github.com/sky0621/familiagildo/domain/vo"
@@ -17,7 +17,7 @@ import (
 )
 
 // RequestCreateGuildByGuest is the resolver for the requestCreateGuildByGuest field.
-func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (*GuestToken, error) {
+func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input model.RequestCreateGuildInput) (*model.GuestToken, error) {
 	usecaseInput := usecase.RequestCreateGuildInput{
 		GuildName: vo.ToGuildName(input.GuildName),
 		OwnerMail: vo.ToOwnerMail(input.OwnerMail),
@@ -34,13 +34,35 @@ func (r *mutationResolver) RequestCreateGuildByGuest(ctx context.Context, input 
 		return nil, CreateGQLError(ctx, err)
 	}
 
-	return &GuestToken{
+	return &model.GuestToken{
 		AcceptedNumber: acceptedNumber.ToVal(),
 	}, err
 }
 
+// CreateGuildByGuest is the resolver for the createGuildByGuest field.
+func (r *mutationResolver) CreateGuildByGuest(ctx context.Context, input model.CreateGuildByGuestInput) (*model.Void, error) {
+	usecaseInput := usecase.CreateGuildByGuestInput{
+		Token:     vo.ToToken(input.Token),
+		OwnerName: vo.ToOwnerName(input.OwnerName),
+		LoginID:   vo.ToLoginID(input.LoginID),
+		Password:  vo.ToPassword(input.Password),
+	}
+
+	if err := r.GuildUsecase.CreateGuildByGuest(ctx, usecaseInput); err != nil {
+		log.ErrorSend(err)
+		return nil, CreateGQLError(ctx, err)
+	}
+
+	return &model.Void{}, nil
+}
+
+// CreateParticipantByGuest is the resolver for the createParticipantByGuest field.
+func (r *mutationResolver) CreateParticipantByGuest(ctx context.Context, input model.CreateParticipantByGuestInput) (*model.Void, error) {
+	panic(fmt.Errorf("not implemented: CreateParticipantByGuest - createParticipantByGuest"))
+}
+
 // GetGuildByToken is the resolver for the getGuildByToken field.
-func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*Guild, error) {
+func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*model.Guild, error) {
 	usecaseToken := vo.ToToken(token)
 
 	guild, err := r.GuildUsecase.GetGuildByToken(ctx, usecaseToken)
@@ -57,34 +79,12 @@ func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*Gui
 		return nil, nil
 	}
 
-	result := &Guild{
+	result := &model.Guild{
 		Name: guild.Root.Name.ToVal(),
 		// FIXME:
-		Owner: &Owner{
+		Owner: &model.Owner{
 			Mail: guild.Owner.Mail.ToVal(),
 		},
 	}
 	return result, nil
-}
-
-// CreateGuildByGuest is the resolver for the createGuildByGuest field.
-func (r *mutationResolver) CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) (*custommodel.Void, error) {
-	usecaseInput := usecase.CreateGuildByGuestInput{
-		Token:     vo.ToToken(input.Token),
-		OwnerName: vo.ToOwnerName(input.OwnerName),
-		LoginID:   vo.ToLoginID(input.LoginID),
-		Password:  vo.ToPassword(input.Password),
-	}
-
-	if err := r.GuildUsecase.CreateGuildByGuest(ctx, usecaseInput); err != nil {
-		log.ErrorSend(err)
-		return nil, CreateGQLError(ctx, err)
-	}
-
-	return &custommodel.Void{}, nil
-}
-
-// CreateParticipantByGuest is the resolver for the createParticipantByGuest field.
-func (r *mutationResolver) CreateParticipantByGuest(ctx context.Context, input CreateParticipantByGuestInput) (*custommodel.Void, error) {
-	panic(fmt.Errorf("not implemented: CreateParticipantByGuest - createParticipantByGuest"))
 }
