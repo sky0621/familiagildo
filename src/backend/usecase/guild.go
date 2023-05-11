@@ -13,11 +13,8 @@ import (
 )
 
 type GuildInputPort interface {
-	// RequestCreateGuildByGuest is ギルド登録を依頼して受付番号を返す
 	RequestCreateGuildByGuest(ctx context.Context, input RequestCreateGuildInput) (vo.AcceptedNumber, error)
-	// CreateGuildByGuest is ギルド及びオーナー情報を登録する
 	CreateGuildByGuest(ctx context.Context, input CreateGuildByGuestInput) error
-	// GetGuildByToken is
 	GetGuildByToken(ctx context.Context, token vo.Token) (*aggregate.Guild, error)
 }
 

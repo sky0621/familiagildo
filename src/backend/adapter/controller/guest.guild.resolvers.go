@@ -63,8 +63,7 @@ func (r *queryResolver) GetGuildByToken(ctx context.Context, token string) (*mod
 		return nil, CreateGQLError(ctx, err)
 	}
 	if guild == nil || guild.Root == nil || guild.Owner == nil {
-		log.ErrorSend(err)
-		return nil, CreateGQLError(ctx, err)
+		return nil, CreateGQLError(ctx, app.NewError("guild == nil || guild.Root == nil || guild.Owner == nil"))
 	}
 
 	result := &model.Guild{
