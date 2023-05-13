@@ -80,10 +80,6 @@ func execMain() {
 	}
 }
 
-// sql-name
-//   table-name
-//     crud(s)
-
 type SQLName string
 
 type TableName string
