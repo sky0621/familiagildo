@@ -34,21 +34,31 @@ func (p *sqlParser) Parse(sqlName, sql string) (*SQLParseResult, error) {
 
 	processedResult := &SQLParseResult{sqlName: ToSQLName(sqlName)}
 
+	fmt.Println("===========================")
 	for _, stmt := range res.GetStmts() {
-		tableNameWithCRUDs, err := parseStmt(stmt.GetStmt())
+		tableNameWithCRUDSlice, err := parseStmt(stmt.GetStmt())
 		if err != nil {
 			log.Println("parseStmt is nil")
 			continue
 		}
-		if tableNameWithCRUDs == nil {
+		if tableNameWithCRUDSlice == nil || len(tableNameWithCRUDSlice) == 0 {
 			continue
 		}
-		processedResult.tableNameWithCRUDsSlice = append(processedResult.tableNameWithCRUDsSlice, tableNameWithCRUDs)
-		fmt.Println(tableNameWithCRUDs.tableName)
-		for _, crud := range tableNameWithCRUDs.cruds{
-			fmt.Println(crud)
+		//		processedResult.tableNameWithCRUDsSlice = append(processedResult.tableNameWithCRUDsSlice, tableNameWithCRUDs)
+		for _, x := range tableNameWithCRUDSlice {
+			fmt.Println(x.tableName)
+			fmt.Println(x.crud)
 		}
 	}
+	fmt.Println("===========================")
+
+	/*	fmt.Println("===========================")
+		fmt.Println(processedResult.sqlName)
+		for _, tc := range processedResult.tableNameWithCRUDsSlice {
+			fmt.Println(tc.tableName)
+			fmt.Println(tc.cruds)
+		}
+	*/
 
 	return processedResult, nil
 }
@@ -61,6 +71,11 @@ type SQLParseResult struct {
 type TableNameWithCRUDs struct {
 	tableName TableName
 	cruds     []CRUD
+}
+
+type TableNameWithCRUD struct {
+	tableName TableName
+	crud      CRUD
 }
 
 type SQLName string
@@ -80,50 +95,50 @@ const (
 	Delete
 )
 
-func parseStmt(s *pg_query.Node) (*TableNameWithCRUDs, error) {
+func parseStmt(s *pg_query.Node) ([]*TableNameWithCRUD, error) {
 	if s == nil {
 		return nil, errors.New("node is nil")
 	}
 
-	var result *TableNameWithCRUDs
+	var tableNameWithCRUDSlice []*TableNameWithCRUD
 	var err error
 
-	result, err = parseSelectStmt(s.GetSelectStmt())
+	tableNameWithCRUDSlice, err = parseSelectStmt(s.GetSelectStmt())
 	if err != nil {
 		return nil, err
 	}
-	if result != nil {
-		return result, nil
+	if tableNameWithCRUDSlice != nil {
+		return tableNameWithCRUDSlice, nil
 	}
 
-	result, err = parseInsertStmt(s.GetInsertStmt())
+	tableNameWithCRUDSlice, err = parseInsertStmt(s.GetInsertStmt())
 	if err != nil {
 		return nil, err
 	}
-	if result != nil {
-		return result, nil
+	if tableNameWithCRUDSlice != nil {
+		return tableNameWithCRUDSlice, nil
 	}
 
-	result, err = parseUpdateStmt(s.GetUpdateStmt())
+	tableNameWithCRUDSlice, err = parseUpdateStmt(s.GetUpdateStmt())
 	if err != nil {
 		return nil, err
 	}
-	if result != nil {
-		return result, nil
+	if tableNameWithCRUDSlice != nil {
+		return tableNameWithCRUDSlice, nil
 	}
 
-	result, err = parseDeleteStmt(s.GetDeleteStmt())
+	tableNameWithCRUDSlice, err = parseDeleteStmt(s.GetDeleteStmt())
 	if err != nil {
 		return nil, err
 	}
-	if result != nil {
-		return result, nil
+	if tableNameWithCRUDSlice != nil {
+		return tableNameWithCRUDSlice, nil
 	}
 
 	return nil, nil
 }
 
-func parseSelectStmt(s *pg_query.SelectStmt) (*CRUDTableNames, error) {
+func parseSelectStmt(s *pg_query.SelectStmt) ([]*TableNameWithCRUD, error) {
 	if s == nil {
 		return nil, nil
 	}
@@ -133,15 +148,15 @@ func parseSelectStmt(s *pg_query.SelectStmt) (*CRUDTableNames, error) {
 		return nil, nil
 	}
 
-	result := &CRUDTableNames{crud: Select}
-	z := &
+	var result []*TableNameWithCRUD
+	crud := Select
 
 	for _, from := range fromArray {
 		n := from.GetNode()
 		nv, ok := n.(*pg_query.Node_RangeVar)
 		if ok {
 			if nv != nil && nv.RangeVar != nil {
-				result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(nv.RangeVar.Relname)})
+				result = append(result, &TableNameWithCRUD{crud: crud, tableName: TableName(nv.RangeVar.Relname)})
 			}
 		}
 		nj, ok2 := n.(*pg_query.Node_JoinExpr)
@@ -152,7 +167,7 @@ func parseSelectStmt(s *pg_query.SelectStmt) (*CRUDTableNames, error) {
 					nv, ok := nl.(*pg_query.Node_RangeVar)
 					if ok {
 						if nv != nil && nv.RangeVar != nil {
-							result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(nv.RangeVar.Relname)})
+							result = append(result, &TableNameWithCRUD{crud: crud, tableName: TableName(nv.RangeVar.Relname)})
 						}
 					}
 				}
@@ -161,7 +176,7 @@ func parseSelectStmt(s *pg_query.SelectStmt) (*CRUDTableNames, error) {
 					nv, ok := nr.(*pg_query.Node_RangeVar)
 					if ok {
 						if nv != nil && nv.RangeVar != nil {
-							result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(nv.RangeVar.Relname)})
+							result = append(result, &TableNameWithCRUD{crud: crud, tableName: TableName(nv.RangeVar.Relname)})
 						}
 					}
 				}
@@ -172,46 +187,49 @@ func parseSelectStmt(s *pg_query.SelectStmt) (*CRUDTableNames, error) {
 	return result, nil
 }
 
-func parseInsertStmt(s *pg_query.InsertStmt) (*CRUDTableNames, error) {
+func parseInsertStmt(s *pg_query.InsertStmt) ([]*TableNameWithCRUD, error) {
 	if s == nil {
 		return nil, nil
 	}
 
-	result := &CRUDTableNames{crud: Insert}
+	var result []*TableNameWithCRUD
+	crud := Insert
 
 	rel := s.GetRelation()
 	if rel != nil {
-		result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(rel.GetRelname())})
+		result = append(result, &TableNameWithCRUD{crud: crud, tableName: TableName(rel.GetRelname())})
 	}
 
 	return result, nil
 }
 
-func parseUpdateStmt(s *pg_query.UpdateStmt) (*CRUDTableNames, error) {
+func parseUpdateStmt(s *pg_query.UpdateStmt) ([]*TableNameWithCRUD, error) {
 	if s == nil {
 		return nil, nil
 	}
 
-	result := &CRUDTableNames{crud: Update}
+	var result []*TableNameWithCRUD
+	crud := Update
 
 	rel := s.GetRelation()
 	if rel != nil {
-		result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(rel.GetRelname())})
+		result = append(result, &TableNameWithCRUD{crud: crud, tableName: TableName(rel.GetRelname())})
 	}
 
 	return result, nil
 }
 
-func parseDeleteStmt(s *pg_query.DeleteStmt) (*CRUDTableNames, error) {
+func parseDeleteStmt(s *pg_query.DeleteStmt) ([]*TableNameWithCRUD, error) {
 	if s == nil {
 		return nil, nil
 	}
 
-	result := &CRUDTableNames{crud: Delete}
+	var result []*TableNameWithCRUD
+	crud := Delete
 
 	rel := s.GetRelation()
 	if rel != nil {
-		result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(rel.GetRelname())})
+		result = append(result, &TableNameWithCRUD{crud: crud, tableName: TableName(rel.GetRelname())})
 	}
 
 	return result, nil

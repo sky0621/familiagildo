@@ -1,10 +1,9 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 
-	pg_query "github.com/pganalyze/pg_query_go/v4"
+	"github.com/sky0621/familiagildo/tool/sqlparser"
 )
 
 const selectSQL01 = `
@@ -45,195 +44,13 @@ func main() {
 }
 
 func execMain() {
-	//result, err := pg_query.Parse(selectSQL01)
-	//result, err := pg_query.Parse(insertSQL01)
-	//result, err := pg_query.Parse(updateSQL01)
-	result, err := pg_query.Parse(deleteSQL01)
-	if err != nil {
-		panic(err)
-	}
-
-	/*	resJSON, err := pg_query.ParseToJSON(selectSQL01)
+	sqls := [][]string{{"selectSQL01", selectSQL01}, {"selectSQL02", selectSQL02}, {"insertSQL01", insertSQL01}, {"updateSQL01", updateSQL01}, {"deleteSQL01", deleteSQL01}}
+	for _, sql := range sqls {
+		res, err := sqlparser.NewSQLParser().Parse(sql[0], sql[1])
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(resJSON)
-	*/
-
-	if result == nil {
-		panic(errors.New("result == nil"))
+		fmt.Println("///////////////////////////")
+		fmt.Println(res)
 	}
-
-	for _, stmt := range result.GetStmts() {
-		result, err := parseStmt(stmt.GetStmt())
-		if err != nil {
-			fmt.Println("parseStmt is nil")
-			continue
-		}
-		if result == nil {
-			continue
-		}
-		fmt.Println(result.crud)
-		for _, tw := range result.tableWiths {
-			fmt.Println(tw.tableName)
-		}
-	}
-}
-
-type SQLName string
-
-type TableName string
-
-type CRUD int8
-
-const (
-	Select CRUD = iota + 1
-	Insert
-	Update
-	Delete
-)
-
-type TableWith struct {
-	tableName TableName
-}
-
-type CRUDTableNames struct {
-	crud       CRUD
-	tableWiths []TableWith
-}
-
-func parseStmt(s *pg_query.Node) (*CRUDTableNames, error) {
-	if s == nil {
-		return nil, errors.New("node is nil")
-	}
-
-	var result *CRUDTableNames
-	var err error
-
-	result, err = parseSelectStmt(s.GetSelectStmt())
-	if err != nil {
-		return nil, err
-	}
-	if result != nil {
-		return result, nil
-	}
-
-	result, err = parseInsertStmt(s.GetInsertStmt())
-	if err != nil {
-		return nil, err
-	}
-	if result != nil {
-		return result, nil
-	}
-
-	result, err = parseUpdateStmt(s.GetUpdateStmt())
-	if err != nil {
-		return nil, err
-	}
-	if result != nil {
-		return result, nil
-	}
-
-	result, err = parseDeleteStmt(s.GetDeleteStmt())
-	if err != nil {
-		return nil, err
-	}
-	if result != nil {
-		return result, nil
-	}
-
-	return nil, nil
-}
-
-func parseSelectStmt(s *pg_query.SelectStmt) (*CRUDTableNames, error) {
-	if s == nil {
-		return nil, nil
-	}
-
-	fromArray := s.FromClause
-	if fromArray == nil {
-		return nil, nil
-	}
-
-	result := &CRUDTableNames{crud: Select}
-
-	for _, from := range fromArray {
-		n := from.GetNode()
-		nv, ok := n.(*pg_query.Node_RangeVar)
-		if ok {
-			if nv != nil && nv.RangeVar != nil {
-				result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(nv.RangeVar.Relname)})
-			}
-		}
-		nj, ok2 := n.(*pg_query.Node_JoinExpr)
-		if ok2 {
-			if nj != nil && nj.JoinExpr != nil {
-				if nj.JoinExpr.Larg != nil && nj.JoinExpr.Larg.GetNode() != nil {
-					nl := nj.JoinExpr.Larg.GetNode()
-					nv, ok := nl.(*pg_query.Node_RangeVar)
-					if ok {
-						if nv != nil && nv.RangeVar != nil {
-							result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(nv.RangeVar.Relname)})
-						}
-					}
-				}
-				if nj.JoinExpr.Rarg != nil && nj.JoinExpr.Rarg.GetNode() != nil {
-					nr := nj.JoinExpr.Rarg.GetNode()
-					nv, ok := nr.(*pg_query.Node_RangeVar)
-					if ok {
-						if nv != nil && nv.RangeVar != nil {
-							result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(nv.RangeVar.Relname)})
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return result, nil
-}
-
-func parseInsertStmt(s *pg_query.InsertStmt) (*CRUDTableNames, error) {
-	if s == nil {
-		return nil, nil
-	}
-
-	result := &CRUDTableNames{crud: Insert}
-
-	rel := s.GetRelation()
-	if rel != nil {
-		result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(rel.GetRelname())})
-	}
-
-	return result, nil
-}
-
-func parseUpdateStmt(s *pg_query.UpdateStmt) (*CRUDTableNames, error) {
-	if s == nil {
-		return nil, nil
-	}
-
-	result := &CRUDTableNames{crud: Update}
-
-	rel := s.GetRelation()
-	if rel != nil {
-		result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(rel.GetRelname())})
-	}
-
-	return result, nil
-}
-
-func parseDeleteStmt(s *pg_query.DeleteStmt) (*CRUDTableNames, error) {
-	if s == nil {
-		return nil, nil
-	}
-
-	result := &CRUDTableNames{crud: Delete}
-
-	rel := s.GetRelation()
-	if rel != nil {
-		result.tableWiths = append(result.tableWiths, TableWith{tableName: TableName(rel.GetRelname())})
-	}
-
-	return result, nil
 }
