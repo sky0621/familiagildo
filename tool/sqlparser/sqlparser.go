@@ -35,17 +35,18 @@ func (p *sqlParser) Parse(sqlName, sql string) (*SQLParseResult, error) {
 	processedResult := &SQLParseResult{sqlName: ToSQLName(sqlName)}
 
 	for _, stmt := range res.GetStmts() {
-		result, err := parseStmt(stmt.GetStmt())
+		tableNameWithCRUDs, err := parseStmt(stmt.GetStmt())
 		if err != nil {
 			log.Println("parseStmt is nil")
 			continue
 		}
-		if result == nil {
+		if tableNameWithCRUDs == nil {
 			continue
 		}
-		fmt.Println(result.crud)
-		for _, tw := range result.tableWiths {
-			fmt.Println(tw.tableName)
+		processedResult.tableNameWithCRUDsSlice = append(processedResult.tableNameWithCRUDsSlice, tableNameWithCRUDs)
+		fmt.Println(tableNameWithCRUDs.tableName)
+		for _, crud := range tableNameWithCRUDs.cruds{
+			fmt.Println(crud)
 		}
 	}
 
@@ -54,7 +55,7 @@ func (p *sqlParser) Parse(sqlName, sql string) (*SQLParseResult, error) {
 
 type SQLParseResult struct {
 	sqlName                 SQLName
-	tableNameWithCRUDsSlice []TableNameWithCRUDs
+	tableNameWithCRUDsSlice []*TableNameWithCRUDs
 }
 
 type TableNameWithCRUDs struct {
@@ -79,12 +80,12 @@ const (
 	Delete
 )
 
-func parseStmt(s *pg_query.Node) (*CRUDTableNames, error) {
+func parseStmt(s *pg_query.Node) (*TableNameWithCRUDs, error) {
 	if s == nil {
 		return nil, errors.New("node is nil")
 	}
 
-	var result *CRUDTableNames
+	var result *TableNameWithCRUDs
 	var err error
 
 	result, err = parseSelectStmt(s.GetSelectStmt())
@@ -133,6 +134,7 @@ func parseSelectStmt(s *pg_query.SelectStmt) (*CRUDTableNames, error) {
 	}
 
 	result := &CRUDTableNames{crud: Select}
+	z := &
 
 	for _, from := range fromArray {
 		n := from.GetNode()
