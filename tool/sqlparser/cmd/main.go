@@ -50,7 +50,11 @@ func execMain() {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println("///////////////////////////")
-		fmt.Println(res)
+
+		fmt.Println(res.SQLName)
+		for _, x := range res.TableNameWithCRUDSlice {
+			fmt.Println(x.TableName)
+			fmt.Println(x.CRUD.ToShortName())
+		}
 	}
 }
