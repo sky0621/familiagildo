@@ -25,6 +25,17 @@ WHERE cust.email NOT LIKE '%@example.com'
 GROUP BY bp.product_id;
 `
 
+const selectSQL03 = `
+SELECT T.*
+FROM (
+ SELECT E.ID, E.NAME, B.NAME AS BRANCH_NAME, D.NAME AS DEPARTMENT_NAME
+ FROM EMPLOYEES E
+ JOIN BRANCH B ON E.BRANCH_ID = B.ID
+ JOIN DEPARTMENT D ON E.DEPARTMENT_ID = D.ID
+) T
+WHERE T.ID = 1;
+`
+
 const insertSQL01 = `
 INSERT INTO guild (name, status) VALUES ($1, 1)
 RETURNING *;
@@ -44,7 +55,17 @@ func main() {
 }
 
 func execMain() {
-	sqls := [][]string{{"selectSQL01", selectSQL01}, {"selectSQL02", selectSQL02}, {"insertSQL01", insertSQL01}, {"updateSQL01", updateSQL01}, {"deleteSQL01", deleteSQL01}}
+	_ = [][]string{
+		{"selectSQL01", selectSQL01},
+		{"selectSQL02", selectSQL02},
+		{"selectSQL03", selectSQL03},
+		{"insertSQL01", insertSQL01},
+		{"updateSQL01", updateSQL01},
+		{"deleteSQL01", deleteSQL01},
+	}
+	sqls := [][]string{
+		{"selectSQL03", selectSQL03},
+	}
 	for _, sql := range sqls {
 		res, err := sqlparser.NewSQLParser().Parse(sql[0], sql[1])
 		if err != nil {

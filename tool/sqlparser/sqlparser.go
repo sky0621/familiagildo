@@ -66,43 +66,6 @@ func ToSQLName(n string) SQLName {
 
 type TableName string
 
-type CRUD int8
-
-const (
-	Create CRUD = iota + 1
-	Read
-	Update
-	Delete
-)
-
-func (c CRUD) ToName() string {
-	switch c {
-	case Create:
-		return "CREATE"
-	case Read:
-		return "READ"
-	case Update:
-		return "UPDATE"
-	case Delete:
-		return "DELETE"
-	}
-	return ""
-}
-
-func (c CRUD) ToShortName() string {
-	switch c {
-	case Create:
-		return "C"
-	case Read:
-		return "R"
-	case Update:
-		return "U"
-	case Delete:
-		return "D"
-	}
-	return ""
-}
-
 func parseStmt(s *pg_query.Node) ([]*TableNameWithCRUD, error) {
 	if s == nil {
 		return nil, errors.New("node is nil")
@@ -111,10 +74,7 @@ func parseStmt(s *pg_query.Node) ([]*TableNameWithCRUD, error) {
 	var tableNameWithCRUDSlice []*TableNameWithCRUD
 	var err error
 
-	tableNameWithCRUDSlice, err = parseSelectStmt(s.GetSelectStmt())
-	if err != nil {
-		return nil, err
-	}
+	tableNameWithCRUDSlice = parseSelectStmt(s.GetSelectStmt())
 	if tableNameWithCRUDSlice != nil {
 		return tableNameWithCRUDSlice, nil
 	}
@@ -146,53 +106,151 @@ func parseStmt(s *pg_query.Node) ([]*TableNameWithCRUD, error) {
 	return nil, nil
 }
 
-func parseSelectStmt(s *pg_query.SelectStmt) ([]*TableNameWithCRUD, error) {
-	if s == nil {
-		return nil, nil
-	}
-
-	fromArray := s.FromClause
-	if fromArray == nil {
-		return nil, nil
-	}
-
+func parseNodeRangeVar(node *pg_query.Node, crud CRUD) []*TableNameWithCRUD {
 	var result []*TableNameWithCRUD
+
+	n := node.GetNode()
+	if n == nil {
+		return result
+	}
+
+	nv, ok := n.(*pg_query.Node_RangeVar)
+	if !ok {
+		return result
+	}
+
+	if nv == nil {
+		return result
+	}
+
+	if nv.RangeVar == nil {
+		return result
+	}
+
+	result = append(result, &TableNameWithCRUD{CRUD: crud, TableName: TableName(nv.RangeVar.Relname)})
+	return result
+}
+
+func parseNodeJoinExpr(node *pg_query.Node, crud CRUD) []*TableNameWithCRUD {
+	var result []*TableNameWithCRUD
+
+	n := node.GetNode()
+	if n == nil {
+		return result
+	}
+
+	nj, ok := n.(*pg_query.Node_JoinExpr)
+	if !ok {
+		return result
+	}
+
+	if nj == nil {
+		return result
+	}
+
+	if nj.JoinExpr == nil {
+		return result
+	}
+
+	if nj.JoinExpr.Larg != nil {
+		res := parseNodeRangeVar(nj.JoinExpr.Larg, crud)
+		if res != nil {
+			result = append(result, res...)
+		}
+	}
+
+	if nj.JoinExpr.Rarg != nil {
+		res := parseNodeRangeVar(nj.JoinExpr.Rarg, crud)
+		if res != nil {
+			result = append(result, res...)
+		}
+	}
+
+	return result
+}
+
+func parseNodeRangeSubSelect(node *pg_query.Node, crud CRUD) []*TableNameWithCRUD {
+	var result []*TableNameWithCRUD
+
+	n := node.GetNode()
+	if n == nil {
+		return result
+	}
+
+	rs, ok := n.(*pg_query.Node_RangeSubselect)
+	if !ok {
+		return result
+	}
+
+	if rs == nil {
+		return result
+	}
+
+	if rs.RangeSubselect == nil {
+		return result
+	}
+
+	sq := rs.RangeSubselect.GetSubquery()
+	if sq == nil {
+		return result
+	}
+
+	sRes := parseSelectStmt(sq.GetSelectStmt())
+	if sRes != nil {
+		result = append(result, sRes...)
+	}
+
+	return result
+}
+
+func parseNode(node *pg_query.Node, crud CRUD) []*TableNameWithCRUD {
+	var result []*TableNameWithCRUD
+
+	res := parseNodeRangeVar(node, crud)
+	if res != nil {
+		result = append(result, res...)
+	}
+
+	res2 := parseNodeJoinExpr(node, crud)
+	if res2 != nil {
+		result = append(result, res2...)
+	}
+
+	res3 := parseNodeRangeSubSelect(node, crud)
+	if res3 != nil {
+		result = append(result, res3...)
+	}
+
+	return result
+}
+
+func parseSelectStmt(s *pg_query.SelectStmt) []*TableNameWithCRUD {
+	var result []*TableNameWithCRUD
+
+	if s == nil {
+		return result
+	}
+
 	crud := Read
 
-	for _, from := range fromArray {
-		n := from.GetNode()
-		nv, ok := n.(*pg_query.Node_RangeVar)
-		if ok {
-			if nv != nil && nv.RangeVar != nil {
-				result = append(result, &TableNameWithCRUD{CRUD: crud, TableName: TableName(nv.RangeVar.Relname)})
-			}
-		}
-		nj, ok2 := n.(*pg_query.Node_JoinExpr)
-		if ok2 {
-			if nj != nil && nj.JoinExpr != nil {
-				if nj.JoinExpr.Larg != nil && nj.JoinExpr.Larg.GetNode() != nil {
-					nl := nj.JoinExpr.Larg.GetNode()
-					nv, ok := nl.(*pg_query.Node_RangeVar)
-					if ok {
-						if nv != nil && nv.RangeVar != nil {
-							result = append(result, &TableNameWithCRUD{CRUD: crud, TableName: TableName(nv.RangeVar.Relname)})
-						}
-					}
-				}
-				if nj.JoinExpr.Rarg != nil && nj.JoinExpr.Rarg.GetNode() != nil {
-					nr := nj.JoinExpr.Rarg.GetNode()
-					nv, ok := nr.(*pg_query.Node_RangeVar)
-					if ok {
-						if nv != nil && nv.RangeVar != nil {
-							result = append(result, &TableNameWithCRUD{CRUD: crud, TableName: TableName(nv.RangeVar.Relname)})
-						}
-					}
-				}
-			}
+	for _, from := range s.FromClause {
+		res := parseNode(from, crud)
+		if res != nil {
+			result = append(result, res...)
 		}
 	}
 
-	return result, nil
+	lRes := parseSelectStmt(s.Larg)
+	if lRes != nil {
+		result = append(result, lRes...)
+	}
+
+	rRes := parseSelectStmt(s.Rarg)
+	if rRes != nil {
+		result = append(result, rRes...)
+	}
+
+	return result
 }
 
 func parseInsertStmt(s *pg_query.InsertStmt) ([]*TableNameWithCRUD, error) {
