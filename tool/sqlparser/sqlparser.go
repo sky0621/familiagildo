@@ -153,14 +153,14 @@ func parseNodeJoinExpr(node *pg_query.Node, crud CRUD) []*TableNameWithCRUD {
 	}
 
 	if nj.JoinExpr.Larg != nil {
-		res := parseNodeRangeVar(nj.JoinExpr.Larg, crud)
+		res := parseNode(nj.JoinExpr.Larg, crud)
 		if res != nil {
 			result = append(result, res...)
 		}
 	}
 
 	if nj.JoinExpr.Rarg != nil {
-		res := parseNodeRangeVar(nj.JoinExpr.Rarg, crud)
+		res := parseNode(nj.JoinExpr.Rarg, crud)
 		if res != nil {
 			result = append(result, res...)
 		}

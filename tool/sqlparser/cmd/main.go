@@ -55,7 +55,7 @@ func main() {
 }
 
 func execMain() {
-	_ = [][]string{
+	sqls := [][]string{
 		{"selectSQL01", selectSQL01},
 		{"selectSQL02", selectSQL02},
 		{"selectSQL03", selectSQL03},
@@ -63,7 +63,7 @@ func execMain() {
 		{"updateSQL01", updateSQL01},
 		{"deleteSQL01", deleteSQL01},
 	}
-	sqls := [][]string{
+	_ = [][]string{
 		{"selectSQL03", selectSQL03},
 	}
 	for _, sql := range sqls {
