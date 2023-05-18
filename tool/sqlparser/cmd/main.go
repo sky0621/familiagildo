@@ -16,16 +16,30 @@ func main() {
 }
 
 func execMain() {
+	var sqlParseResults []*sqlparser.SQLParseResult
 	if err := filepath.WalkDir(filepath.Join("cmd", "testdata"), func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
 			return nil
 		}
 
-		fmt.Println(path)
 		fl, err := os.Open(path)
 		if err != nil {
 			panic(err)
 		}
+		defer func() {
+			if fl != nil {
+				if err := fl.Close(); err != nil {
+					fmt.Println(err)
+				}
+			}
+		}()
+
+		stat, err := fl.Stat()
+		if err != nil {
+			panic(err)
+		}
+
+		sqlFileName := stat.Name()
 
 		sqlName := ""
 		sql := strings.Builder{}
@@ -33,21 +47,41 @@ func execMain() {
 		sc := bufio.NewScanner(fl)
 		for sc.Scan() {
 			line := sc.Text()
+
 			if isBlankLine(line) {
-				fmt.Println("is blank line...")
 				continue
 			}
+
 			if isSQLNameLine(line) {
 				sqlName = getSQLName(line)
-				fmt.Println(sqlName)
 				continue
 			}
+
 			sql.WriteString(line + " ")
 
+			if isEndSQL(line) {
+				res, err := sqlparser.NewSQLParser().Parse(sqlName, sqlFileName, sql.String())
+				if err != nil {
+					panic(err)
+				}
+				sqlParseResults = append(sqlParseResults, res)
+
+				sqlName = ""
+				sql.Reset()
+			}
 		}
 		return nil
 	}); err != nil {
 		panic(err)
+	}
+
+	for _, pr := range sqlParseResults {
+		fmt.Printf("[%s (%s)]\n", pr.SQLName, pr.SQLFileName)
+		for _, x := range pr.TableNameWithCRUDSlice {
+			fmt.Printf("%s : %s\n", x.TableName, x.CRUD.ToShortName())
+		}
+		fmt.Println("===============")
+
 	}
 }
 
@@ -56,8 +90,11 @@ func isBlankLine(line string) bool {
 }
 
 func isSQLNameLine(line string) bool {
-	fmt.Println(line)
-	return strings.HasPrefix(strings.Trim(line, " "), "--name")
+	return strings.HasPrefix(strings.Trim(line, " "), "-- name")
+}
+
+func isEndSQL(line string) bool {
+	return strings.HasSuffix(strings.Trim(line, " "), ";")
 }
 
 func getSQLName(line string) string {
@@ -69,19 +106,4 @@ func getSQLName(line string) string {
 		return ""
 	}
 	return tokens[1]
-}
-
-func execTest() {
-	for _, sql := range sqls {
-		res, err := sqlparser.NewSQLParser().Parse(sql[0], sql[1])
-		if err != nil {
-			panic(err)
-		}
-
-		fmt.Println(res.SQLName)
-		for _, x := range res.TableNameWithCRUDSlice {
-			fmt.Println(x.TableName)
-			fmt.Println(x.CRUD.ToShortName())
-		}
-	}
 }

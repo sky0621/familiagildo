@@ -3,6 +3,7 @@ package sqlparser
 import (
 	"errors"
 	"log"
+	"strings"
 
 	pg_query "github.com/pganalyze/pg_query_go/v4"
 )
@@ -12,7 +13,7 @@ import (
 //     CRUD(s)
 
 type SQLParser interface {
-	Parse(sqlName, sql string) (*SQLParseResult, error)
+	Parse(sqlName, sqlFileName, sql string) (*SQLParseResult, error)
 }
 
 func NewSQLParser() SQLParser {
@@ -22,7 +23,7 @@ func NewSQLParser() SQLParser {
 type sqlParser struct {
 }
 
-func (p *sqlParser) Parse(sqlName, sql string) (*SQLParseResult, error) {
+func (p *sqlParser) Parse(sqlName, sqlFileName, sql string) (*SQLParseResult, error) {
 	res, err := pg_query.Parse(sql)
 	if err != nil {
 		return nil, err
@@ -31,7 +32,7 @@ func (p *sqlParser) Parse(sqlName, sql string) (*SQLParseResult, error) {
 		return nil, errors.New("result == nil")
 	}
 
-	processedResult := &SQLParseResult{SQLName: ToSQLName(sqlName)}
+	processedResult := &SQLParseResult{SQLName: ToSQLName(sqlName), SQLFileName: ToSQLFileName(sqlFileName)}
 
 	for _, stmt := range res.GetStmts() {
 		tableNameWithCRUDSlice, err := parseStmt(stmt.GetStmt())
@@ -50,6 +51,7 @@ func (p *sqlParser) Parse(sqlName, sql string) (*SQLParseResult, error) {
 
 type SQLParseResult struct {
 	SQLName                SQLName
+	SQLFileName            SQLFileName
 	TableNameWithCRUDSlice []*TableNameWithCRUD
 }
 
@@ -61,7 +63,13 @@ type TableNameWithCRUD struct {
 type SQLName string
 
 func ToSQLName(n string) SQLName {
-	return SQLName(n)
+	return SQLName(strings.Trim(n, " "))
+}
+
+type SQLFileName string
+
+func ToSQLFileName(n string) SQLFileName {
+	return SQLFileName(strings.Trim(n, " "))
 }
 
 type TableName string
