@@ -58,11 +58,19 @@ type TableNameWithCRUD struct {
 
 type SQLName string
 
+func (n SQLName) ToString() string {
+	return string(n)
+}
+
 func ToSQLName(n string) SQLName {
 	return SQLName(strings.Trim(n, " "))
 }
 
 type SQLFileName string
+
+func (n SQLFileName) ToString() string {
+	return string(n)
+}
 
 func ToSQLFileName(n string) SQLFileName {
 	return SQLFileName(strings.Trim(n, " "))

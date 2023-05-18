@@ -9,6 +9,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/xuri/excelize/v2"
+
 	"github.com/sky0621/familiagildo/tool/sqlparser"
 )
 
@@ -86,6 +88,53 @@ func execMain() {
 
 	sortedUniqueTableNames := collectTableNames(sqlParseResults)
 	fmt.Println(sortedUniqueTableNames)
+
+	f := excelize.NewFile()
+	defer func() {
+		if err := f.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	sheetName := "CRUD"
+	index, err := f.NewSheet(sheetName)
+	if err != nil {
+		panic(err)
+	}
+
+	if err := f.SetCellStr(sheetName, "A2", "No"); err != nil {
+		panic(err)
+	}
+	if err := f.SetCellStr(sheetName, "B2", "SQL関数名"); err != nil {
+		panic(err)
+	}
+	if err := f.SetCellStr(sheetName, "C2", "SQLファイル名"); err != nil {
+		panic(err)
+	}
+	for i, tableName := range sortedUniqueTableNames {
+		if err := f.SetCellStr(sheetName, fmt.Sprintf("%s2", tableColSet[i]), tableName); err != nil {
+			panic(err)
+		}
+	}
+
+	for i, x := range sqlParseResults {
+		if err := f.SetCellInt(sheetName, fmt.Sprintf("A%d", i+3), i+1); err != nil {
+			panic(err)
+		}
+		if err := f.SetCellStr(sheetName, fmt.Sprintf("B%d", i+3), x.SQLName.ToString()); err != nil {
+			panic(err)
+		}
+		if err := f.SetCellStr(sheetName, fmt.Sprintf("C%d", i+3), x.SQLFileName.ToString()); err != nil {
+			panic(err)
+		}
+		// FIXME:
+	}
+
+	f.SetActiveSheet(index)
+
+	if err := f.SaveAs("CRUD.xlsx"); err != nil {
+		fmt.Println(err)
+	}
 }
 
 func isBlankLine(line string) bool {
@@ -125,3 +174,5 @@ func collectTableNames(sqlParseResults []*sqlparser.SQLParseResult) []string {
 	sort.Strings(r)
 	return r
 }
+
+var tableColSet = []string{"D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U"}
