@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/sky0621/familiagildo/tool/sqlparser"
@@ -81,8 +82,10 @@ func execMain() {
 			fmt.Printf("%s : %s\n", x.TableName, x.CRUD.ToShortName())
 		}
 		fmt.Println("===============")
-
 	}
+
+	sortedUniqueTableNames := collectTableNames(sqlParseResults)
+	fmt.Println(sortedUniqueTableNames)
 }
 
 func isBlankLine(line string) bool {
@@ -106,4 +109,19 @@ func getSQLName(line string) string {
 		return ""
 	}
 	return tokens[1]
+}
+
+func collectTableNames(sqlParseResults []*sqlparser.SQLParseResult) []string {
+	m := map[string]struct{}{}
+	for _, x := range sqlParseResults {
+		for _, y := range x.TableNameWithCRUDSlice {
+			m[y.TableName.ToString()] = struct{}{}
+		}
+	}
+	var r []string
+	for k, _ := range m {
+		r = append(r, k)
+	}
+	sort.Strings(r)
+	return r
 }

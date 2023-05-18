@@ -8,10 +8,6 @@ import (
 	pg_query "github.com/pganalyze/pg_query_go/v4"
 )
 
-// sql-name
-//   table-name
-//     CRUD(s)
-
 type SQLParser interface {
 	Parse(sqlName, sqlFileName, sql string) (*SQLParseResult, error)
 }
@@ -73,6 +69,10 @@ func ToSQLFileName(n string) SQLFileName {
 }
 
 type TableName string
+
+func (t TableName) ToString() string {
+	return string(t)
+}
 
 func parseStmt(s *pg_query.Node) ([]*TableNameWithCRUD, error) {
 	if s == nil {
