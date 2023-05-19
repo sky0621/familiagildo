@@ -78,16 +78,7 @@ func execMain() {
 		panic(err)
 	}
 
-	for _, pr := range sqlParseResults {
-		fmt.Printf("[%s (%s)]\n", pr.SQLName, pr.SQLFileName)
-		for _, x := range pr.TableNameWithCRUDSlice {
-			fmt.Printf("%s : %s\n", x.TableName, x.CRUD.ToShortName())
-		}
-		fmt.Println("===============")
-	}
-
 	sortedUniqueTableNames := collectTableNames(sqlParseResults)
-	fmt.Println(sortedUniqueTableNames)
 
 	f := excelize.NewFile()
 	defer func() {
@@ -97,40 +88,56 @@ func execMain() {
 	}()
 
 	sheetName := "CRUD"
-	index, err := f.NewSheet(sheetName)
-	if err != nil {
+	if err := f.SetSheetName("Sheet1", sheetName); err != nil {
 		panic(err)
 	}
 
-	if err := f.SetCellStr(sheetName, "A2", "No"); err != nil {
+	if err := f.SetCellStr(sheetName, "A1", "No"); err != nil {
 		panic(err)
 	}
-	if err := f.SetCellStr(sheetName, "B2", "SQL関数名"); err != nil {
+	if err := f.SetCellStr(sheetName, "B1", "SQL関数名"); err != nil {
 		panic(err)
 	}
-	if err := f.SetCellStr(sheetName, "C2", "SQLファイル名"); err != nil {
+	if err := f.SetCellStr(sheetName, "C1", "SQLファイル名"); err != nil {
 		panic(err)
 	}
 	for i, tableName := range sortedUniqueTableNames {
-		if err := f.SetCellStr(sheetName, fmt.Sprintf("%s2", tableColSet[i]), tableName); err != nil {
+		if err := f.SetCellStr(sheetName, fmt.Sprintf("%s1", tableColSet[i]), tableName); err != nil {
 			panic(err)
 		}
 	}
 
 	for i, x := range sqlParseResults {
-		if err := f.SetCellInt(sheetName, fmt.Sprintf("A%d", i+3), i+1); err != nil {
+		if err := f.SetCellInt(sheetName, fmt.Sprintf("A%d", i+2), i+1); err != nil {
 			panic(err)
 		}
-		if err := f.SetCellStr(sheetName, fmt.Sprintf("B%d", i+3), x.SQLName.ToString()); err != nil {
+		if err := f.SetCellStr(sheetName, fmt.Sprintf("B%d", i+2), x.SQLName.ToString()); err != nil {
 			panic(err)
 		}
-		if err := f.SetCellStr(sheetName, fmt.Sprintf("C%d", i+3), x.SQLFileName.ToString()); err != nil {
+		if err := f.SetCellStr(sheetName, fmt.Sprintf("C%d", i+2), x.SQLFileName.ToString()); err != nil {
 			panic(err)
 		}
-		// FIXME:
+		for _, y := range x.TableNameWithCRUDSlice {
+			for i3, tableName := range sortedUniqueTableNames {
+				if tableName == y.TableName.ToString() {
+					targetCell := fmt.Sprintf("%s%d", tableColSet[i3], i+2)
+					already, err := f.GetCellValue(sheetName, targetCell)
+					if err != nil {
+						panic(err)
+					}
+					if already == "" {
+						if err := f.SetCellStr(sheetName, targetCell, y.CRUD.ToShortName()); err != nil {
+							panic(err)
+						}
+					} else {
+						if err := f.SetCellStr(sheetName, targetCell, already+", "+y.CRUD.ToShortName()); err != nil {
+							panic(err)
+						}
+					}
+				}
+			}
+		}
 	}
-
-	f.SetActiveSheet(index)
 
 	if err := f.SaveAs("CRUD.xlsx"); err != nil {
 		fmt.Println(err)

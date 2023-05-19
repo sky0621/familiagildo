@@ -7,4 +7,4 @@ UPDATE guild SET status = 2 WHERE id = $1
 RETURNING *;
 
 -- name: GetGuildByID :one
-SELECT * FROM guild WHERE id = $1;
+SELECT * FROM guild g INNER JOIN guild_owner_relation r ON r.guild_id = g.id WHERE g.id = $1;
